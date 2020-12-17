@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.domain.aggregate;
+package io.deviad.ripeti.webapp.domain.valueobject.user;
 
 public enum UserStatus {
     INITIALIZED,

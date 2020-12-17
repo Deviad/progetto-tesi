@@ -8,6 +8,7 @@ import io.deviad.ripeti.webapp.domain.event.command.Update;
 import io.deviad.ripeti.webapp.domain.event.user.UserRegistered;
 import io.deviad.ripeti.webapp.domain.event.user.UserRemoved;
 import io.deviad.ripeti.webapp.domain.event.user.UserUpdated;
+import io.deviad.ripeti.webapp.domain.valueobject.user.UserStatus;
 import io.vavr.API;
 import io.vavr.Function1;
 import io.vavr.Function2;
@@ -19,7 +20,7 @@ import lombok.With;
 import java.util.List;
 import java.util.UUID;
 
-import static io.deviad.ripeti.webapp.domain.aggregate.UserStatus.*;
+import static io.deviad.ripeti.webapp.domain.valueobject.user.UserStatus.*;
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.Predicates.instanceOf;

@@ -6,9 +6,11 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootConfiguration
 @ComponentScan(basePackages = "io.deviad.ripeti.webapp")
+@EnableScheduling
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
 @EnableElasticsearchRepositories(basePackages = "io.deviad.ripeti.webapp.eventstore")
 public class WebappApplication {

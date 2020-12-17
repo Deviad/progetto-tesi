@@ -1,18 +1,17 @@
 package io.deviad.ripeti.webapp.eventstore.publisher;
 
-import org.springframework.cloud.stream.messaging.Source;
-import org.springframework.integration.annotation.Publisher;
-import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
 
-import java.util.UUID;
+import java.util.function.Function;
 
-@Component
+@Configuration
 public class PublishChannel {
 
-    @Publisher(channel = Source.OUTPUT)
-    public String send(String payload, @Header UUID uuid) {
-        return payload;
+    @Bean
+    public Function<Message<String>, String> sendMessage() {
+        return Message::getPayload;
     }
 }
 
