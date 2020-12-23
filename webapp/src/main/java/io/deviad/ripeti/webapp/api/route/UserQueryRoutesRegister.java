@@ -30,11 +30,7 @@ public class UserQueryRoutesRegister {
     log.info("test");
     return Mono.just(request.pathVariable("username"))
         .onErrorResume(Mono::error)
-        .map(
-            r -> {
-              log.info("prova");
-              return queryService.getUserInfo(r);
-            })
+        .map(r -> queryService.getUserInfo(r))
         .flatMap(Function.identity())
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }

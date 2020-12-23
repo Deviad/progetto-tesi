@@ -45,6 +45,10 @@ public class FirstName {
   @Override
   public boolean equals(Object other) {
 
+    if (other == null) {
+      return false;
+    }
+
     if (!this.getClass().getName().equals(other.getClass().getName())) {
       return false;
     }

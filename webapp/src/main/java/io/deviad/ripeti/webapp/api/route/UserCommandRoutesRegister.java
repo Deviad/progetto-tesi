@@ -38,10 +38,7 @@ public class UserCommandRoutesRegister {
     return request
         .bodyToMono(RegistrationRequest.class)
         .onErrorResume(Mono::error)
-        .map(
-            r -> {
-              return userManagement.registerUser(r);
-            })
+        .map(r -> userManagement.registerUser(r))
         .flatMap(Function.identity())
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
