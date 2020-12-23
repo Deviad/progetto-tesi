@@ -1,40 +1,32 @@
 package io.deviad.ripeti.webapp.domain.event.user;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.deviad.ripeti.webapp.domain.event.DomainEvent;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Username;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.time.Instant;
-import java.util.UUID;
 
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserRemoved implements DomainEvent {
+/*
+    The following two lines are used to tell Jackson that
+    getters/setters are not standard with prefix get/set.
+ */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@Accessors(fluent = true)
+public record UserRemoved(Instant when, UserRemovedPayload payload) implements DomainEvent {
     public static final String TYPE = "user.removed";
-
-    private UUID uuid;
-    private Instant when;
-    private Username username;
-
 
     @Override
     public String type() {
         return TYPE;
     }
 
-    @Override
-    public Instant when() {
-        return when;
-    }
+    public static record UserRemovedPayload(Username username) {
 
-    @Override
-    public UUID aggregateUuid() {
-        return uuid;
     }
-
 
 }
+

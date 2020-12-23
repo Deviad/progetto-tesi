@@ -10,10 +10,9 @@ import lombok.experimental.Accessors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 /*
-    This is a value object
- */
+   This is a value object
+*/
 
 @Value
 @With
@@ -22,52 +21,47 @@ import java.util.regex.Pattern;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 /*
-    The following two lines are used to tell Jackson that
-    getters/setters are not standard with prefix get/set.
- */
-public class Username  {
+   The following two lines are used to tell Jackson that
+   getters/setters are not standard with prefix get/set.
+*/
+public class Username {
 
-    private final String username;
+  private final String username;
 
-    public String username() {
-        return this.username;
+  public Username(String username) {
+    validate(username);
+    this.username = username;
+  }
+
+  public String username() {
+    return this.username;
+  }
+
+  public void validate(String username) {
+    Pattern p = Pattern.compile("^[A-Za-z]{3,20}$");
+    Matcher m = p.matcher(username);
+    if (!m.matches()) {
+      throw new IllegalArgumentException("Username cannot be accepted");
+    }
+  }
+
+  @Override
+  public boolean equals(Object other) {
+
+    if (!this.getClass().getName().equals(other.getClass().getName())) {
+      return false;
     }
 
-    public Username(String username) {
-        validate(username);
-        this.username = username;
-    }
+    Username that = (Username) other;
 
-    public void validate(String username) {
-        Pattern p = Pattern.compile("^[A-Za-z]{3,20}$");
-        Matcher m = p.matcher(username);
-        if (!m.matches()) {
-            throw new IllegalArgumentException("Username cannot be accepted");
-        }
-    }
+    return this.username().equals(that.username);
+  }
 
-
-    @Override
-    public boolean equals(Object other) {
-
-        if (!this.getClass().getName().equals(other.getClass().getName())) {
-            return false;
-        }
-
-        Username that = (Username) other;
-
-        return this.username().equals(that.username);
-
-    }
-
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((username == null) ? 0 : username.hashCode());
-        return result;
-
-    }
-
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((username == null) ? 0 : username.hashCode());
+    return result;
+  }
 }
