@@ -1,6 +1,7 @@
 package io.deviad.ripeti.webapp.domain.valueobject.user;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Value;
@@ -23,8 +24,8 @@ import java.util.regex.Pattern;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class Password {
-  @JsonUnwrapped private final String password;
-
+   String password;
+  @JsonCreator
   public Password(String password) {
     validate(password);
     this.password = password;

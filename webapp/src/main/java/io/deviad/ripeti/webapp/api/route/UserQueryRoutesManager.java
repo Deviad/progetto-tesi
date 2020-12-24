@@ -17,17 +17,16 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Configuration
 @Slf4j
 @AllArgsConstructor
-public class UserQueryRoutesRegister {
+public class UserQueryRoutesManager {
 
   UserQueryService queryService;
 
   @Bean
   public RouterFunction<ServerResponse> userQueryRoutes() {
-    return route().GET("/api/user/{username}", this::handleRegistration).build();
+    return route().GET("/api/user/{username}", this::handleGetUserinfo).build();
   }
 
-  Mono<ServerResponse> handleRegistration(ServerRequest request) {
-    log.info("test");
+  Mono<ServerResponse> handleGetUserinfo(ServerRequest request) {
     return Mono.just(request.pathVariable("username"))
         .onErrorResume(Mono::error)
         .map(r -> queryService.getUserInfo(r))

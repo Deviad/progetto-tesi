@@ -1,6 +1,7 @@
 package io.deviad.ripeti.webapp.domain.valueobject.user;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
@@ -27,18 +28,21 @@ import java.util.regex.Pattern;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class LastName {
 
-  @JsonUnwrapped private final String lastName;
-
+  String lastName;
+  @JsonCreator
   public LastName(String lastName) {
     validate(lastName);
     this.lastName = lastName;
   }
 
   public void validate(String lastName) {
+    if(lastName == null || lastName.equals(" ")) {
+      throw new IllegalArgumentException("LastName cannot be empty");
+    }
     Pattern p = Pattern.compile("^[A-Za-z]{3,20}$");
     Matcher m = p.matcher(lastName);
     if (!m.matches()) {
-      throw new IllegalArgumentException("Password cannot be accepted");
+      throw new IllegalArgumentException("LastName cannot be accepted");
     }
   }
 

@@ -1,10 +1,7 @@
 package io.deviad.ripeti.webapp.persistence;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import io.deviad.ripeti.webapp.domain.valueobject.user.FirstName;
-import io.deviad.ripeti.webapp.domain.valueobject.user.LastName;
-import io.deviad.ripeti.webapp.domain.valueobject.user.Password;
-import io.deviad.ripeti.webapp.domain.valueobject.user.Username;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,25 +13,23 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserEntity {
+  @JsonIgnore
   @Id Long id;
-
   @Column("username")
-  @JsonUnwrapped
-  Username username;
+  String username;
 
   @Column("password")
-  @JsonUnwrapped
-  Password password;
+  String password;
 
   @Column("first_name")
-  @JsonUnwrapped
-  FirstName firstName;
+  String firstName;
 
   @Column("last_name")
-  @JsonUnwrapped
-  LastName lastName;
+  String lastName;
 
   @Column("address_id")
+  @JsonIgnore
   Long addressId;
 }
