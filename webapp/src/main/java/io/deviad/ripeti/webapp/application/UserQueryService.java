@@ -1,6 +1,6 @@
 package io.deviad.ripeti.webapp.application;
 
-import io.deviad.ripeti.webapp.adapter.UserInfoAdapter;
+import io.deviad.ripeti.webapp.adapter.UserAdapters;
 import io.deviad.ripeti.webapp.api.dto.UserInfo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 public class UserQueryService {
 
     R2dbcEntityOperations client;
-    UserInfoAdapter mapper;
+
 
     public Mono<UserInfo> getUserInfo(String username) {
 
@@ -31,7 +31,7 @@ public class UserQueryService {
 
         return client.getDatabaseClient().sql(query)
                 .bind("$1", username)
-                .map(mapper::apply)
+                .map(UserAdapters.USERINFO_FROM_ROW_MAP::apply)
                 .first();
     }
 

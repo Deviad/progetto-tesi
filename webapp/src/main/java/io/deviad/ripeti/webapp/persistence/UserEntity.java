@@ -32,6 +32,9 @@ public class UserEntity {
   @Column("password")
   String password;
 
+  @Column("email")
+  String email;
+
   @Column("first_name")
   String firstName;
 
@@ -40,5 +43,5 @@ public class UserEntity {
 
   @Column("address_id")
   @JsonIgnore
-  Long addressId;
+  UUID addressId;
 }

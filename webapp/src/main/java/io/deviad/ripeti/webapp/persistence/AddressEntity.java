@@ -10,6 +10,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.UUID;
+
 @Table("addresses")
 @Value
 @With
@@ -18,7 +20,8 @@ import org.springframework.data.relational.core.mapping.Table;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class AddressEntity {
-  @Id Long id;
+  @Id
+  UUID id;
 
   @Column("first_address_line")
   String firstAddressLine;

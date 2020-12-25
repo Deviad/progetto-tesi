@@ -67,10 +67,7 @@ public class UserCommandService {
         // therefore we return Optional.empty()
         .defaultIfEmpty(Optional.empty())
         .flatMap(
-            x -> {
-              Mono<AddressEntity> test = address.apply(r);
-              return test;
-            })
+            x -> address.apply(r))
         .flatMap(saveEnrolledUser(r))
         .flatMap(t -> Mono.just(mapToUserInfo(t)));
   }
@@ -81,7 +78,7 @@ public class UserCommandService {
       Mono<UserEntity> user =
           userRepository.save(
               new UserEntity(
-                  null, r.username(), r.password(), r.firstName(), r.lastName(), ad.getId()));
+                  null, r.username(), r.password(), r.email(), r.firstName(), r.lastName(), ad.getId()));
       return Mono.zip(user, Mono.just(ad));
     };
   }
@@ -103,12 +100,12 @@ public class UserCommandService {
     return userEntity
         .map(x -> x.withFirstName(r.firstName()).withLastName(r.lastName()))
         .flatMap(x -> userRepository.save(x))
-        .map(x -> UserInfo.of(x.username(), x.firstName(), x.lastName(), null));
+        .map(x -> UserInfo.of(x.username(), x.email(), x.firstName(), x.lastName(), null));
   }
 
   Mono<UserInfo> saveWithAddress(UpdateRequest r, Mono<UserEntity> userEntity) {
     return userEntity
-        .map(x -> x.withFirstName(r.firstName()).withLastName(r.lastName()))
+        .map(x -> x.withFirstName(r.firstName()).withLastName(r.lastName()).withEmail(r.email()))
         .flatMap(x -> userRepository.save(x))
         .flatMap(x -> Mono.zip(Mono.just(x), addressesRepository.findById(x.addressId())))
         .flatMap(
@@ -131,6 +128,7 @@ public class UserCommandService {
   UserInfo mapToUserInfo(Tuple2<UserEntity, AddressEntity> t) {
     return UserInfo.of(
         t.getT1().username(),
+        t.getT1().email(),
         t.getT1().firstName(),
         t.getT1().lastName(),
         Address.builder()
