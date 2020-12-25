@@ -64,7 +64,7 @@ public class UserCommandService {
                                               ad.getId()));
                       return Mono.zip(user, address);
                     })
-            .flatMap(t -> Mono.just(mapToUserInfo(t, t.getT2())));
+            .flatMap(t -> Mono.just(mapToUserInfo(t)));
   }
 
   @Transactional
@@ -95,9 +95,10 @@ public class UserCommandService {
             .flatMap(
                     x -> {
                       var address = createNewAddress(r, x);
-                      addressesRepository.save(address);
-                      return Mono.just(mapToUserInfo(x, address));
-                    });
+                      Mono<AddressEntity> aEntity = addressesRepository.save(address);
+                      return Mono.zip(Mono.just(x.getT1()), aEntity);
+                    })
+            .flatMap((t)-> Mono.just(mapToUserInfo(t)));
   }
 
   private AddressEntity createNewAddress(UpdateRequest r, Tuple2<UserEntity, AddressEntity> x) {
@@ -108,16 +109,16 @@ public class UserCommandService {
             .withCountry(r.address().country());
   }
 
-  UserInfo mapToUserInfo(Tuple2<UserEntity, AddressEntity> x, AddressEntity address) {
+  UserInfo mapToUserInfo(Tuple2<UserEntity, AddressEntity> t) {
     return UserInfo.of(
-            x.getT1().username(),
-            x.getT1().firstName(),
-            x.getT1().lastName(),
+            t.getT1().username(),
+            t.getT1().firstName(),
+            t.getT1().lastName(),
             Address.builder()
-                    .firstAddressLine(address.getFirstAddressLine())
-                    .secondAddressLine(address.getSecondAddressLine())
-                    .city(address.getCity())
-                    .country(address.getCountry())
+                    .firstAddressLine(t.getT2().getFirstAddressLine())
+                    .secondAddressLine(t.getT2().getSecondAddressLine())
+                    .city(t.getT2().getCity())
+                    .country(t.getT2().getCountry())
                     .build());
   }
 
