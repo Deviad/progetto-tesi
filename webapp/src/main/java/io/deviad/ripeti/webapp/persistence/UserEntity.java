@@ -12,6 +12,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.UUID;
+
 @Accessors(fluent = true)
 @Table("users")
 @Value
@@ -22,7 +24,8 @@ import org.springframework.data.relational.core.mapping.Table;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class UserEntity {
   @JsonIgnore
-  @Id Long id;
+  @Id
+  UUID id;
   @Column("username")
   String username;
 

@@ -1,78 +1,80 @@
-version: '3.2'
+version: "3.2"
 
 services:
-#  elasticsearch:
-#    build:
-#      context: elasticsearch/
-#      args:
-#        ELK_VERSION: 7.9.3
-#    volumes:
-#      - type: bind
-#        source: ./elasticsearch/config/elasticsearch.yml
-#        target: /usr/share/elasticsearch/config/elasticsearch.yml
-#        read_only: true
-#      - type: volume
-#        source: elasticsearch
-#        target: /usr/share/elasticsearch/data
-#    ports:
-#      - "9200:9200"
-#      - "9300:9300"
-#    environment:
-#      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-#      ELASTIC_PASSWORD: changeme
-#      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
-#      # see: https://www.elastic.co/guide/en/elasticsearch/reference/7.10/bootstrap-checks.html
-#      discovery.type: single-node
-#    networks:
-#      - ripeti-network
-#    restart: always
-#
-#  logstash:
-#    build:
-#      context: logstash/
-#      args:
-#        ELK_VERSION: 7.9.3
-#    volumes:
-#      - type: bind
-#        source: ./logstash/config/logstash.yml
-#        target: /usr/share/logstash/config/logstash.yml
-#        read_only: true
-#      - type: bind
-#        source: ./logstash/pipeline
-#        target: /usr/share/logstash/pipeline
-#        read_only: true
-#    ports:
-#      - "5044:5044"
-#      - "5000:5000/tcp"
-#      - "5000:5000/udp"
-#      - "9600:9600"
-#    environment:
-#      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-#    networks:
-#      - ripeti-network
-#    depends_on:
-#      - elasticsearch
-#    restart: always
-#
-#  kibana:
-#    build:
-#      context: kibana/
-#      args:
-#        ELK_VERSION: 7.9.3
-#    volumes:
-#      - type: bind
-#        source: ./kibana/config/kibana.yml
-#        target: /usr/share/kibana/config/kibana.yml
-#        read_only: true
-#    ports:
-#      - "5601:5601"
-#    networks:
-#      - ripeti-network
-#    depends_on:
-#      - elasticsearch
-#    restart: always
+  #  elasticsearch:
+  #    build:
+  #      context: elasticsearch/
+  #      args:
+  #        ELK_VERSION: 7.9.3
+  #    volumes:
+  #      - type: bind
+  #        source: ./elasticsearch/config/elasticsearch.yml
+  #        target: /usr/share/elasticsearch/config/elasticsearch.yml
+  #        read_only: true
+  #      - type: volume
+  #        source: elasticsearch
+  #        target: /usr/share/elasticsearch/data
+  #    ports:
+  #      - "9200:9200"
+  #      - "9300:9300"
+  #    environment:
+  #      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+  #      ELASTIC_PASSWORD: changeme
+  #      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
+  #      # see: https://www.elastic.co/guide/en/elasticsearch/reference/7.10/bootstrap-checks.html
+  #      discovery.type: single-node
+  #    networks:
+  #      - ripeti-network
+  #    restart: always
+  #
+  #  logstash:
+  #    build:
+  #      context: logstash/
+  #      args:
+  #        ELK_VERSION: 7.9.3
+  #    volumes:
+  #      - type: bind
+  #        source: ./logstash/config/logstash.yml
+  #        target: /usr/share/logstash/config/logstash.yml
+  #        read_only: true
+  #      - type: bind
+  #        source: ./logstash/pipeline
+  #        target: /usr/share/logstash/pipeline
+  #        read_only: true
+  #    ports:
+  #      - "5044:5044"
+  #      - "5000:5000/tcp"
+  #      - "5000:5000/udp"
+  #      - "9600:9600"
+  #    environment:
+  #      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+  #    networks:
+  #      - ripeti-network
+  #    depends_on:
+  #      - elasticsearch
+  #    restart: always
+  #
+  #  kibana:
+  #    build:
+  #      context: kibana/
+  #      args:
+  #        ELK_VERSION: 7.9.3
+  #    volumes:
+  #      - type: bind
+  #        source: ./kibana/config/kibana.yml
+  #        target: /usr/share/kibana/config/kibana.yml
+  #        read_only: true
+  #    ports:
+  #      - "5601:5601"
+  #    networks:
+  #      - ripeti-network
+  #    depends_on:
+  #      - elasticsearch
+  #    restart: always
   ripeti-db:
-    image: postgres
+    build:
+      context: .
+      dockerfile: pg-Dockerfile
     volumes:
       - ripeti_db:/var/lib/postgresql/data
     environment:
@@ -90,7 +92,7 @@ services:
     image: bitnami/zookeeper:latest
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
-      
+
     networks:
       - ripeti-network
     volumes:
@@ -105,15 +107,12 @@ services:
     environment:
       ALLOW_PLAINTEXT_LISTENER: "yes"
       KAFKA_BROKER_ID: 1
-      KAFKA_LISTENERS:
-        "INTERNAL://kafka:9090,\
-         EXTERNAL://:9092"
-      KAFKA_ADVERTISED_LISTENERS:
-        "INTERNAL://kafka:9090,\
-         EXTERNAL://127.0.0.1:9092"
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP:
-        "INTERNAL:PLAINTEXT,\
-         EXTERNAL:PLAINTEXT"
+      KAFKA_LISTENERS: "INTERNAL://kafka:9090,\
+        EXTERNAL://:9092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:9090,\
+        EXTERNAL://127.0.0.1:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,\
+        EXTERNAL:PLAINTEXT"
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
 
