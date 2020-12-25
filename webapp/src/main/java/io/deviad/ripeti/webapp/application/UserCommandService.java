@@ -1,8 +1,12 @@
 package io.deviad.ripeti.webapp.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.deviad.ripeti.webapp.Utils;
 import io.deviad.ripeti.webapp.api.command.RegistrationRequest;
+import io.deviad.ripeti.webapp.api.command.UpdatePasswordRequest;
 import io.deviad.ripeti.webapp.api.command.UpdateRequest;
+import io.deviad.ripeti.webapp.api.dto.Address;
+import io.deviad.ripeti.webapp.api.dto.UserInfo;
 import io.deviad.ripeti.webapp.persistence.AddressEntity;
 import io.deviad.ripeti.webapp.persistence.UserEntity;
 import io.deviad.ripeti.webapp.persistence.repository.AddressRepository;
@@ -14,11 +18,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -34,76 +37,100 @@ public class UserCommandService {
 
   @Transactional
   @SneakyThrows
-  public Mono<UserEntity> registerUser(RegistrationRequest r) {
+  public Mono<UserInfo> registerUser(RegistrationRequest r) {
     Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(r);
 
-    if (!violations.isEmpty()) {
-      LinkedHashMap<String, String> messageMap =
-          violations.stream()
-              .collect(
-                  LinkedHashMap::new,
-                  (m, e) -> m.put(e.getPropertyPath().toString(), e.getMessage()),
-                  Map::putAll);
-      String message = mapper.writeValueAsString(messageMap);
-      throw new RuntimeException(message);
-    }
+    Utils.handleValidation(mapper, violations);
 
     Mono<AddressEntity> address =
-        addressesRepository.save(
-            new AddressEntity(
-                null,
-                r.address().firstAddressLine(),
-                r.address().secondAddressLine(),
-                r.address().country(),
-                r.address().city()));
-    return address.flatMap(
-        ad ->
-            userRepository.save(
-                new UserEntity(
-                    null, r.username(), r.password(), r.firstName(), r.lastName(), ad.getId())));
+            addressesRepository.save(
+                    new AddressEntity(
+                            null,
+                            r.address().firstAddressLine(),
+                            r.address().secondAddressLine(),
+                            r.address().country(),
+                            r.address().city()));
+    return address
+            .flatMap(
+                    ad -> {
+                      Mono<UserEntity> user =
+                              userRepository.save(
+                                      new UserEntity(
+                                              null,
+                                              r.username(),
+                                              r.password(),
+                                              r.firstName(),
+                                              r.lastName(),
+                                              ad.getId()));
+                      return Mono.zip(user, address);
+                    })
+            .flatMap(t -> Mono.just(mapToUserInfo(t, t.getT2())));
   }
 
   @Transactional
   @SneakyThrows
-  public Mono<UserEntity> updateUser(UpdateRequest r) {
+  public Mono<UserInfo> updateUser(UpdateRequest r) {
 
     var userEntity = userRepository.getUserEntityByUsername(r.username());
 
-   return userEntity
-            .switchIfEmpty(Mono.error(new RuntimeException("User does not exist")))
-            .map(x-> (Object)Mono.just(r.address()))
-            .switchIfEmpty(saveWithoutAddress(r, userEntity))
-            .flatMap(x->saveWithAddress(r, userEntity));
-  }
-
-   Mono<UserEntity> saveWithoutAddress(UpdateRequest r, Mono<UserEntity> userEntity) {
-   return userEntity
-        .map(
-            x -> x.withPassword(r.password())
-            .withFirstName(r.firstName())
-            .withLastName(r.lastName()))
-        .flatMap(x -> userRepository.save(x));
-  }
-
-   Mono<UserEntity> saveWithAddress(UpdateRequest r, Mono<UserEntity> userEntity) {
     return userEntity
-        .map(
-            x -> x.withPassword(r.password())
-                    .withFirstName(r.firstName())
-                    .withLastName(r.lastName()))
-        .flatMap(x -> userRepository.save(x))
-        .flatMap(x -> Mono.zip(Mono.just(x), addressesRepository.findById(x.addressId())))
-        .flatMap(
-            x -> {
-              var address =
-                  x.getT2()
-                      .withFirstAddressLine(r.address().firstAddressLine())
-                      .withSecondAddressLine(r.address().secondAddressLine())
-                      .withCity(r.address().city())
-                      .withCountry(r.address().country());
-              addressesRepository.save(address);
-              return Mono.just(x.getT1());
-            });
+            .switchIfEmpty(Mono.error(new RuntimeException("User does not exist")))
+            .map(x -> (Object) Mono.just(r.address()))
+            .switchIfEmpty(saveWithoutAddress(r, userEntity))
+            .flatMap(x -> saveWithAddress(r, userEntity));
+  }
+
+  Mono<UserInfo> saveWithoutAddress(UpdateRequest r, Mono<UserEntity> userEntity) {
+    return userEntity
+            .map(x -> x.withFirstName(r.firstName()).withLastName(r.lastName()))
+            .flatMap(x -> userRepository.save(x))
+            .map(x -> UserInfo.of(x.username(), x.firstName(), x.lastName(), null));
+  }
+
+  Mono<UserInfo> saveWithAddress(UpdateRequest r, Mono<UserEntity> userEntity) {
+    return userEntity
+            .map(x -> x.withFirstName(r.firstName()).withLastName(r.lastName()))
+            .flatMap(x -> userRepository.save(x))
+            .flatMap(x -> Mono.zip(Mono.just(x), addressesRepository.findById(x.addressId())))
+            .flatMap(
+                    x -> {
+                      var address = createNewAddress(r, x);
+                      addressesRepository.save(address);
+                      return Mono.just(mapToUserInfo(x, address));
+                    });
+  }
+
+  private AddressEntity createNewAddress(UpdateRequest r, Tuple2<UserEntity, AddressEntity> x) {
+    return x.getT2()
+            .withFirstAddressLine(r.address().firstAddressLine())
+            .withSecondAddressLine(r.address().secondAddressLine())
+            .withCity(r.address().city())
+            .withCountry(r.address().country());
+  }
+
+  UserInfo mapToUserInfo(Tuple2<UserEntity, AddressEntity> x, AddressEntity address) {
+    return UserInfo.of(
+            x.getT1().username(),
+            x.getT1().firstName(),
+            x.getT1().lastName(),
+            Address.builder()
+                    .firstAddressLine(address.getFirstAddressLine())
+                    .secondAddressLine(address.getSecondAddressLine())
+                    .city(address.getCity())
+                    .country(address.getCountry())
+                    .build());
+  }
+
+  @Transactional
+  public Mono<UserEntity> updatePassword(UpdatePasswordRequest r) {
+    var userEntity = userRepository.getUserEntityByUsername(r.username());
+
+    return userEntity
+            .switchIfEmpty(Mono.error(new RuntimeException("User does not exist")))
+            .flatMap(x -> savePassword(r, userEntity));
+  }
+
+  Mono<UserEntity> savePassword(UpdatePasswordRequest r, Mono<UserEntity> userEntity) {
+    return userEntity.map(x -> x.withPassword(r.password())).flatMap(x -> userRepository.save(x));
   }
 }
-

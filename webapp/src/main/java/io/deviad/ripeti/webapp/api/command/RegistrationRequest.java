@@ -3,6 +3,7 @@ package io.deviad.ripeti.webapp.api.command;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.deviad.ripeti.webapp.api.dto.Address;
 import lombok.Value;
 import lombok.experimental.Accessors;
 

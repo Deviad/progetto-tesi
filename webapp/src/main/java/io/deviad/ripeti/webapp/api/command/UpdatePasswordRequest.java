@@ -3,30 +3,28 @@ package io.deviad.ripeti.webapp.api.command;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 
-@Value
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
 @Accessors(fluent = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class Address {
-  @Pattern(regexp = "^[A-Za-z0-9,.]{3,50}$")
-  @NotBlank
-  String firstAddressLine;
-
-  @Pattern(regexp = "^[A-Za-z0-9,.]{3,50}$")
-  String secondAddressLine;
-
-  @NotBlank
+public class UpdatePasswordRequest {
   @Pattern(regexp = "^[A-Za-z]{3,20}$")
-  String city;
+  String username;
 
-  @NotBlank
-  @Pattern(regexp = "^[A-Za-z]{3,20}$")
-  String country;
+  @Pattern(
+      regexp =
+          "(?=.*[a-z]+)(?=.*[0-9]+)(?=.*[A-Z]+)(?=.*[!@#$%^&*()_+\\[\\]{}:\";,.<>?|=-_]+).{8,20}")
+  String password;
+
 }

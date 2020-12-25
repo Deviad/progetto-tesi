@@ -1,7 +1,7 @@
 package io.deviad.ripeti.webapp.adapter;
 
+import io.deviad.ripeti.webapp.api.dto.Address;
 import io.deviad.ripeti.webapp.api.dto.UserInfo;
-import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import io.r2dbc.spi.Row;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,13 @@ public class UserInfoAdapter implements BiFunction<Row, Object, UserInfo> {
     var secondAddressLine = row.get("second_address_line", String.class);
     var city = row.get("city", String.class);
     var country = row.get("country", String.class);
-    var address = Address.of(firstAddressLine, secondAddressLine, city, country);
+    var address = Address
+            .builder()
+            .firstAddressLine(firstAddressLine)
+            .secondAddressLine(secondAddressLine)
+            .city(city)
+            .country(country)
+            .build();
     return UserInfo.of(username, firstName, lastName, address);
   }
 }

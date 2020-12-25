@@ -1,9 +1,10 @@
 package io.deviad.ripeti.webapp.api.dto;
 
-import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Value;
 
 @Value(staticConstructor = "of")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class UserInfo {
 
   String username;
