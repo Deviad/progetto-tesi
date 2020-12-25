@@ -112,6 +112,11 @@
             <classifier>test-binder</classifier>
             <type>test-jar</type>
         </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-tools</artifactId>
+            <version>3.3.12.RELEASE</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
