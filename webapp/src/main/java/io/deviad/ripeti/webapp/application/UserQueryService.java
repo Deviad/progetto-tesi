@@ -2,6 +2,7 @@ package io.deviad.ripeti.webapp.application;
 
 import io.deviad.ripeti.webapp.adapter.UserAdapters;
 import io.deviad.ripeti.webapp.api.dto.UserInfo;
+import io.micrometer.core.annotation.Timed;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -18,12 +19,11 @@ public class UserQueryService {
 
     R2dbcEntityOperations client;
 
-
     public Mono<UserInfo> getUserInfo(String username) {
 
         String query =
                 """
-                        SELECT username, first_name, last_name, first_address_line, second_address_line, city, country
+                        SELECT username, email, first_name, last_name, first_address_line, second_address_line, city, country
                         FROM users as u
                         JOIN addresses as a on a.id = u.address_id
                         WHERE u.username = $1

@@ -10,8 +10,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.util.function.Function;
-
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -28,9 +26,9 @@ public class UserQueryRoutesManager {
 
   Mono<ServerResponse> handleGetUserinfo(ServerRequest request) {
     return Mono.just(request.pathVariable("username"))
-        .onErrorResume(Mono::error)
-        .map(r -> queryService.getUserInfo(r))
-        .flatMap(Function.identity())
+            .onErrorResume(Mono::error)
+            .flatMap(r -> queryService.getUserInfo(r))
+            .switchIfEmpty(Mono.error(new RuntimeException("Cannot find user")))
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
 }
