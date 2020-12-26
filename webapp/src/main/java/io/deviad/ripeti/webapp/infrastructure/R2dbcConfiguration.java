@@ -5,6 +5,7 @@ import io.deviad.ripeti.webapp.domain.valueobject.user.LastName;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Password;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Username;
 import io.r2dbc.spi.ConnectionFactory;
+import lombok.NonNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,8 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
 import org.springframework.r2dbc.core.DatabaseClient;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 @Configuration
@@ -66,7 +69,7 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
   public Converter<Username, String> usernameStringConverter() {
     return new Converter<Username, String>() {
       @Override
-      public String convert(Username username) {
+      public String convert(@NonNull Username username) {
         return username.username();
       }
     };
@@ -76,7 +79,7 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
   public Converter<Password, String> passwordStringConverter() {
     return new Converter<Password, String>() {
       @Override
-      public String convert(Password password) {
+      public String convert(@NonNull Password password) {
         return password.password();
       }
     };
@@ -86,7 +89,7 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
   public Converter<FirstName, String> firstNameStringConverter() {
     return new Converter<FirstName, String>() {
       @Override
-      public String convert(FirstName firstName) {
+      public String convert(@NonNull FirstName firstName) {
         return firstName.firstName();
       }
     };
@@ -96,9 +99,19 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
   public Converter<LastName, String> lastNameStringConverter() {
     return new Converter<LastName, String>() {
       @Override
-      public String convert(LastName lastName) {
+      public String convert(@NonNull LastName lastName) {
         return lastName.lastName();
       }
     };
   }
+  @Bean
+  public Converter<Instant, Timestamp> instantTimestampConverter() {
+    return new Converter<Instant, Timestamp>() {
+      @Override
+      public Timestamp convert(@NonNull Instant time) {
+        return Timestamp.from(time);
+      }
+    };
+  }
+
 }
