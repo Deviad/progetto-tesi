@@ -19,6 +19,7 @@ public class UserQueryService {
 
     R2dbcEntityOperations client;
 
+    @Timed("getUserInfo")
     public Mono<UserInfo> getUserInfo(String username) {
 
         String query =
