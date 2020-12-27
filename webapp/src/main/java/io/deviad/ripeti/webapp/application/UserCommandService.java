@@ -26,6 +26,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import static io.deviad.ripeti.webapp.adapter.UserAdapters.mapToUserInfo;
+
 @Service
 @Slf4j
 @Lazy
@@ -123,20 +125,6 @@ public class UserCommandService {
         .withSecondAddressLine(r.address().secondAddressLine())
         .withCity(r.address().city())
         .withCountry(r.address().country());
-  }
-
-  UserInfo mapToUserInfo(Tuple2<UserEntity, AddressEntity> t) {
-    return UserInfo.of(
-        t.getT1().username(),
-        t.getT1().email(),
-        t.getT1().firstName(),
-        t.getT1().lastName(),
-        Address.builder()
-            .firstAddressLine(t.getT2().getFirstAddressLine())
-            .secondAddressLine(t.getT2().getSecondAddressLine())
-            .city(t.getT2().getCity())
-            .country(t.getT2().getCountry())
-            .build());
   }
 
   @Transactional
