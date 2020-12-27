@@ -3,7 +3,8 @@ package io.deviad.ripeti.webapp.api.command;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.deviad.ripeti.webapp.api.dto.Address;
+import io.deviad.ripeti.webapp.api.dto.AddressDto;
+import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import lombok.Value;
 import lombok.experimental.Accessors;
 
@@ -48,5 +49,9 @@ public class RegistrationRequest {
   @NotBlank
   String lastName;
 
-  @Valid @NotNull Address address;
+  @Valid @NotNull AddressDto address;
+
+  @NotNull
+  Role role;
+
 }

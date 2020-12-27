@@ -3,11 +3,17 @@ package io.deviad.ripeti.webapp.infrastructure;
 import io.deviad.ripeti.webapp.domain.valueobject.user.FirstName;
 import io.deviad.ripeti.webapp.domain.valueobject.user.LastName;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Password;
+import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Username;
+import io.r2dbc.postgresql.PostgresqlConnectionConfiguration;
+import io.r2dbc.postgresql.PostgresqlConnectionFactory;
+import io.r2dbc.postgresql.codec.EnumCodec;
+import io.r2dbc.postgresql.extension.CodecRegistrar;
 import io.r2dbc.spi.ConnectionFactory;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -30,13 +36,11 @@ import java.util.List;
 @EnableR2dbcRepositories(
     basePackages = "io.deviad.ripeti.persistence.repository",
     entityOperationsRef = "myEntityOperations")
-public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements InitializingBean {
-
-  @Autowired ConnectionFactory connectionFactory;
+public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements InitializingBean, ApplicationContextAware {
 
   @Override
   protected List<Object> getCustomConverters() {
-    return List.of(usernameStringConverter(), passwordStringConverter());
+    return List.of(usernameStringConverter(), passwordStringConverter(), roleConverter());
   }
 
   @Override
@@ -45,7 +49,7 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
         new ResourceDatabasePopulator(
             new ClassPathResource("schema.sql"), new ClassPathResource("data.sql"));
 
-    databasePopulator.populate(connectionFactory).block();
+    databasePopulator.populate(connectionFactory()).block();
   }
 
   @Bean
@@ -57,12 +61,21 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
 
   @Bean
   DatabaseClient client() {
-    return DatabaseClient.create(connectionFactory);
+    return DatabaseClient.create(connectionFactory());
   }
 
-  @Override
+  @SneakyThrows
+  @Bean
+  @Primary
   public ConnectionFactory connectionFactory() {
-    return connectionFactory;
+    CodecRegistrar enumCodec = EnumCodec.builder().withEnum("user_role", Role.class).build();
+    return  new PostgresqlConnectionFactory(PostgresqlConnectionConfiguration.builder()
+        .host(r2dbcProperties().getHostname())
+        .database(r2dbcProperties().getName())
+        .port(r2dbcProperties().getPort())
+        .codecRegistrar(enumCodec)
+        .username(r2dbcProperties().getUsername())
+        .password(r2dbcProperties().getPassword()).build());
   }
 
   @Bean
@@ -112,6 +125,25 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
         return Timestamp.from(time);
       }
     };
+  }
+
+  /*
+  This is required because by default Spring Data converts enums into strings.
+   */
+
+  @Bean
+  public Converter<Role, Role> roleConverter() {
+    return new Converter<Role, Role>() {
+      @Override
+      public Role convert(@NonNull Role role) {
+        return role;
+      }
+    };
+  }
+
+  @Bean
+  public R2dbcProperties r2dbcProperties() {
+    return new R2dbcProperties();
   }
 
 }

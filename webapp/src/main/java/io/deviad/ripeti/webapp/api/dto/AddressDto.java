@@ -16,7 +16,7 @@ import javax.validation.constraints.Pattern;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Builder
-public class Address {
+public class AddressDto {
   @Pattern(regexp = "^[A-Za-z0-9,.]{3,50}$")
   @NotBlank
   String firstAddressLine;

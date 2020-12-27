@@ -1,5 +1,10 @@
 create schema if not exists ripeti;
 set search_path to ripeti;
+
+drop type if exists user_role cascade;
+create type user_role as enum ('STUDENT', 'TEACHER');
+alter table if exists users add role user_role not null;
+
 create table if not exists addresses
 (
     id                  uuid DEFAULT public.uuid_generate_v4(),
@@ -18,6 +23,8 @@ create table if not exists users
     password   varchar(255)        not null,
     email      varchar(150) unique not null,
     address_id uuid,
+    role user_role not null,
+    course_ids uuid[],
     primary key (id),
     constraint fk_users_address foreign key (address_id) references addresses (id)
 );

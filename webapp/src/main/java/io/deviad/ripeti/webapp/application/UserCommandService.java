@@ -5,8 +5,7 @@ import io.deviad.ripeti.webapp.Utils;
 import io.deviad.ripeti.webapp.api.command.RegistrationRequest;
 import io.deviad.ripeti.webapp.api.command.UpdatePasswordRequest;
 import io.deviad.ripeti.webapp.api.command.UpdateRequest;
-import io.deviad.ripeti.webapp.api.dto.Address;
-import io.deviad.ripeti.webapp.api.dto.UserInfo;
+import io.deviad.ripeti.webapp.api.dto.UserInfoDto;
 import io.deviad.ripeti.webapp.persistence.AddressEntity;
 import io.deviad.ripeti.webapp.persistence.UserEntity;
 import io.deviad.ripeti.webapp.persistence.repository.AddressRepository;
@@ -41,7 +40,7 @@ public class UserCommandService {
 
   @Transactional
   @SneakyThrows
-  public Mono<UserInfo> registerUser(RegistrationRequest r) {
+  public Mono<UserInfoDto> registerUser(RegistrationRequest r) {
     Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(r);
 
     Utils.handleValidation(mapper, violations);
@@ -78,16 +77,22 @@ public class UserCommandService {
       saveEnrolledUser(RegistrationRequest r) {
     return ad -> {
       Mono<UserEntity> user =
-          userRepository.save(
-              new UserEntity(
-                  null, r.username(), r.password(), r.email(), r.firstName(), r.lastName(), ad.getId()));
+          userRepository.save(UserEntity.builder()
+              .id(null)
+              .username(r.username())
+              .password(r.password())
+              .email(r.email())
+              .firstName(r.firstName())
+              .lastName(r.lastName())
+              .role(r.role())
+              .addressId(ad.getId()).build());
       return Mono.zip(user, Mono.just(ad));
     };
   }
 
   @Transactional
   @SneakyThrows
-  public Mono<UserInfo> updateUser(UpdateRequest r) {
+  public Mono<UserInfoDto> updateUser(UpdateRequest r) {
 
     var userEntity = userRepository.getUserEntityByUsername(r.username());
 
@@ -98,14 +103,14 @@ public class UserCommandService {
         .flatMap(x -> saveWithAddress(r, userEntity));
   }
 
-  Mono<UserInfo> saveWithoutAddress(UpdateRequest r, Mono<UserEntity> userEntity) {
+  Mono<UserInfoDto> saveWithoutAddress(UpdateRequest r, Mono<UserEntity> userEntity) {
     return userEntity
         .map(x -> x.withFirstName(r.firstName()).withLastName(r.lastName()))
         .flatMap(x -> userRepository.save(x))
-        .map(x -> UserInfo.of(x.username(), x.email(), x.firstName(), x.lastName(), null));
+        .map(x -> UserInfoDto.of(x.username(), x.email(), x.firstName(), x.lastName(), x.role(), null));
   }
 
-  Mono<UserInfo> saveWithAddress(UpdateRequest r, Mono<UserEntity> userEntity) {
+  Mono<UserInfoDto> saveWithAddress(UpdateRequest r, Mono<UserEntity> userEntity) {
     return userEntity
         .map(x -> x.withFirstName(r.firstName()).withLastName(r.lastName()).withEmail(r.email()))
         .flatMap(x -> userRepository.save(x))
