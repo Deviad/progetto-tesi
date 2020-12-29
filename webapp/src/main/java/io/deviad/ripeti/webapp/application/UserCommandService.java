@@ -42,7 +42,8 @@ public class UserCommandService {
 
     Utils.handleValidation(mapper, violations);
 
-    var address = Address.builder()
+    var address =
+        Address.builder()
             .firstAddressLine(r.address().firstAddressLine())
             .secondAddressLine(r.address().secondAddressLine())
             .city(r.address().city())
@@ -51,6 +52,7 @@ public class UserCommandService {
 
     return userRepository
         .getUserEntityByUsername(r.username())
+        .onErrorResume(Mono::error)
         .flatMap(
             x -> {
               if (x != null) {
@@ -61,8 +63,10 @@ public class UserCommandService {
         // When token == null it does not trigger flatmap
         // therefore we return Optional.empty()
         .defaultIfEmpty(Optional.empty())
-        .flatMap(x-> userRepository.save(
-                UserAggregate.builder()
+        .flatMap(
+            x ->
+                userRepository.save(
+                    UserAggregate.builder()
                         .username(r.username())
                         .password(r.password())
                         .email(r.email())
@@ -70,9 +74,8 @@ public class UserCommandService {
                         .lastName(r.lastName())
                         .role(r.role())
                         .address(address)
-                        .build()
-        ))
-        .flatMap(u->Mono.just(UserAdapters.mapToUserInfo(u)));
+                        .build()))
+        .flatMap(u -> Mono.just(UserAdapters.mapToUserInfo(u)));
   }
 
   @Transactional
@@ -90,18 +93,28 @@ public class UserCommandService {
 
   Mono<UserInfoDto> saveWithoutAddress(UpdateRequest r, Mono<UserAggregate> userEntity) {
     return userEntity
+        .onErrorResume(Mono::error)
         .map(x -> x.withFirstName(r.firstName()).withLastName(r.lastName()))
         .flatMap(x -> userRepository.save(x))
-        .map(x -> UserInfoDto.of(x.username(), x.email(), x.firstName(), x.lastName(), x.role(), null));
+        .map(
+            x ->
+                UserInfoDto.of(
+                    x.username(), x.email(), x.firstName(), x.lastName(), x.role(), null));
   }
 
   Mono<UserInfoDto> saveWithAddress(UpdateRequest r, Mono<UserAggregate> userEntity) {
     return userEntity
-        .map(x -> x.withFirstName(r.firstName()).withLastName(r.lastName()).withEmail(r.email())
-                .withAddress(Address.builder()
-                        .firstAddressLine(r.address().firstAddressLine())
-                        .secondAddressLine(r.address().secondAddressLine())
-                        .build()))
+        .onErrorResume(Mono::error)
+        .map(
+            x ->
+                x.withFirstName(r.firstName())
+                    .withLastName(r.lastName())
+                    .withEmail(r.email())
+                    .withAddress(
+                        Address.builder()
+                            .firstAddressLine(r.address().firstAddressLine())
+                            .secondAddressLine(r.address().secondAddressLine())
+                            .build()))
         .flatMap(x -> userRepository.save(x))
         .flatMap((t) -> Mono.just(mapToUserInfo(t)));
   }

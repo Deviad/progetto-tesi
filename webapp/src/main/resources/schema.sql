@@ -23,7 +23,7 @@ create table if not exists users
     username   varchar(30) unique  not null,
     password   varchar(255)        not null,
     email      varchar(150) unique not null,
-    address text not null,
+    address varchar not null,
     role       user_role,
     primary key (id)
 --     constraint fk_users_address foreign key (address_id) references addresses (id)
@@ -88,3 +88,22 @@ create table if not exists quiz_run
     constraint fk_quiz_run_question foreign key (question_id) references questions (id),
     primary key(id)
 );
+
+create or replace function f_users_1() returns trigger as
+$$
+declare
+begin
+    raise notice 'THE NEW ID IS: %', old.id;
+    update courses set student_ids = array_remove(courses.student_ids, old.id)
+    where (select courses.id from courses where old.id = any(courses.student_ids)) = courses.id;
+    return old;
+end
+$$ language 'plpgsql';
+--
+-- -- select is_available('ccc');
+drop trigger if exists users_1_trg on users;
+create trigger users_1_trg
+    before delete
+    on users
+    for each row
+execute procedure f_users_1();

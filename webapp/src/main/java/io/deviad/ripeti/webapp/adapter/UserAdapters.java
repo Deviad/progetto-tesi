@@ -6,7 +6,9 @@ import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import io.deviad.ripeti.webapp.persistence.UserAggregate;
 import io.r2dbc.spi.Row;
 
+import java.util.Arrays;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class UserAdapters {
 
@@ -15,15 +17,17 @@ public class UserAdapters {
         var username = row.get("username", String.class);
         var firstName = row.get("first_name", String.class);
         var email = row.get("email", String.class);
-        var role = Role.valueOf(row.get("role", String.class));
+        var role = row.get("role", Role.class);
         var lastName = row.get("last_name", String.class);
-        var address = row.get("address", String.class);
+        var address = Arrays
+                .stream(row.get("address", String.class).split("\\|"))
+                .map(x-> x.replace(" \\", "")).toArray(String[]::new);
         var address_obj =
             Address.builder()
-                .firstAddressLine(address.split("\\|")[0])
-                .secondAddressLine(address.split("\\|")[1])
-                .city(address.split("\\|")[2])
-                .country(address.split("\\|")[3])
+                .firstAddressLine(address[0])
+                .secondAddressLine(address[1])
+                .city(address[2])
+                .country(address[3])
                 .build();
         return UserInfoDto.of(username, email, firstName, lastName, role, address_obj);
       };

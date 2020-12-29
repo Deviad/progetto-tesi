@@ -21,7 +21,7 @@ public class UserQueryService {
 
     @Timed("getUserInfo")
     public Mono<UserInfoDto> getUserInfo(String username) {
-
+        //language=PostgreSQL
         String query =
                 """
                 SELECT username, email, role, address, first_name, last_name

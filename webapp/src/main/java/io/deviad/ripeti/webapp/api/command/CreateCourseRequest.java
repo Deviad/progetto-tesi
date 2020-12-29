@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Value;
 import lombok.experimental.Accessors;
 
+import java.util.UUID;
+
 @Value
 @Accessors(fluent = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -15,5 +17,5 @@ public class CreateCourseRequest {
 
     String courseName;
     String courseDescription;
-
+    UUID teacherId;
 }

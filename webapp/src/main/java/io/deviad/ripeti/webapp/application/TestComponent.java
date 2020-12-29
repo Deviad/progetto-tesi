@@ -1,6 +1,5 @@
 package io.deviad.ripeti.webapp.application;
 
-import com.google.common.collect.ImmutableSet;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import io.deviad.ripeti.webapp.persistence.CourseAggregate;
@@ -55,12 +54,11 @@ public class TestComponent implements InitializingBean {
             .build();
     UserAggregate savedTeacher = userRepository.save(teacher).block();
 
-    var course =
-        CourseAggregate.builder()
-            .courseName("History")
-            .teacherId(savedTeacher.id())
-            .studentIds(ImmutableSet.of(savedStudent.id()))
-            .build();
-    courseRepository.save(course).block();
+    var course = CourseAggregate.createCourse("History", savedTeacher.id());
+    CourseAggregate savedCourse = courseRepository.save(course).block();
+    assert savedCourse != null;
+    savedCourse.assignStudentToCourse(savedStudent.id());
+    courseRepository.save(savedCourse).block();
+
   }
 }

@@ -21,6 +21,7 @@ public class CourseQueryService {
     @Timed("getAllEnrolledStudents")
     public Mono<UserInfoDto> getAllEnrolledStudents(UUID courseId) {
 
+        //language=PostgreSQL
         String query =
                 """
                 SELECT u.* FROM unnest(array(select c.student_ids from courses c where c.id = $1)) user_id
