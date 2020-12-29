@@ -1,5 +1,6 @@
 package io.deviad.ripeti.webapp.infrastructure;
 
+import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import io.deviad.ripeti.webapp.domain.valueobject.user.FirstName;
 import io.deviad.ripeti.webapp.domain.valueobject.user.LastName;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Password;
@@ -29,6 +30,7 @@ import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
 import org.springframework.r2dbc.core.DatabaseClient;
 
 import java.sql.Timestamp;
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.List;
 
@@ -40,7 +42,7 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
 
   @Override
   protected List<Object> getCustomConverters() {
-    return List.of(usernameStringConverter(), passwordStringConverter(), roleConverter());
+    return List.of(usernameStringConverter(), passwordStringConverter(), roleConverter(), addressConverter());
   }
 
   @Override
@@ -137,6 +139,21 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
       @Override
       public Role convert(@NonNull Role role) {
         return role;
+      }
+    };
+  }
+
+  @Bean
+  public Converter<Address, String> addressConverter() {
+    var separator = "\\|";
+    return new Converter<Address, String>() {
+
+      @Override
+      public String convert(@NonNull Address address) {
+
+        var params = new String[]{separator, address.firstAddressLine(), address.secondAddressLine(), address.city(), address.country()};
+
+        return MessageFormat.format("{1} {0} {2} {0} {3} {0} {4}", params);
       }
     };
   }

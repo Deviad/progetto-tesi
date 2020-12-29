@@ -1,0 +1,8 @@
+package io.deviad.ripeti.webapp.persistence.repository;
+
+import io.deviad.ripeti.webapp.persistence.CourseAggregate;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
+
+import java.util.UUID;
+
+public interface TeamRepository extends R2dbcRepository<CourseAggregate, UUID> {}

@@ -1,6 +1,7 @@
-package io.deviad.ripeti.webapp.api.dto;
+package io.deviad.ripeti.webapp.api.queries;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import lombok.Value;
 
@@ -12,5 +13,5 @@ public class UserInfoDto {
   String firstName;
   String lastName;
   Role role;
-  AddressDto address;
+  Address address;
 }

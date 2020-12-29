@@ -3,7 +3,7 @@ package io.deviad.ripeti.webapp.api.command;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.deviad.ripeti.webapp.api.dto.AddressDto;
+import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,5 +38,5 @@ public class UpdateRequest {
   @Pattern(regexp = "^[A-Za-z]{3,20}$")
   String lastName;
 
-  @Valid AddressDto address;
+  @Valid Address address;
 }

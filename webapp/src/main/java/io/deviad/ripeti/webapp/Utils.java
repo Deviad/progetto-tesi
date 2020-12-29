@@ -22,7 +22,7 @@ public class Utils {
                     (m, e) -> m.put(e.getPropertyPath().toString(), e.getMessage()),
                     Map::putAll);
         String message = mapper.writeValueAsString(messageMap);
-        throw new RuntimeException(message);
+        throw new IllegalArgumentException(message);
       }
     }
 }

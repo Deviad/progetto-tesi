@@ -3,7 +3,7 @@ package io.deviad.ripeti.webapp.domain.event.user;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.deviad.ripeti.webapp.domain.event.DomainEvent;
-import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
+import io.deviad.ripeti.webapp.domain.valueobject.user.AddressOld;
 import io.deviad.ripeti.webapp.domain.valueobject.user.FirstName;
 import io.deviad.ripeti.webapp.domain.valueobject.user.LastName;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Password;
@@ -24,7 +24,7 @@ public record UserUpdated(Instant when, UserUpdatedPayload payload) implements D
     }
 
     static record UserUpdatedPayload(Password password,
-                                     Address address,
+                                     AddressOld address,
                                      FirstName firstName,
                                      LastName lastName) {
     }

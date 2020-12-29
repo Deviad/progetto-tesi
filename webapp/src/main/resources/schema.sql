@@ -3,17 +3,18 @@ set search_path to ripeti;
 
 drop type if exists user_role cascade;
 create type user_role as enum ('STUDENT', 'TEACHER');
-alter table if exists users add role user_role not null;
+alter table if exists users
+    add role user_role;
 
-create table if not exists addresses
-(
-    id                  uuid DEFAULT public.uuid_generate_v4(),
-    first_address_line  varchar(255) not null,
-    second_address_line varchar(255),
-    city                varchar(30)  not null,
-    country             varchar(30)  not null,
-    primary key (id)
-);
+-- create table if not exists addresses
+-- (
+--     id                  uuid DEFAULT public.uuid_generate_v4(),
+--     first_address_line  varchar(255) not null,
+--     second_address_line varchar(255),
+--     city                varchar(30)  not null,
+--     country             varchar(30)  not null,
+--     primary key (id)
+-- );
 create table if not exists users
 (
     id         uuid DEFAULT public.uuid_generate_v4(),
@@ -22,11 +23,10 @@ create table if not exists users
     username   varchar(30) unique  not null,
     password   varchar(255)        not null,
     email      varchar(150) unique not null,
-    address_id uuid,
-    role user_role not null,
-    course_ids uuid[],
-    primary key (id),
-    constraint fk_users_address foreign key (address_id) references addresses (id)
+    address text not null,
+    role       user_role,
+    primary key (id)
+--     constraint fk_users_address foreign key (address_id) references addresses (id)
 );
 create index concurrently if not exists idx_users_username ON users (username);
 create index concurrently if not exists idx_users_email ON users (email);
@@ -35,29 +35,26 @@ create table if not exists courses
     id          uuid DEFAULT public.uuid_generate_v4(),
     course_name varchar(255),
     teacher_id  uuid,
-    student_id  uuid,
+    student_ids uuid[],
+    lesson_ids uuid[],
     primary key (id),
-    constraint fk_course_teacher foreign key (teacher_id) references users (id),
-    constraint fk_course_student foreign key (student_id) references users (id)
+    constraint fk_course_teacher foreign key (teacher_id) references users (id)
 );
 create table if not exists lessons
 (
     id             uuid DEFAULT public.uuid_generate_v4(),
     lesson_name    varchar(255),
-    course_id      uuid,
     lesson_content text,
-    constraint fk_lesson_course foreign key (course_id) references courses (id),
     primary key (id)
 );
 create table if not exists teams
 (
-    id         uuid DEFAULT public.uuid_generate_v4(),
-    team_name  varchar(255),
-    course_id  uuid,
-    student_id uuid,
-    score      int,
-    constraint fk_lesson_course foreign key (course_id) references courses (id),
-    constraint fk_team_student foreign key (student_id) references users (id),
+    id          uuid DEFAULT public.uuid_generate_v4(),
+    team_name   varchar(255),
+    course_id   uuid,
+    score       int,
+    student_ids uuid[],
+    constraint fk_teams_course foreign key (course_id) references courses (id),
     primary key (id)
 );
 create table if not exists quizzes
@@ -88,5 +85,6 @@ create table if not exists quiz_run
     avg_run_score int,
     constraint fk_quiz_run_quiz foreign key (quiz_id) references quizzes (id),
     constraint fk_quiz_run_student foreign key (student_id) references users (id),
-    constraint fk_quiz_run_question foreign key (question_id) references questions (id)
+    constraint fk_quiz_run_question foreign key (question_id) references questions (id),
+    primary key(id)
 );
