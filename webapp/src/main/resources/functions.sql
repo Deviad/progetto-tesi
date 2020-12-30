@@ -1,9 +1,9 @@
 set search_path to ripeti;
 create or replace function f_users_1() returns trigger as
-$BODY$
+'
 declare
 begin
-    raise notice 'THE STUDENT ID TO REMOVE FROM COURSES IS: %', old.id;
+    raise notice $$THE STUDENT ID TO REMOVE FROM COURSES IS: %$$, old.id;
     update courses
     set student_ids = array_remove(courses.student_ids, old.id)
     where courses.id in (select courses.id from courses where old.id = any (courses.student_ids));
@@ -14,7 +14,7 @@ begin
 
     return old;
 end;
-$BODY$
+'
     language plpgsql;
 --
 -- -- select is_available('ccc');
