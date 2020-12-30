@@ -1,5 +1,6 @@
 package io.deviad.ripeti.webapp.infrastructure;
 
+import io.deviad.ripeti.webapp.domain.valueobject.course.Status;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import io.deviad.ripeti.webapp.domain.valueobject.user.FirstName;
 import io.deviad.ripeti.webapp.domain.valueobject.user.LastName;
@@ -29,6 +30,7 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
 import org.springframework.r2dbc.core.DatabaseClient;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.time.Instant;
@@ -42,16 +44,16 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
 
   @Override
   protected List<Object> getCustomConverters() {
-    return List.of(usernameStringConverter(), passwordStringConverter(), roleConverter(), addressConverter());
+    return List.of(usernameStringConverter(), passwordStringConverter(), roleConverter(), statusConverter(), addressConverter());
   }
 
   @Override
   public void afterPropertiesSet() {
-    ResourceDatabasePopulator databasePopulator =
-        new ResourceDatabasePopulator(
-            new ClassPathResource("schema.sql"), new ClassPathResource("data.sql"));
-
-    databasePopulator.populate(connectionFactory()).block();
+//    ResourceDatabasePopulator databasePopulator =
+//        new ResourceDatabasePopulator(
+//            new ClassPathResource("schema.sql"), new ClassPathResource("data.sql"));
+//
+//    databasePopulator.populate(connectionFactory()).block();
   }
 
   @Bean
@@ -70,12 +72,14 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
   @Bean
   @Primary
   public ConnectionFactory connectionFactory() {
-    CodecRegistrar enumCodec = EnumCodec.builder().withEnum("user_role", Role.class).build();
+    CodecRegistrar roleEnumCodec = EnumCodec.builder().withEnum("user_role", Role.class).build();
+    CodecRegistrar statusEnumCodec = EnumCodec.builder().withEnum("course_status", Status.class).build();
     return  new PostgresqlConnectionFactory(PostgresqlConnectionConfiguration.builder()
         .host(r2dbcProperties().getHostname())
         .database(r2dbcProperties().getName())
         .port(r2dbcProperties().getPort())
-        .codecRegistrar(enumCodec)
+        .codecRegistrar(roleEnumCodec)
+        .codecRegistrar(statusEnumCodec)
         .username(r2dbcProperties().getUsername())
         .password(r2dbcProperties().getPassword()).build());
   }
@@ -139,6 +143,16 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
       @Override
       public Role convert(@NonNull Role role) {
         return role;
+      }
+    };
+  }
+
+  @Bean
+  public Converter<Status, Status> statusConverter() {
+    return new Converter<Status, Status>() {
+      @Override
+      public Status convert(@NonNull Status status) {
+        return status;
       }
     };
   }

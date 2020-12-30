@@ -57,9 +57,29 @@ public class TestComponent implements InitializingBean {
     UserAggregate savedTeacher = userRepository.save(teacher).block();
 
     var course = CourseAggregate.createCourse("History", "testttt", savedTeacher.id());
+    var course2 = CourseAggregate.createCourse("History2", "testttt2", savedTeacher.id());
     CourseAggregate savedCourse = courseRepository.save(course).block();
+    CourseAggregate savedCourse2 = courseRepository.save(course2).block();
+
     Objects.requireNonNull(savedCourse, "Save should return a course");
-    savedCourse.assignStudentToCourse(savedStudent.id());
-    courseRepository.save(savedCourse).block();
+    Objects.requireNonNull(savedCourse2, "Save should return a course");
+
+    CourseAggregate publishedCourse1 = savedCourse.publishCourse();
+    CourseAggregate publishCourse2 = savedCourse2.publishCourse();
+
+    CourseAggregate saved2Course1 = courseRepository.save(publishedCourse1).block();
+    CourseAggregate saved2Course2 = courseRepository.save(publishCourse2).block();
+
+    assert saved2Course1 != null;
+    saved2Course1.assignStudentToCourse(savedStudent.id());
+    assert saved2Course2 != null;
+    saved2Course2.assignStudentToCourse(savedStudent.id());
+
+
+    courseRepository.save(saved2Course1).block();
+    courseRepository.save(saved2Course2).block();
+
+
+
   }
 }

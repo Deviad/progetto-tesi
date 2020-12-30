@@ -27,7 +27,7 @@ public class CourseCommandRoutesManager {
   CourseCommandService courseService;
 
   @Bean
-  public RouterFunction<ServerResponse> userCommandRoutes() {
+  public RouterFunction<ServerResponse> courseCommandRoutes() {
     return route()
         .POST(
             "/api/course",

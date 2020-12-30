@@ -3,8 +3,16 @@ set search_path to ripeti;
 
 drop type if exists user_role cascade;
 create type user_role as enum ('STUDENT', 'TEACHER');
+
 alter table if exists users
     add role user_role;
+
+drop type if exists course_status cascade;
+create type course_status as enum ('DRAFT', 'LIVE');
+
+alter table if exists courses
+    add status course_status;
+
 
 -- create table if not exists addresses
 -- (
@@ -35,6 +43,7 @@ create table if not exists courses
     id          uuid DEFAULT public.uuid_generate_v4(),
     course_name varchar(255),
     description text,
+    status course_status,
     teacher_id  uuid,
     student_ids uuid[],
     lesson_ids uuid[],
@@ -91,15 +100,20 @@ create table if not exists quiz_run
 );
 
 create or replace function f_users_1() returns trigger as
-$$
+$BODY$
 declare
 begin
     raise notice 'THE STUDENT ID TO REMOVE FROM COURSES IS: %', old.id;
     update courses set student_ids = array_remove(courses.student_ids, old.id)
-    where (select courses.id from courses where old.id = any(courses.student_ids)) = courses.id;
+    where courses.id in (select courses.id from courses where old.id = any(courses.student_ids));
+
+    update teams set student_ids = array_remove(teams.student_ids, old.id)
+    where teams.id in (select teams.id from teams where old.id = any(teams.student_ids));
+
     return old;
-end
-$$ language 'plpgsql';
+end;
+$BODY$
+language 'plpgsql';
 --
 -- -- select is_available('ccc');
 drop trigger if exists users_1_trg on users;
