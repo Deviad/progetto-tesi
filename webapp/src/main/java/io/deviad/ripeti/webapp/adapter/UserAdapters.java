@@ -3,12 +3,11 @@ package io.deviad.ripeti.webapp.adapter;
 import io.deviad.ripeti.webapp.api.queries.UserInfoDto;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
-import io.deviad.ripeti.webapp.persistence.UserAggregate;
+import io.deviad.ripeti.webapp.domain.aggregate.UserAggregate;
 import io.r2dbc.spi.Row;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 public class UserAdapters {
 

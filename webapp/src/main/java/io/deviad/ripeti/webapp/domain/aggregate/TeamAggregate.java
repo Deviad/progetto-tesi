@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.persistence;
+package io.deviad.ripeti.webapp.domain.aggregate;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

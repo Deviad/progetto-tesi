@@ -2,8 +2,8 @@ package io.deviad.ripeti.webapp.application;
 
 import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
-import io.deviad.ripeti.webapp.persistence.CourseAggregate;
-import io.deviad.ripeti.webapp.persistence.UserAggregate;
+import io.deviad.ripeti.webapp.domain.aggregate.CourseAggregate;
+import io.deviad.ripeti.webapp.domain.aggregate.UserAggregate;
 import io.deviad.ripeti.webapp.persistence.repository.CourseRepository;
 import io.deviad.ripeti.webapp.persistence.repository.UserRepository;
 import org.springframework.beans.factory.InitializingBean;
@@ -54,7 +54,7 @@ public class TestComponent implements InitializingBean {
             .build();
     UserAggregate savedTeacher = userRepository.save(teacher).block();
 
-    var course = CourseAggregate.createCourse("History", savedTeacher.id());
+    var course = CourseAggregate.createCourse("History", "testttt", savedTeacher.id());
     CourseAggregate savedCourse = courseRepository.save(course).block();
     assert savedCourse != null;
     savedCourse.assignStudentToCourse(savedStudent.id());

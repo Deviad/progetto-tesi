@@ -34,6 +34,7 @@ create table if not exists courses
 (
     id          uuid DEFAULT public.uuid_generate_v4(),
     course_name varchar(255),
+    description text,
     teacher_id  uuid,
     student_ids uuid[],
     lesson_ids uuid[],
@@ -93,7 +94,7 @@ create or replace function f_users_1() returns trigger as
 $$
 declare
 begin
-    raise notice 'THE NEW ID IS: %', old.id;
+    raise notice 'THE STUDENT ID TO REMOVE FROM COURSES IS: %', old.id;
     update courses set student_ids = array_remove(courses.student_ids, old.id)
     where (select courses.id from courses where old.id = any(courses.student_ids)) = courses.id;
     return old;

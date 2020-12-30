@@ -14,7 +14,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
 import java.util.function.Function;
 
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
