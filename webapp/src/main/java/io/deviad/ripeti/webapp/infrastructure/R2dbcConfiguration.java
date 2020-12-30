@@ -30,7 +30,6 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
 import org.springframework.r2dbc.core.DatabaseClient;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.time.Instant;
@@ -40,20 +39,28 @@ import java.util.List;
 @EnableR2dbcRepositories(
     basePackages = "io.deviad.ripeti.persistence.repository",
     entityOperationsRef = "myEntityOperations")
-public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements InitializingBean, ApplicationContextAware {
+public class R2dbcConfiguration extends AbstractR2dbcConfiguration
+    implements InitializingBean, ApplicationContextAware {
 
   @Override
   protected List<Object> getCustomConverters() {
-    return List.of(usernameStringConverter(), passwordStringConverter(), roleConverter(), statusConverter(), addressConverter());
+    return List.of(
+        usernameStringConverter(),
+        passwordStringConverter(),
+        roleConverter(),
+        statusConverter(),
+        addressConverter());
   }
 
   @Override
   public void afterPropertiesSet() {
-//    ResourceDatabasePopulator databasePopulator =
-//        new ResourceDatabasePopulator(
-//            new ClassPathResource("schema.sql"), new ClassPathResource("data.sql"));
-//
-//    databasePopulator.populate(connectionFactory()).block();
+    ResourceDatabasePopulator databasePopulator =
+        new ResourceDatabasePopulator(
+            new ClassPathResource("schema.sql"),
+            new ClassPathResource("functions.sql"),
+            new ClassPathResource("data.sql"));
+
+    databasePopulator.populate(connectionFactory()).block();
   }
 
   @Bean
@@ -73,15 +80,18 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
   @Primary
   public ConnectionFactory connectionFactory() {
     CodecRegistrar roleEnumCodec = EnumCodec.builder().withEnum("user_role", Role.class).build();
-    CodecRegistrar statusEnumCodec = EnumCodec.builder().withEnum("course_status", Status.class).build();
-    return  new PostgresqlConnectionFactory(PostgresqlConnectionConfiguration.builder()
-        .host(r2dbcProperties().getHostname())
-        .database(r2dbcProperties().getName())
-        .port(r2dbcProperties().getPort())
-        .codecRegistrar(roleEnumCodec)
-        .codecRegistrar(statusEnumCodec)
-        .username(r2dbcProperties().getUsername())
-        .password(r2dbcProperties().getPassword()).build());
+    CodecRegistrar statusEnumCodec =
+        EnumCodec.builder().withEnum("course_status", Status.class).build();
+    return new PostgresqlConnectionFactory(
+        PostgresqlConnectionConfiguration.builder()
+            .host(r2dbcProperties().getHostname())
+            .database(r2dbcProperties().getName())
+            .port(r2dbcProperties().getPort())
+            .codecRegistrar(roleEnumCodec)
+            .codecRegistrar(statusEnumCodec)
+            .username(r2dbcProperties().getUsername())
+            .password(r2dbcProperties().getPassword())
+            .build());
   }
 
   @Bean
@@ -123,6 +133,7 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
       }
     };
   }
+
   @Bean
   public Converter<Instant, Timestamp> instantTimestampConverter() {
     return new Converter<Instant, Timestamp>() {
@@ -165,7 +176,14 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
       @Override
       public String convert(@NonNull Address address) {
 
-        var params = new String[]{separator, address.firstAddressLine(), address.secondAddressLine(), address.city(), address.country()};
+        var params =
+            new String[] {
+              separator,
+              address.firstAddressLine(),
+              address.secondAddressLine(),
+              address.city(),
+              address.country()
+            };
 
         return MessageFormat.format("{1} {0} {2} {0} {3} {0} {4}", params);
       }
@@ -176,5 +194,4 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration implements In
   public R2dbcProperties r2dbcProperties() {
     return new R2dbcProperties();
   }
-
 }

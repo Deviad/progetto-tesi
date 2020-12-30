@@ -31,7 +31,7 @@ create table if not exists users
     username   varchar(30) unique  not null,
     password   varchar(255)        not null,
     email      varchar(150) unique not null,
-    address varchar not null,
+    address    varchar             not null,
     role       user_role,
     primary key (id)
 --     constraint fk_users_address foreign key (address_id) references addresses (id)
@@ -43,10 +43,10 @@ create table if not exists courses
     id          uuid DEFAULT public.uuid_generate_v4(),
     course_name varchar(255),
     description text,
-    status course_status,
+    status      course_status,
     teacher_id  uuid,
     student_ids uuid[],
-    lesson_ids uuid[],
+    lesson_ids  uuid[],
     primary key (id),
     constraint fk_course_teacher foreign key (teacher_id) references users (id)
 );
@@ -96,29 +96,7 @@ create table if not exists quiz_run
     constraint fk_quiz_run_quiz foreign key (quiz_id) references quizzes (id),
     constraint fk_quiz_run_student foreign key (student_id) references users (id),
     constraint fk_quiz_run_question foreign key (question_id) references questions (id),
-    primary key(id)
+    primary key (id)
 );
 
-create or replace function f_users_1() returns trigger as
-$BODY$
-declare
-begin
-    raise notice 'THE STUDENT ID TO REMOVE FROM COURSES IS: %', old.id;
-    update courses set student_ids = array_remove(courses.student_ids, old.id)
-    where courses.id in (select courses.id from courses where old.id = any(courses.student_ids));
 
-    update teams set student_ids = array_remove(teams.student_ids, old.id)
-    where teams.id in (select teams.id from teams where old.id = any(teams.student_ids));
-
-    return old;
-end;
-$BODY$
-language 'plpgsql';
---
--- -- select is_available('ccc');
-drop trigger if exists users_1_trg on users;
-create trigger users_1_trg
-    before delete
-    on users
-    for each row
-execute procedure f_users_1();
