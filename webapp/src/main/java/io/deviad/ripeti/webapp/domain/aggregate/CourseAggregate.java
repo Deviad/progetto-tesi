@@ -82,6 +82,18 @@ public class CourseAggregate {
     studentIds.add(student);
     return this;
   }
+  public CourseAggregate removeStudentFromCourse(UUID student) {
+    if (id == null) {
+      throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "student"));
+    }
+
+    if (status().name().equals(Status.DRAFT.name())) {
+      throw new RuntimeException(String.format(NOT_PUBLISHED_YET, "student"));
+    }
+
+    studentIds.remove(student);
+    return this;
+  }
 
   public CourseAggregate addLessonToCourse(UUID lesson) {
     if (id == null) {
