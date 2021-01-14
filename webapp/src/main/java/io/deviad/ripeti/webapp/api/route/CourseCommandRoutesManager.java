@@ -3,7 +3,9 @@ package io.deviad.ripeti.webapp.api.route;
 import io.deviad.ripeti.webapp.api.command.CreateCourseRequest;
 import io.deviad.ripeti.webapp.api.command.UpdateCourseRequest;
 import io.deviad.ripeti.webapp.application.CourseCommandService;
+import io.deviad.ripeti.webapp.application.UserCommandService;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +27,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class CourseCommandRoutesManager {
 
   CourseCommandService courseService;
+  UserCommandService userCommandService;
 
   @Bean
   public RouterFunction<ServerResponse> courseCommandRoutes() {
@@ -38,6 +41,9 @@ public class CourseCommandRoutesManager {
             RequestPredicates.contentType(MediaType.APPLICATION_JSON),
             this::handleUpdate)
         .DELETE("/api/course", this::deleteCourse)
+        .PUT(
+            "/api/course/publish/{courseId}/{teacherId}",
+            this::publishCourse)
         .PUT("/api/course/assign/{courseId}/{studentId}", this::assignStudentToCourse)
         .build();
   }
@@ -85,5 +91,16 @@ public class CourseCommandRoutesManager {
         .assignUserToCourse(studentId, courseId)
         .onErrorResume(Mono::error)
         .flatMap(r -> ServerResponse.ok().build());
+  }
+
+  @SneakyThrows
+  Mono<ServerResponse> publishCourse(ServerRequest request) {
+    UUID courseId = UUID.fromString(request.pathVariable("courseId"));
+    UUID teacherId = UUID.fromString(request.pathVariable("teacherId"));
+
+    return courseService
+        .publishCourse(courseId, teacherId)
+        .onErrorResume(Mono::error)
+        .flatMap(x -> ServerResponse.ok().bodyValue(x));
   }
 }

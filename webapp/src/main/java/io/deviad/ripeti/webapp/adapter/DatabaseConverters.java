@@ -14,6 +14,10 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Configuration
 public class DatabaseConverters {
@@ -93,6 +97,16 @@ public class DatabaseConverters {
     return new AddressFromDbConverter();
   }
 
+  @Bean
+  public UUIDArrayFromDb uuidArrayFromDb() {
+    return new UUIDArrayFromDb();
+  }
+
+  @Bean
+  public UUIDArrayToDb uuidArrayToDb() {
+    return new UUIDArrayToDb();
+  }
+
   @WritingConverter
   public class InstantToTimestamp implements Converter<Instant, Timestamp> {
 
@@ -137,4 +151,22 @@ public class DatabaseConverters {
       return MappingUtils.fromJson(address, Address.class);
     }
   }
+
+//  @ReadingConverter
+//  public class UUIDArrayFromDb implements Converter<UUID[], Set<UUID>> {
+//
+//    @Override
+//    public Set<UUID> convert(UUID[] source) {
+//      return Stream.of(source).collect(Collectors.toSet());
+//    }
+//  }
+//
+//  @WritingConverter
+//  public class UUIDArrayToDb implements Converter<Set<UUID>, UUID[]> {
+//
+//    @Override
+//    public UUID[] convert(Set<UUID> source) {
+//      return source.toArray(new UUID[] {});
+//    }
+//  }
 }

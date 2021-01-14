@@ -7,8 +7,10 @@ import io.deviad.ripeti.webapp.domain.aggregate.UserAggregate;
 import io.deviad.ripeti.webapp.persistence.repository.CourseRepository;
 import io.deviad.ripeti.webapp.persistence.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
@@ -72,7 +74,7 @@ public class CourseCommandService {
 
     return course
         .flatMap(c -> Mono.zip(Mono.just(c), user))
-        .map(t -> t.getT1().assignStudentToCourse(t.getT2().id()))
+        .flatMap(t -> courseRepository.save(t.getT1().assignStudentToCourse(t.getT2().id())))
         .flatMap(c -> Mono.empty());
   }
 
@@ -93,6 +95,35 @@ public class CourseCommandService {
         .flatMap(c -> Mono.zip(Mono.just(c), user))
         .map(t -> t.getT1().removeStudentFromCourse(t.getT2().id()))
         .flatMap(c -> Mono.empty());
+  }
+
+  @Transactional
+  public Mono<CourseAggregate> publishCourse(UUID courseId, UUID teacherId) {
+
+    Mono<CourseAggregate> course =
+        courseRepository
+            .findById(courseId)
+            .onErrorResume(Mono::error)
+            .switchIfEmpty(Mono.error(new RuntimeException("Course does not exist")));
+
+    Mono<UserAggregate> user =
+        userRepository
+            .findById(teacherId)
+            .onErrorResume(Mono::error)
+            .switchIfEmpty(Mono.error(new RuntimeException("Teacher does not exist")));
+
+    return user.flatMap(x -> Mono.zip(Mono.just(x), course))
+        .flatMap(
+            x -> {
+              if (!x.getT2().teacherId().equals(x.getT1().id())) {
+                return Mono.error(
+                    new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "You do not own this course"));
+              }
+              return course;
+            })
+        .onErrorResume(Mono::error)
+        .flatMap(x->courseRepository.save(x.publishCourse()));
   }
 
   //    @Transactional
