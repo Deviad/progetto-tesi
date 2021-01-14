@@ -58,7 +58,7 @@ public class CourseCommandService {
         Mono<CourseAggregate> course = courseRepository.findById(courseId)
                 .onErrorResume(Mono::error)
                 .switchIfEmpty(Mono.error(new RuntimeException("Course does not exist")));
-        Mono<UserAggregate> user = userRepository.findById(courseId)
+        Mono<UserAggregate> user = userRepository.findById(userId)
                 .onErrorResume(Mono::error)
                 .switchIfEmpty(Mono.error(new RuntimeException("User does not exist")));
 

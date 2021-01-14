@@ -8,6 +8,6 @@ import java.util.UUID;
 
 public interface UserRepository extends R2dbcRepository<UserAggregate, UUID> {
 
-    Mono<UserAggregate> getUserEntityByUsername(String Username);
+    Mono<UserAggregate> getUserAggregateByUsername(String Username);
 
 }

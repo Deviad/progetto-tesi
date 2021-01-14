@@ -51,7 +51,7 @@ public class UserCommandService {
             .build();
 
     return userRepository
-        .getUserEntityByUsername(r.username())
+        .getUserAggregateByUsername(r.username())
         .onErrorResume(Mono::error)
         .flatMap(
             x -> {
@@ -82,8 +82,7 @@ public class UserCommandService {
   @SneakyThrows
   public Mono<UserInfoDto> updateUser(UpdateRequest r) {
 
-    var userEntity = userRepository.getUserEntityByUsername(r.username());
-
+    var userEntity = userRepository.getUserAggregateByUsername(r.username());
     return userEntity
         .switchIfEmpty(Mono.error(new RuntimeException("User does not exist")))
         .map(x -> (Object) Mono.just(r.address()))
@@ -121,7 +120,7 @@ public class UserCommandService {
 
   @Transactional
   public Mono<UserAggregate> updatePassword(UpdatePasswordRequest r) {
-    var userEntity = userRepository.getUserEntityByUsername(r.username());
+    var userEntity = userRepository.getUserAggregateByUsername(r.username());
 
     return userEntity
         .switchIfEmpty(Mono.error(new RuntimeException("User does not exist")))

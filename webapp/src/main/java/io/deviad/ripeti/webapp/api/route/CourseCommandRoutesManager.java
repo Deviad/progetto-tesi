@@ -40,6 +40,7 @@ public class CourseCommandRoutesManager {
         .DELETE(
             "/api/course",
             this::deleteCourse)
+        .PUT("/api/course/assign/{courseId}/{studentId}", this::assignStudentToCourse)
         .build();
   }
 
@@ -75,5 +76,15 @@ public class CourseCommandRoutesManager {
         .map(r -> courseService.updateCourse(r))
         .flatMap(Function.identity())
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
+  }
+
+  Mono<ServerResponse> assignStudentToCourse(ServerRequest request) {
+    UUID courseId = UUID.fromString(request.pathVariable("courseId"));
+    UUID studentId = UUID.fromString(request.pathVariable("studentId"));
+
+    return courseService.assignUserToCourse(studentId, courseId)
+            .onErrorResume(Mono::error)
+            .flatMap(r-> ServerResponse.ok().build());
+
   }
 }
