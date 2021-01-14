@@ -64,6 +64,7 @@ public class CourseAggregate {
     this.courseName = courseName;
     this.description = description;
     this.teacherId = teacherId;
+    this.status = Status.DRAFT;
   }
 
   public static CourseAggregate createCourse(
