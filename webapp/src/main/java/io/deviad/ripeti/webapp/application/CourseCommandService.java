@@ -6,6 +6,7 @@ import io.deviad.ripeti.webapp.domain.aggregate.CourseAggregate;
 import io.deviad.ripeti.webapp.domain.aggregate.UserAggregate;
 import io.deviad.ripeti.webapp.persistence.repository.CourseRepository;
 import io.deviad.ripeti.webapp.persistence.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -14,6 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class CourseCommandService {
 
   CourseRepository courseRepository;

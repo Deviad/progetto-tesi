@@ -8,6 +8,7 @@ import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Value;
 import lombok.With;
 import lombok.experimental.Accessors;
@@ -19,7 +20,7 @@ import java.util.UUID;
 
 @Accessors(fluent = true)
 @Table("users")
-@Value
+@Data
 @With
 @Builder
 @AllArgsConstructor
@@ -27,7 +28,7 @@ import java.util.UUID;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class UserAggregate {
-  @JsonIgnore @Id UUID id;
+  @Id UUID id;
 
   @Column("username")
   String username;
@@ -48,6 +49,5 @@ public class UserAggregate {
   Address address;
 
   @Column("role")
-  @JsonIgnore
   Role role;
 }

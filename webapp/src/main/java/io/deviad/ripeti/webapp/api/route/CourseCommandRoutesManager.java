@@ -47,6 +47,7 @@ public class CourseCommandRoutesManager {
         .bodyToMono(CreateCourseRequest.class)
         .onErrorResume(Mono::error)
         .map(r -> courseService.createCourse(r))
+        .flatMap(Function.identity())
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
 

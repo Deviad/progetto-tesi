@@ -5,7 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.deviad.ripeti.webapp.domain.valueobject.course.Status;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Value;
+import lombok.With;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
@@ -15,13 +20,17 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 
+
 @Accessors(fluent = true)
 @Table("courses")
-@Getter
-@AllArgsConstructor
+@With
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class CourseAggregate {
 
   public static final String DOES_NOT_EXIST_YET =
@@ -34,7 +43,7 @@ public class CourseAggregate {
   private UUID id;
 
   @Column("course_name")
-  private final String courseName;
+  private String courseName;
 
   @Column("description")
   private String description;
@@ -43,7 +52,7 @@ public class CourseAggregate {
   private Status status;
 
   @Column("teacher_id")
-  private final UUID teacherId;
+  private UUID teacherId;
 
   @Column("student_ids")
   private Set<UUID> studentIds = new LinkedHashSet<>();
@@ -55,7 +64,6 @@ public class CourseAggregate {
     this.courseName = courseName;
     this.description = description;
     this.teacherId = teacherId;
-    this.status = Status.DRAFT;
   }
 
   public static CourseAggregate createCourse(
@@ -71,6 +79,7 @@ public class CourseAggregate {
     return new CourseAggregate(
         id(), courseName(), description(), Status.LIVE, teacherId(), studentIds(), lessonIds());
   }
+
 
   public CourseAggregate assignStudentToCourse(UUID student) {
     if (id == null) {
@@ -111,7 +120,7 @@ public class CourseAggregate {
       throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "course"));
     }
     return new CourseAggregate(
-        id(), courseName(), description(), status(), teacherId(), studentIds(), lessonIds());
+        id(), name, description(), status(), teacherId(), studentIds(), lessonIds());
   }
 
   public CourseAggregate changeCourseDescription(String description) {
@@ -119,6 +128,6 @@ public class CourseAggregate {
       throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "description"));
     }
     return new CourseAggregate(
-        id(), courseName(), description(), status(), teacherId(), studentIds(), lessonIds());
+        id(), courseName(), description, status(), teacherId(), studentIds(), lessonIds());
   }
 }
