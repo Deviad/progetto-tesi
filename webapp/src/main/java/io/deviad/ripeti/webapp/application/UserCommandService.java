@@ -1,7 +1,7 @@
 package io.deviad.ripeti.webapp.application;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.deviad.ripeti.webapp.Utils;
+import io.deviad.ripeti.webapp.adapter.MappingUtils;
 import io.deviad.ripeti.webapp.adapter.UserAdapters;
 import io.deviad.ripeti.webapp.api.command.RegistrationRequest;
 import io.deviad.ripeti.webapp.api.command.UpdatePasswordRequest;
@@ -32,7 +32,6 @@ import static io.deviad.ripeti.webapp.adapter.UserAdapters.mapToUserInfo;
 public class UserCommandService {
 
   private UserRepository userRepository;
-  private ObjectMapper mapper;
   private Validator validator;
 
   @Transactional
@@ -40,7 +39,7 @@ public class UserCommandService {
   public Mono<UserInfoDto> registerUser(RegistrationRequest r) {
     Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(r);
 
-    Utils.handleValidation(mapper, violations);
+    Utils.handleValidation(MappingUtils.MAPPER, violations);
 
     var address =
         Address.builder()

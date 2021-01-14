@@ -24,8 +24,10 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class CourseAggregate {
 
-  public static final String DOES_NOT_EXIST_YET = "You cannot assign a %s to a course that does not exist yet";
-  public static final String NOT_PUBLISHED_YET = "You cannot assign a %s to a course that is not published yet";
+  public static final String DOES_NOT_EXIST_YET =
+      "You cannot assign a %s to a course that does not exist yet";
+  public static final String NOT_PUBLISHED_YET =
+      "You cannot assign a %s to a course that is not published yet";
 
   @Id
   @Column("id")
@@ -61,7 +63,7 @@ public class CourseAggregate {
     return new CourseAggregate(courseName, description, teacherId);
   }
 
-  public  CourseAggregate updateCourseInformation(String courseName, String courseDescription) {
+  public CourseAggregate updateCourseInformation(String courseName, String courseDescription) {
     return changeCourseName(courseName).changeCourseDescription(courseDescription);
   }
 
@@ -82,6 +84,7 @@ public class CourseAggregate {
     studentIds.add(student);
     return this;
   }
+
   public CourseAggregate removeStudentFromCourse(UUID student) {
     if (id == null) {
       throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "student"));
@@ -113,8 +116,7 @@ public class CourseAggregate {
 
   public CourseAggregate changeCourseDescription(String description) {
     if (id == null) {
-      throw new RuntimeException(
-              String.format(DOES_NOT_EXIST_YET, "description"));
+      throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "description"));
     }
     return new CourseAggregate(
         id(), courseName(), description(), status(), teacherId(), studentIds(), lessonIds());

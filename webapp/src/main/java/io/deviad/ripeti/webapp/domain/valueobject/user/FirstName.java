@@ -3,7 +3,6 @@ package io.deviad.ripeti.webapp.domain.valueobject.user;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 import lombok.Value;
 import lombok.With;
@@ -29,6 +28,7 @@ import java.util.regex.Pattern;
 public class FirstName {
 
   String firstName;
+
   @JsonCreator
   public FirstName(String firstName) {
     validate(firstName);
@@ -37,7 +37,7 @@ public class FirstName {
 
   public void validate(String firstName) {
 
-    if(firstName == null || firstName.equals(" ")) {
+    if (firstName == null || firstName.equals(" ")) {
       throw new IllegalArgumentException("FirstName cannot be empty");
     }
 

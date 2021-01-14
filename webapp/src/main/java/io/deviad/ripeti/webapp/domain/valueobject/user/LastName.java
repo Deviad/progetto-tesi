@@ -3,7 +3,6 @@ package io.deviad.ripeti.webapp.domain.valueobject.user;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 import lombok.Value;
 import lombok.With;
@@ -29,6 +28,7 @@ import java.util.regex.Pattern;
 public class LastName {
 
   String lastName;
+
   @JsonCreator
   public LastName(String lastName) {
     validate(lastName);
@@ -36,7 +36,7 @@ public class LastName {
   }
 
   public void validate(String lastName) {
-    if(lastName == null || lastName.equals(" ")) {
+    if (lastName == null || lastName.equals(" ")) {
       throw new IllegalArgumentException("LastName cannot be empty");
     }
     Pattern p = Pattern.compile("^[A-Za-z]{3,20}$");

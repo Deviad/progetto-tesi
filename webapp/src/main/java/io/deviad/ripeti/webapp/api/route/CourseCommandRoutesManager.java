@@ -37,9 +37,7 @@ public class CourseCommandRoutesManager {
             "/api/course",
             RequestPredicates.contentType(MediaType.APPLICATION_JSON),
             this::handleUpdate)
-        .DELETE(
-            "/api/course",
-            this::deleteCourse)
+        .DELETE("/api/course", this::deleteCourse)
         .PUT("/api/course/assign/{courseId}/{studentId}", this::assignStudentToCourse)
         .build();
   }
@@ -82,9 +80,9 @@ public class CourseCommandRoutesManager {
     UUID courseId = UUID.fromString(request.pathVariable("courseId"));
     UUID studentId = UUID.fromString(request.pathVariable("studentId"));
 
-    return courseService.assignUserToCourse(studentId, courseId)
-            .onErrorResume(Mono::error)
-            .flatMap(r-> ServerResponse.ok().build());
-
+    return courseService
+        .assignUserToCourse(studentId, courseId)
+        .onErrorResume(Mono::error)
+        .flatMap(r -> ServerResponse.ok().build());
   }
 }

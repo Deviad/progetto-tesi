@@ -31,7 +31,8 @@ public class AddressOld {
   private final String city;
   private final String country;
 
-  public AddressOld(String firstAddressLine, String secondAddressLine, String city, String country) {
+  public AddressOld(
+      String firstAddressLine, String secondAddressLine, String city, String country) {
     validate(firstAddressLine, city, country);
     validateSecondLine(secondAddressLine);
     this.firstAddressLine = firstAddressLine;
@@ -63,7 +64,7 @@ public class AddressOld {
   @Override
   public boolean equals(Object other) {
 
-    if (other == null ) {
+    if (other == null) {
       return false;
     }
 

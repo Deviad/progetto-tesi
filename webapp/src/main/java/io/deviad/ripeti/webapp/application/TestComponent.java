@@ -1,19 +1,19 @@
-//package io.deviad.ripeti.webapp.application;
+// package io.deviad.ripeti.webapp.application;
 //
-//import io.deviad.ripeti.webapp.domain.aggregate.CourseAggregate;
-//import io.deviad.ripeti.webapp.domain.aggregate.UserAggregate;
-//import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
-//import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
-//import io.deviad.ripeti.webapp.persistence.repository.CourseRepository;
-//import io.deviad.ripeti.webapp.persistence.repository.UserRepository;
-//import org.springframework.beans.factory.InitializingBean;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Component;
+// import io.deviad.ripeti.webapp.domain.aggregate.CourseAggregate;
+// import io.deviad.ripeti.webapp.domain.aggregate.UserAggregate;
+// import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
+// import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
+// import io.deviad.ripeti.webapp.persistence.repository.CourseRepository;
+// import io.deviad.ripeti.webapp.persistence.repository.UserRepository;
+// import org.springframework.beans.factory.InitializingBean;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.stereotype.Component;
 //
-//import java.util.Objects;
+// import java.util.Objects;
 //
-//@Component
-//public class TestComponent implements InitializingBean {
+// @Component
+// public class TestComponent implements InitializingBean {
 //  @Autowired UserRepository userRepository;
 //
 //  @Autowired CourseRepository courseRepository;
@@ -82,4 +82,4 @@
 //
 //
 //  }
-//}
+// }

@@ -13,11 +13,8 @@ import lombok.With;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Accessors(fluent = true)
@@ -30,9 +27,8 @@ import java.util.UUID;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class UserAggregate {
-  @JsonIgnore
-  @Id
-  UUID id;
+  @JsonIgnore @Id UUID id;
+
   @Column("username")
   String username;
 
@@ -54,5 +50,4 @@ public class UserAggregate {
   @Column("role")
   @JsonIgnore
   Role role;
-
 }

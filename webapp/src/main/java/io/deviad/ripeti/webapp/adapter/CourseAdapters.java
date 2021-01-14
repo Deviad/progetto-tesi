@@ -1,4 +1,3 @@
 package io.deviad.ripeti.webapp.adapter;
 
-public class CourseAdapters {
-}
+public class CourseAdapters {}

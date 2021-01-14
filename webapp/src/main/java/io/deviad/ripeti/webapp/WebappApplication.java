@@ -23,5 +23,4 @@ public class WebappApplication {
     ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     return factory.getValidator();
   }
-
 }

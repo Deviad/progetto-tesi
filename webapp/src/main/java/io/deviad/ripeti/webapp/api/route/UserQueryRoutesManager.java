@@ -26,9 +26,9 @@ public class UserQueryRoutesManager {
 
   Mono<ServerResponse> handleGetUserinfo(ServerRequest request) {
     return Mono.just(request.pathVariable("username"))
-            .onErrorResume(Mono::error)
-            .flatMap(r -> queryService.getUserInfo(r))
-            .switchIfEmpty(Mono.error(new RuntimeException("Cannot find user")))
+        .onErrorResume(Mono::error)
+        .flatMap(r -> queryService.getUserInfo(r))
+        .switchIfEmpty(Mono.error(new RuntimeException("Cannot find user")))
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
 }

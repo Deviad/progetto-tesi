@@ -16,10 +16,7 @@ import java.util.UUID;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class UpdateCourseRequest {
-    @NotNull
-    UUID courseId;
-    @NotBlank
-    String courseName;
-    @NotBlank
-    String courseDescription;
+  @NotNull UUID courseId;
+  @NotBlank String courseName;
+  @NotBlank String courseDescription;
 }

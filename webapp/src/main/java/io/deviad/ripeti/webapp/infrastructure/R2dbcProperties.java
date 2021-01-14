@@ -12,11 +12,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @AllArgsConstructor
 @NoArgsConstructor
 public class R2dbcProperties {
-    String url;
-    String username;
-    String password;
-    String hostname;
-    String name;
-    Integer port;
-
+  String url;
+  String username;
+  String password;
+  String hostname;
+  String name;
+  Integer port;
 }
