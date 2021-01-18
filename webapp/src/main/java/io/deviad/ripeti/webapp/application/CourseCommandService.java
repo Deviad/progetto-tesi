@@ -1,10 +1,14 @@
 package io.deviad.ripeti.webapp.application;
 
+import io.deviad.ripeti.webapp.adapter.MappingUtils;
+import io.deviad.ripeti.webapp.api.command.AddLessonToCourseRequest;
 import io.deviad.ripeti.webapp.api.command.CreateCourseRequest;
 import io.deviad.ripeti.webapp.api.command.UpdateCourseRequest;
 import io.deviad.ripeti.webapp.domain.aggregate.CourseAggregate;
 import io.deviad.ripeti.webapp.domain.aggregate.UserAggregate;
+import io.deviad.ripeti.webapp.domain.entity.LessonEntity;
 import io.deviad.ripeti.webapp.persistence.repository.CourseRepository;
+import io.deviad.ripeti.webapp.persistence.repository.LessonRepository;
 import io.deviad.ripeti.webapp.persistence.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +26,7 @@ public class CourseCommandService {
 
   CourseRepository courseRepository;
   UserRepository userRepository;
+  LessonRepository lessonRepository;
 
   @Transactional
   public Mono<CourseAggregate> createCourse(CreateCourseRequest request) {
@@ -126,19 +131,39 @@ public class CourseCommandService {
         .flatMap(x->courseRepository.save(x.publishCourse()));
   }
 
-  //    @Transactional
-  //    public Mono<Void> assignLessonToCourse(UUID lessonId, UUID courseId) {
-  //        Mono<CourseAggregate> course = courseRepository.findById(courseId)
-  //                .onErrorResume(Mono::error)
-  //                .switchIfEmpty(Mono.error(new RuntimeException("Course does not exist")));
-  //        Mono<UserAggregate> lesson = userRepository.findById(lessonId)
-  //                .onErrorResume(Mono::error)
-  //                .switchIfEmpty(Mono.error(new RuntimeException("User does not exist")));
-  //
-  //        return course
-  //                .flatMap(c->Mono.zip(Mono.just(c), lesson))
-  //                .map(t -> t.getT1().addLessonToCourse(t.getT2().id()))
-  //                .flatMap(c->Mono.empty());
-  //    }
+      @Transactional
+      public Mono<Void> addLessonToCourse(UUID courseId, AddLessonToCourseRequest lessonDetails) {
+
+          LessonEntity lessonEntity = MappingUtils.MAPPER.convertValue(lessonDetails, LessonEntity.class);
+
+          Mono<CourseAggregate> course = courseRepository.findById(courseId)
+                  .onErrorResume(Mono::error)
+                  .switchIfEmpty(Mono.error(new RuntimeException("Course does not exist")));
+          Mono<LessonEntity> lesson = lessonRepository.save(lessonEntity)
+                  .onErrorResume(Mono::error);
+
+          return course
+                  .flatMap(c->Mono.zip(Mono.just(c), lesson))
+                  .flatMap(t ->  {
+                      t.getT1().addLessonToCourse(t.getT2().id());
+                      return courseRepository.save(t.getT1());
+                  })
+                  .flatMap(c->Mono.empty());
+      }
+
+
+    @Transactional
+    public Mono<Void> removeLessonFromCourse(UUID lessonId) {
+
+
+        Mono<LessonEntity> lesson = lessonRepository.findById(lessonId)
+                .onErrorResume(Mono::error)
+                .switchIfEmpty(Mono.error(new RuntimeException("Lesson does not exist")));
+
+        return lesson
+                .flatMap(c-> lessonRepository.deleteById(lessonId))
+                .flatMap(c->Mono.empty());
+
+    }
 
 }

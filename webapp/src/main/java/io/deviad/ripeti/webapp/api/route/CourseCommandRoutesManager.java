@@ -1,5 +1,6 @@
 package io.deviad.ripeti.webapp.api.route;
 
+import io.deviad.ripeti.webapp.api.command.AddLessonToCourseRequest;
 import io.deviad.ripeti.webapp.api.command.CreateCourseRequest;
 import io.deviad.ripeti.webapp.api.command.UpdateCourseRequest;
 import io.deviad.ripeti.webapp.application.CourseCommandService;
@@ -42,9 +43,14 @@ public class CourseCommandRoutesManager {
             this::handleUpdate)
         .DELETE("/api/course", this::deleteCourse)
         .PUT(
-            "/api/course/publish/{courseId}/{teacherId}",
+            "/api/course/{courseId}/publish/{teacherId}",
             this::publishCourse)
-        .PUT("/api/course/assign/{courseId}/{studentId}", this::assignStudentToCourse)
+        .PUT("/api/course/{courseId}/assignstudent/{studentId}", this::assignStudentToCourse)
+        .POST("/api/course/{courseId}/addlesson",
+                RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+                this::addLessonToCourse)
+        .DELETE("/api/course/removelesson/{lessonId}",
+                this::removeLesson)
         .build();
   }
 
@@ -103,4 +109,25 @@ public class CourseCommandRoutesManager {
         .onErrorResume(Mono::error)
         .flatMap(x -> ServerResponse.ok().bodyValue(x));
   }
+
+  @SneakyThrows
+  Mono<ServerResponse> addLessonToCourse(ServerRequest request) {
+    UUID courseId = UUID.fromString(request.pathVariable("courseId"));
+
+    return request.bodyToMono(AddLessonToCourseRequest.class)
+            .onErrorResume(Mono::error)
+            .flatMap(info -> courseService.addLessonToCourse(courseId, info))
+            .flatMap(x-> ServerResponse.ok().build());
+
+  }
+
+  @SneakyThrows
+  Mono<ServerResponse> removeLesson(ServerRequest request) {
+    UUID lessonId = UUID.fromString(request.pathVariable("lessonId"));
+
+    return  courseService.removeLessonFromCourse(lessonId)
+            .onErrorResume(Mono::error)
+            .flatMap(x-> ServerResponse.ok().build());
+  }
+
 }

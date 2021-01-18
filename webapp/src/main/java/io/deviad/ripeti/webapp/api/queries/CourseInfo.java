@@ -1,13 +1,20 @@
 package io.deviad.ripeti.webapp.api.queries;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.deviad.ripeti.webapp.domain.valueobject.course.Status;
+import lombok.Builder;
 import lombok.Value;
 
-@Value(staticConstructor = "of")
+import java.util.UUID;
+
+@Value
+@Builder
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CourseInfo {
   String courseName;
-  String courseId;
+  UUID courseId;
   String courseDescription;
+  Status courseStatus;
   String teacherName;
+  UUID teacherId;
 }

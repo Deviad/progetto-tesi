@@ -7,9 +7,7 @@ import io.deviad.ripeti.webapp.domain.valueobject.course.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 import lombok.With;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
@@ -113,6 +111,19 @@ public class CourseAggregate {
       throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "lesson"));
     }
     lessonIds.add(lesson);
+    return this;
+  }
+
+  public CourseAggregate removeLessonFromCourse(UUID lesson) {
+    if (id == null) {
+      throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "lesson"));
+    }
+
+    if(!lessonIds.contains(lesson)) {
+      throw new RuntimeException("Cannot remove a lesson which was not added previously");
+    }
+
+    lessonIds.remove(lesson);
     return this;
   }
 

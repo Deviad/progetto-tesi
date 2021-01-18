@@ -32,45 +32,6 @@ public class DatabaseConverters {
     return list;
   }
 
-  //  @WritingConverter
-  //  public  enum UsernameToDbStringConverter implements Converter<Username, String> {
-  //    INSTANCE;
-  //
-  //    @Override
-  //    public String convert(@NonNull Username username) {
-  //      return username.username();
-  //    }
-  //  }
-  //
-  //  @WritingConverter
-  //  public  enum PasswordToDbConverter implements Converter<Password, String> {
-  //    INSTANCE;
-  //
-  //    @Override
-  //    public String convert(@NonNull Password password) {
-  //      return password.password();
-  //    }
-  //  }
-  //
-  //  @WritingConverter
-  //  public  enum FirstNameToDbConverter implements Converter<FirstName, String> {
-  //    INSTANCE;
-  //
-  //    @Override
-  //    public String convert(@NonNull FirstName firstName) {
-  //      return firstName.firstName();
-  //    }
-  //  }
-  //
-  //  @WritingConverter
-  //  public  enum LastNameToDbConverter implements Converter<LastName, String> {
-  //    INSTANCE;
-  //
-  //    @Override
-  //    public String convert(@NonNull LastName lastName) {
-  //      return lastName.lastName();
-  //    }
-  //  }
 
   @Bean
   public InstantToTimestamp instantToTimestamp() {
@@ -95,16 +56,6 @@ public class DatabaseConverters {
   @Bean
   public AddressFromDbConverter addressFromDbConverter() {
     return new AddressFromDbConverter();
-  }
-
-  @Bean
-  public UUIDArrayFromDb uuidArrayFromDb() {
-    return new UUIDArrayFromDb();
-  }
-
-  @Bean
-  public UUIDArrayToDb uuidArrayToDb() {
-    return new UUIDArrayToDb();
   }
 
   @WritingConverter
@@ -152,21 +103,4 @@ public class DatabaseConverters {
     }
   }
 
-//  @ReadingConverter
-//  public class UUIDArrayFromDb implements Converter<UUID[], Set<UUID>> {
-//
-//    @Override
-//    public Set<UUID> convert(UUID[] source) {
-//      return Stream.of(source).collect(Collectors.toSet());
-//    }
-//  }
-//
-//  @WritingConverter
-//  public class UUIDArrayToDb implements Converter<Set<UUID>, UUID[]> {
-//
-//    @Override
-//    public UUID[] convert(Set<UUID> source) {
-//      return source.toArray(new UUID[] {});
-//    }
-//  }
 }
