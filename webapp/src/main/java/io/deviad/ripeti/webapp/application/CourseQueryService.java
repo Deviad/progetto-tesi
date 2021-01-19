@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 @Service
 @AllArgsConstructor
 @Lazy
@@ -55,17 +53,19 @@ public class CourseQueryService {
 
 
     @Timed("getCourseByTeacherId")
-    public Mono<CourseInfo> getCourseByTeacherId(UUID courseId) {
+    public Flux<CourseInfo> getCourseByTeacherId(String courseId) {
         //language=PostgreSQL
         String query =
                 """
-                select c.* from courses c where c.teacher_id::text = $1
+                 select c.*, concat(u.first_name, ', ', u.last_name) as teacher_name from courses c
+                join users u on c.teacher_id = u.id
+                where c.teacher_id::text = $1
                 """;
 
         return client.getDatabaseClient().sql(query)
-                .bind("$1", courseId.toString())
+                .bind("$1", courseId)
                 .map(CourseAdapters.COURSEINFO_FROM_ROW_MAP::apply)
-                .first();
+                .all();
     }
 
 }

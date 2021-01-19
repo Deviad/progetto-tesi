@@ -1,18 +1,22 @@
 create schema if not exists ripeti;
 set search_path to ripeti;
 
-drop type if exists user_role cascade;
-create type user_role as enum ('STUDENT', 'TEACHER');
 
-alter table if exists users
-    add role user_role;
+----- begin these are to be used only for the first time in order to create the full schema ---
 
-drop type if exists course_status cascade;
-create type course_status as enum ('DRAFT', 'LIVE');
+-- drop type if exists user_role cascade;
+-- create type user_role as enum ('STUDENT', 'TEACHER');
 
-alter table if exists courses
-    add status course_status;
+-- alter table if exists users
+--     add role user_role;
 
+-- drop type if exists course_status cascade;
+-- create type course_status as enum ('DRAFT', 'LIVE');
+
+-- alter table if exists courses
+--     add status course_status;
+
+----- end ----
 
 -- create table if not exists addresses
 -- (

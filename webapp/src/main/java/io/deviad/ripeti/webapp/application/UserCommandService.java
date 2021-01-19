@@ -5,7 +5,7 @@ import io.deviad.ripeti.webapp.adapter.MappingUtils;
 import io.deviad.ripeti.webapp.adapter.UserAdapters;
 import io.deviad.ripeti.webapp.api.command.RegistrationRequest;
 import io.deviad.ripeti.webapp.api.command.UpdatePasswordRequest;
-import io.deviad.ripeti.webapp.api.command.UpdateRequest;
+import io.deviad.ripeti.webapp.api.command.UpdateUserRequest;
 import io.deviad.ripeti.webapp.api.queries.UserInfoDto;
 import io.deviad.ripeti.webapp.domain.aggregate.UserAggregate;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
@@ -79,7 +79,7 @@ public class UserCommandService {
 
   @Transactional
   @SneakyThrows
-  public Mono<UserInfoDto> updateUser(UpdateRequest r) {
+  public Mono<UserInfoDto> updateUser(UpdateUserRequest r) {
 
     var userEntity = userRepository.getUserAggregateByUsername(r.username());
     return userEntity
@@ -89,7 +89,7 @@ public class UserCommandService {
         .flatMap(x -> saveWithAddress(r, userEntity));
   }
 
-  Mono<UserInfoDto> saveWithoutAddress(UpdateRequest r, Mono<UserAggregate> userEntity) {
+  Mono<UserInfoDto> saveWithoutAddress(UpdateUserRequest r, Mono<UserAggregate> userEntity) {
     return userEntity
         .onErrorResume(Mono::error)
         .map(x -> x.withFirstName(r.firstName()).withLastName(r.lastName()))
@@ -100,7 +100,7 @@ public class UserCommandService {
                     x.username(), x.email(), x.firstName(), x.lastName(), x.role(), null));
   }
 
-  Mono<UserInfoDto> saveWithAddress(UpdateRequest r, Mono<UserAggregate> userEntity) {
+  Mono<UserInfoDto> saveWithAddress(UpdateUserRequest r, Mono<UserAggregate> userEntity) {
     return userEntity
         .onErrorResume(Mono::error)
         .map(

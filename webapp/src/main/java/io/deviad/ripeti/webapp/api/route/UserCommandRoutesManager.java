@@ -1,7 +1,7 @@
 package io.deviad.ripeti.webapp.api.route;
 
 import io.deviad.ripeti.webapp.api.command.RegistrationRequest;
-import io.deviad.ripeti.webapp.api.command.UpdateRequest;
+import io.deviad.ripeti.webapp.api.command.UpdateUserRequest;
 import io.deviad.ripeti.webapp.application.UserCommandService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +50,7 @@ public class UserCommandRoutesManager {
 
   Mono<ServerResponse> handleUpdate(ServerRequest request) {
     return request
-        .bodyToMono(UpdateRequest.class)
+        .bodyToMono(UpdateUserRequest.class)
         .onErrorResume(Mono::error)
         .map(r -> userManagement.updateUser(r))
         .flatMap(Function.identity())

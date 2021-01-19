@@ -1,5 +1,6 @@
 package io.deviad.ripeti.webapp.api.route;
 
+import io.deviad.ripeti.webapp.api.queries.CourseInfo;
 import io.deviad.ripeti.webapp.api.queries.UserInfoDto;
 import io.deviad.ripeti.webapp.application.CourseQueryService;
 import io.deviad.ripeti.webapp.application.UserQueryService;
@@ -26,6 +27,7 @@ public class CourseQueryRoutesManager {
     return route()
             .GET("/api/course/{courseId}", this::handleGetCourse)
             .GET("/api/course/{courseId}/getstudents", this::handleGetEnrolledStudents)
+            .GET("/api/course/teacher/{teacherId}", this::handleGetByTeacherId)
             .build();
   }
 
@@ -43,5 +45,13 @@ public class CourseQueryRoutesManager {
             .map(r -> queryService.getAllEnrolledStudents(r))
             .switchIfEmpty(Mono.error(new RuntimeException("Cannot find students")))
             .flatMap(r -> ServerResponse.ok().body(r, UserInfoDto.class));
+  }
+
+  Mono<ServerResponse> handleGetByTeacherId(ServerRequest request) {
+    return Mono.just(request.pathVariable("teacherId"))
+            .onErrorResume(Mono::error)
+            .map(r -> queryService.getCourseByTeacherId(r))
+            .switchIfEmpty(Mono.error(new RuntimeException("Cannot find students")))
+            .flatMap(r -> ServerResponse.ok().body(r, CourseInfo.class));
   }
 }
