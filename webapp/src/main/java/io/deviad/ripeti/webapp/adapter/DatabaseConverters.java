@@ -1,6 +1,6 @@
 package io.deviad.ripeti.webapp.adapter;
 
-import io.deviad.ripeti.webapp.domain.valueobject.course.Status;
+import io.deviad.ripeti.webapp.domain.valueobject.course.CourseStatus;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import lombok.NonNull;
@@ -75,10 +75,10 @@ public class DatabaseConverters {
 
   @WritingConverter
   @ReadingConverter
-  public class StatusConverter implements Converter<Status, Status> {
+  public class StatusConverter implements Converter<CourseStatus, CourseStatus> {
 
     @Override
-    public Status convert(@NonNull Status status) {
+    public CourseStatus convert(@NonNull CourseStatus status) {
       return status;
     }
   }

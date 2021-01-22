@@ -1,6 +1,7 @@
 package io.deviad.ripeti.webapp.api.route;
 
 import io.deviad.ripeti.webapp.api.command.AddLessonToCourseRequest;
+import io.deviad.ripeti.webapp.api.command.AddQuizToCourseRequest;
 import io.deviad.ripeti.webapp.api.command.CreateCourseRequest;
 import io.deviad.ripeti.webapp.api.command.UpdateCourseRequest;
 import io.deviad.ripeti.webapp.application.CourseCommandService;
@@ -42,15 +43,18 @@ public class CourseCommandRoutesManager {
             RequestPredicates.contentType(MediaType.APPLICATION_JSON),
             this::handleUpdate)
         .DELETE("/api/course", this::deleteCourse)
-        .PUT(
-            "/api/course/{courseId}/publish/{teacherId}",
-            this::publishCourse)
+        .PUT("/api/course/{courseId}/publish/{teacherId}", this::publishCourse)
         .PUT("/api/course/{courseId}/assignstudent/{studentId}", this::assignStudentToCourse)
-        .POST("/api/course/{courseId}/addlesson",
-                RequestPredicates.contentType(MediaType.APPLICATION_JSON),
-                this::addLessonToCourse)
-        .DELETE("/api/course/removelesson/{lessonId}",
-                this::removeLesson)
+        .POST(
+            "/api/course/{courseId}/addlesson",
+            RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+            this::addLessonToCourse)
+        .DELETE("/api/course/removelesson/{lessonId}", this::removeLesson)
+        .POST(
+            "/api/course/{courseId}/createquiz",
+            RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+            this::createQuiz)
+        .DELETE("/api/course/removequiz/{quizId}", this::removeQuiz)
         .build();
   }
 
@@ -114,20 +118,39 @@ public class CourseCommandRoutesManager {
   Mono<ServerResponse> addLessonToCourse(ServerRequest request) {
     UUID courseId = UUID.fromString(request.pathVariable("courseId"));
 
-    return request.bodyToMono(AddLessonToCourseRequest.class)
-            .onErrorResume(Mono::error)
-            .flatMap(info -> courseService.addLessonToCourse(courseId, info))
-            .flatMap(x-> ServerResponse.ok().build());
-
+    return request
+        .bodyToMono(AddLessonToCourseRequest.class)
+        .onErrorResume(Mono::error)
+        .flatMap(info -> courseService.addLessonToCourse(courseId, info))
+        .flatMap(x -> ServerResponse.ok().build());
   }
 
   @SneakyThrows
   Mono<ServerResponse> removeLesson(ServerRequest request) {
     UUID lessonId = UUID.fromString(request.pathVariable("lessonId"));
 
-    return  courseService.removeLessonFromCourse(lessonId)
-            .onErrorResume(Mono::error)
-            .flatMap(x-> ServerResponse.ok().build());
+    return courseService
+        .removeLessonFromCourse(lessonId)
+        .onErrorResume(Mono::error)
+        .flatMap(x -> ServerResponse.ok().build());
   }
 
+  Mono<ServerResponse> createQuiz(ServerRequest request) {
+    UUID courseId = UUID.fromString(request.pathVariable("courseId"));
+    return request
+        .bodyToMono(AddQuizToCourseRequest.class)
+        .onErrorResume(Mono::error)
+        .flatMap(r -> courseService.addQuizToCourse(courseId, r))
+        .flatMap(x -> ServerResponse.ok().build());
+  }
+
+  @SneakyThrows
+  Mono<ServerResponse> removeQuiz(ServerRequest request) {
+    UUID lessonId = UUID.fromString(request.pathVariable("quizId"));
+
+    return courseService
+            .removeQuizFromCourse(lessonId)
+            .onErrorResume(Mono::error)
+            .flatMap(x -> ServerResponse.ok().build());
+  }
 }

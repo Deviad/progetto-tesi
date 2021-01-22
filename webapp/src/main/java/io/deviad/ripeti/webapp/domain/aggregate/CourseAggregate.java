@@ -3,7 +3,7 @@ package io.deviad.ripeti.webapp.domain.aggregate;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.deviad.ripeti.webapp.domain.valueobject.course.Status;
+import io.deviad.ripeti.webapp.domain.valueobject.course.CourseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -47,7 +47,7 @@ public class CourseAggregate {
   private String description;
 
   @Column("status")
-  private Status status;
+  private CourseStatus status;
 
   @Column("teacher_id")
   private UUID teacherId;
@@ -58,11 +58,15 @@ public class CourseAggregate {
   @Column("lesson_ids")
   private Set<UUID> lessonIds = new LinkedHashSet<>();
 
+  @Column("quiz_ids")
+  private Set<UUID> quizIds = new LinkedHashSet<>();
+
+
   private CourseAggregate(String courseName, String description, UUID teacherId) {
     this.courseName = courseName;
     this.description = description;
     this.teacherId = teacherId;
-    this.status = Status.DRAFT;
+    this.status = CourseStatus.DRAFT;
   }
 
   public static CourseAggregate createCourse(
@@ -76,7 +80,7 @@ public class CourseAggregate {
 
   public CourseAggregate publishCourse() {
     return new CourseAggregate(
-        id(), courseName(), description(), Status.LIVE, teacherId(), studentIds(), lessonIds());
+        id(), courseName(), description(), CourseStatus.LIVE, teacherId(), studentIds(), lessonIds(), quizIds());
   }
 
 
@@ -85,7 +89,7 @@ public class CourseAggregate {
       throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "student"));
     }
 
-    if (status().name().equals(Status.DRAFT.name())) {
+    if (status().name().equals(CourseStatus.DRAFT.name())) {
       throw new RuntimeException(String.format(NOT_PUBLISHED_YET, "student"));
     }
 
@@ -98,7 +102,7 @@ public class CourseAggregate {
       throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "student"));
     }
 
-    if (status().name().equals(Status.DRAFT.name())) {
+    if (status().name().equals(CourseStatus.DRAFT.name())) {
       throw new RuntimeException(String.format(NOT_PUBLISHED_YET, "student"));
     }
 
@@ -132,7 +136,7 @@ public class CourseAggregate {
       throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "course"));
     }
     return new CourseAggregate(
-        id(), name, description(), status(), teacherId(), studentIds(), lessonIds());
+        id(), name, description(), status(), teacherId(), studentIds(), lessonIds(), quizIds());
   }
 
   public CourseAggregate changeCourseDescription(String description) {
@@ -140,6 +144,24 @@ public class CourseAggregate {
       throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "description"));
     }
     return new CourseAggregate(
-        id(), courseName(), description, status(), teacherId(), studentIds(), lessonIds());
+        id(), courseName(), description, status(), teacherId(), studentIds(), lessonIds(), quizIds());
   }
+
+
+  public CourseAggregate addQuizToCourse(UUID quiz) {
+    if (id == null) {
+      throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "quiz"));
+    }
+    quizIds.add(quiz);
+    return this;
+  }
+
+  public CourseAggregate removeQuizFromCourse(UUID quiz) {
+    if (id == null) {
+      throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "quiz"));
+    }
+    quizIds.remove(quiz);
+    return this;
+  }
+
 }

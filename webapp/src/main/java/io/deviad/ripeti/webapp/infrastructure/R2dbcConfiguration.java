@@ -1,7 +1,7 @@
 package io.deviad.ripeti.webapp.infrastructure;
 
 import io.deviad.ripeti.webapp.adapter.DatabaseConverters;
-import io.deviad.ripeti.webapp.domain.valueobject.course.Status;
+import io.deviad.ripeti.webapp.domain.valueobject.course.CourseStatus;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import io.r2dbc.postgresql.PostgresqlConnectionConfiguration;
 import io.r2dbc.postgresql.PostgresqlConnectionFactory;
@@ -70,7 +70,7 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration
   public ConnectionFactory connectionFactory() {
     CodecRegistrar roleEnumCodec = EnumCodec.builder().withEnum("user_role", Role.class).build();
     CodecRegistrar statusEnumCodec =
-        EnumCodec.builder().withEnum("course_status", Status.class).build();
+        EnumCodec.builder().withEnum("course_status", CourseStatus.class).build();
     return new PostgresqlConnectionFactory(
         PostgresqlConnectionConfiguration.builder()
             .host(r2dbcProperties().getHostname())

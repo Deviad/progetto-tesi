@@ -30,6 +30,32 @@ create or replace function f_lessons_1() returns trigger as
 '
     language plpgsql;
 
+create or replace function f_quizzes_1() returns trigger as
+'
+    declare
+    begin
+        raise notice $$THE QUIZ ID TO REMOVE FROM COURSES IS: %$$, old.id;
+        update courses
+        set quiz_ids = array_remove(courses.quiz_ids, old.id)
+        where courses.id in (select courses.id from courses where old.id = any (courses.quiz_ids));
+        return old;
+    end;
+'
+    language plpgsql;
+
+create or replace function f_questions_1() returns trigger as
+'
+    declare
+    begin
+        raise notice $$THE QUESTION ID TO REMOVE FROM COURSES IS: %$$, old.id;
+        update quizzes
+        set question_ids = array_remove(quizzes.question_ids, old.id)
+        where quizzes.id in (select quizzes.id from quizzes where old.id = any (quizzes.question_ids));
+        return old;
+    end;
+'
+    language plpgsql;
+
 
 --
 -- -- select is_available('ccc');
@@ -47,4 +73,21 @@ create trigger lessons_1_trg
     on lessons
     for each row
 execute procedure f_lessons_1();
+
+
+drop trigger if exists quizzes_1_trg on quizzes;
+create trigger quizzes_1_trg
+    before delete
+    on quizzes
+    for each row
+execute procedure f_quizzes_1();
+
+
+
+drop trigger if exists questions_1_trg on questions;
+create trigger questions_1_trg
+    before delete
+    on questions
+    for each row
+execute procedure f_questions_1();
 
