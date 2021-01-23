@@ -4,7 +4,6 @@ import io.deviad.ripeti.webapp.adapter.QuizAdapters;
 import io.deviad.ripeti.webapp.api.command.AnswerDto;
 import io.deviad.ripeti.webapp.api.queries.QuestionResponseDto;
 import io.deviad.ripeti.webapp.api.queries.QuizWithoutResults;
-import io.deviad.ripeti.webapp.persistence.repository.AnswersReadRepository;
 import io.micrometer.core.annotation.Timed;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +26,6 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class QuizQueryService {
 
-    AnswersReadRepository answersReadRepository;
     R2dbcEntityOperations client;
 
 
