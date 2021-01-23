@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.application;
+package io.deviad.ripeti.webapp.application.query;
 
 import io.deviad.ripeti.webapp.adapter.CourseAdapters;
 import io.deviad.ripeti.webapp.adapter.UserAdapters;
@@ -53,7 +53,7 @@ public class CourseQueryService {
 
 
     @Timed("getCourseByTeacherId")
-    public Flux<CourseInfo> getCourseByTeacherId(String courseId) {
+    public Flux<CourseInfo> getCoursesByTeacherId(String courseId) {
         //language=PostgreSQL
         String query =
                 """

@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.application;
+package io.deviad.ripeti.webapp.application.query;
 
 import io.deviad.ripeti.webapp.adapter.UserAdapters;
 import io.deviad.ripeti.webapp.api.queries.UserInfoDto;
@@ -12,7 +12,6 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
-
 @Lazy
 @AllArgsConstructor
 public class UserQueryService {

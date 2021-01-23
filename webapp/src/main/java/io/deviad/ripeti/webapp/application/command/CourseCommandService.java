@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.application;
+package io.deviad.ripeti.webapp.application.command;
 
 import io.deviad.ripeti.webapp.adapter.MappingUtils;
 import io.deviad.ripeti.webapp.api.command.AddLessonToCourseRequest;
@@ -257,7 +257,7 @@ public class CourseCommandService {
   private Set<AnswerEntity> mapToAnswerEntity(Set<AnswerDto> answers) {
     return answers.stream()
         .map(
-            adto -> AnswerEntity.builder().correct(adto.isCorrect()).title(adto.getTitle()).build())
+            adto -> AnswerEntity.builder().correct(adto.getCorrect()).title(adto.getTitle()).build())
         .collect(Collectors.toSet());
   }
 

@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.application;
+package io.deviad.ripeti.webapp.application.command;
 
 import io.deviad.ripeti.webapp.Utils;
 import io.deviad.ripeti.webapp.adapter.MappingUtils;

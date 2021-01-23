@@ -6,7 +6,7 @@ import lombok.Value;
 import java.util.Set;
 
 @Value(staticConstructor = "of")
-public class QuestionDto {
+public class QuestionRequestDto {
     String title;
     Set<AnswerDto> answers;
 }
