@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
@@ -28,11 +27,11 @@ public class CourseQueryRoutesManager {
   @Bean
   public RouterFunction<ServerResponse> courseQueryRoutes() {
     return route()
-            .GET("/api/course/{courseId}", this::handleGetCourse)
-            .GET("/api/course/{courseId}/getstudents", this::handleGetEnrolledStudents)
-            .GET("/api/course/teacher/{teacherId}", this::handleGetByTeacherId)
-            .GET("/api/course/{courseId}/getquizzes", this::getQuizzesByCourseId)
-            .build();
+        .GET("/api/course/{courseId}", this::handleGetCourse)
+        .GET("/api/course/{courseId}/getstudents", this::handleGetEnrolledStudents)
+        .GET("/api/course/teacher/{teacherId}", this::handleGetByTeacherId)
+        .GET("/api/course/{courseId}/getquizzes", this::getQuizzesByCourseId)
+        .build();
   }
 
   Mono<ServerResponse> handleGetCourse(ServerRequest request) {
@@ -45,25 +44,25 @@ public class CourseQueryRoutesManager {
 
   Mono<ServerResponse> handleGetEnrolledStudents(ServerRequest request) {
     return Mono.just(request.pathVariable("courseId"))
-            .onErrorResume(Mono::error)
-            .map(r -> queryService.getAllEnrolledStudents(r))
-            .switchIfEmpty(Mono.error(new RuntimeException("Cannot find students")))
-            .flatMap(r -> ServerResponse.ok().body(r, UserInfoDto.class));
+        .onErrorResume(Mono::error)
+        .map(r -> queryService.getAllEnrolledStudents(r))
+        .switchIfEmpty(Mono.error(new RuntimeException("Cannot find students")))
+        .flatMap(r -> ServerResponse.ok().body(r, UserInfoDto.class));
   }
 
   Mono<ServerResponse> handleGetByTeacherId(ServerRequest request) {
     return Mono.just(request.pathVariable("teacherId"))
-            .onErrorResume(Mono::error)
-            .map(r -> queryService.getCoursesByTeacherId(r))
-            .switchIfEmpty(Mono.error(new RuntimeException("Cannot find courses")))
-            .flatMap(r -> ServerResponse.ok().body(r, CourseInfo.class));
+        .onErrorResume(Mono::error)
+        .map(r -> queryService.getCoursesByTeacherId(r))
+        .switchIfEmpty(Mono.error(new RuntimeException("Cannot find courses")))
+        .flatMap(r -> ServerResponse.ok().body(r, CourseInfo.class));
   }
 
   Mono<ServerResponse> getQuizzesByCourseId(ServerRequest request) {
     return Mono.just(request.pathVariable("courseId"))
-            .onErrorResume(Mono::error)
-            .map(r -> quizQueryService.getAllQuizzes(r))
-            .switchIfEmpty(Mono.error(new RuntimeException("Cannot find quizzes")))
-            .flatMap(r-> ServerResponse.ok().body(r, QuizWithoutResults.class));
+        .onErrorResume(Mono::error)
+        .map(r -> quizQueryService.getAllQuizzes(r))
+        .switchIfEmpty(Mono.error(new RuntimeException("Cannot find quizzes")))
+        .flatMap(r -> ServerResponse.ok().body(r, QuizWithoutResults.class));
   }
 }

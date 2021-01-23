@@ -1,6 +1,5 @@
 package io.deviad.ripeti.webapp.domain.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -30,20 +29,19 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class QuizEntity {
 
-    @Id
-    @Column("id")
-    private UUID id;
+  @Id
+  @Column("id")
+  private UUID id;
 
-    @Column("quiz_name")
-    private String quizName;
+  @Column("quiz_name")
+  private String quizName;
 
-    @Column("course_id")
-    private UUID courseId;
+  @Column("course_id")
+  private UUID courseId;
 
-    @Column("quiz_content")
-    private String quizContent;
+  @Column("quiz_content")
+  private String quizContent;
 
-    @Column("question_ids")
-    private Set<UUID> questionIds = new LinkedHashSet<>();
-
+  @Column("question_ids")
+  private Set<UUID> questionIds = new LinkedHashSet<>();
 }

@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 
 import java.util.Set;
 import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,12 +22,11 @@ import java.util.UUID;
 @Accessors(fluent = true)
 public class QuizWithoutResults {
 
-     UUID id;
+  UUID id;
 
-     String quizName;
+  String quizName;
 
-     String quizContent;
+  String quizContent;
 
-     Set<QuestionResponseDto> questions;
-
+  Set<QuestionResponseDto> questions;
 }

@@ -1,6 +1,5 @@
 package io.deviad.ripeti.webapp.domain.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,14 +25,13 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class LessonEntity {
 
-    @Id
-    @Column("id")
-    private UUID id;
+  @Id
+  @Column("id")
+  private UUID id;
 
-    @Column("lesson_name")
-    private String lessonName;
+  @Column("lesson_name")
+  private String lessonName;
 
-    @Column("lesson_content")
-    private String lessonContent;
-
+  @Column("lesson_content")
+  private String lessonContent;
 }

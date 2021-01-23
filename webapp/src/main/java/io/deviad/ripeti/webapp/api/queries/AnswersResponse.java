@@ -1,10 +1,8 @@
 package io.deviad.ripeti.webapp.api.queries;
 
-import java.util.UUID;
-
-//public class AnswersResponse {
+// public class AnswersResponse {
 //
 //    UUID questionId
 //
 //
-//}
+// }

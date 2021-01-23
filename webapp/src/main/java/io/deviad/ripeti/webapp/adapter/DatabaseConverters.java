@@ -28,7 +28,6 @@ public class DatabaseConverters {
     return list;
   }
 
-
   @Bean
   public InstantToTimestamp instantToTimestamp() {
     return new InstantToTimestamp();
@@ -98,5 +97,4 @@ public class DatabaseConverters {
       return MappingUtils.fromJson(address, Address.class);
     }
   }
-
 }

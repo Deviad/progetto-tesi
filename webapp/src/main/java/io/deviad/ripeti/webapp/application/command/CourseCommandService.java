@@ -257,7 +257,8 @@ public class CourseCommandService {
   private Set<AnswerEntity> mapToAnswerEntity(Set<AnswerDto> answers) {
     return answers.stream()
         .map(
-            adto -> AnswerEntity.builder().correct(adto.getCorrect()).title(adto.getTitle()).build())
+            adto ->
+                AnswerEntity.builder().correct(adto.getCorrect()).title(adto.getTitle()).build())
         .collect(Collectors.toSet());
   }
 

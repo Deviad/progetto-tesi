@@ -1,7 +1,6 @@
 package io.deviad.ripeti.webapp.domain.aggregate;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
@@ -9,7 +8,6 @@ import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Value;
 import lombok.With;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;

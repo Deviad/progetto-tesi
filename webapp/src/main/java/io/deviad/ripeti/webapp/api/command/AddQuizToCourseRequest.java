@@ -1,6 +1,5 @@
 package io.deviad.ripeti.webapp.api.command;
 
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,7 +16,7 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @With
 public class AddQuizToCourseRequest {
-    String quizName;
-    String quizContent;
-    Set<QuestionRequestDto> questions;
+  String quizName;
+  String quizContent;
+  Set<QuestionRequestDto> questions;
 }

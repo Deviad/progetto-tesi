@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.With;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
@@ -25,11 +24,13 @@ import java.util.UUID;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class AnswerEntity {
-    @Id
-    @Column("id")
-    private UUID id;
-    @Column("title")
-    String title;
-    @Column("correct")
-    Boolean correct;
+  @Id
+  @Column("id")
+  private UUID id;
+
+  @Column("title")
+  String title;
+
+  @Column("correct")
+  Boolean correct;
 }

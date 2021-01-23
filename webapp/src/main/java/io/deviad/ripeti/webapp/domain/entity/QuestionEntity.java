@@ -1,6 +1,5 @@
 package io.deviad.ripeti.webapp.domain.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -27,14 +26,13 @@ import java.util.UUID;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class QuestionEntity {
-    @Id
-    @Column("id")
-    private UUID id;
+  @Id
+  @Column("id")
+  private UUID id;
 
-    @Column("title")
-    private String title;
+  @Column("title")
+  private String title;
 
-    @Column("answer_ids")
-    private Set<UUID> answerIds = new LinkedHashSet<>();
-
+  @Column("answer_ids")
+  private Set<UUID> answerIds = new LinkedHashSet<>();
 }

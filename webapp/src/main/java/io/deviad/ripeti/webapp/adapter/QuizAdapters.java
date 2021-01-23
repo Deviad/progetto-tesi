@@ -39,11 +39,6 @@ public class QuizAdapters {
         var id = row.get("id", UUID.class);
         var title = row.get("title", String.class);
         var correct = row.get("correct", Boolean.class);
-        return AnswerDto
-                .builder()
-                .id(id)
-                .title(title)
-                .correct(correct)
-                .build();
+        return AnswerDto.builder().id(id).title(title).correct(correct).build();
       };
 }

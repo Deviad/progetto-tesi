@@ -18,7 +18,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 
-
 @Accessors(fluent = true)
 @Table("courses")
 @With
@@ -61,7 +60,6 @@ public class CourseAggregate {
   @Column("quiz_ids")
   private Set<UUID> quizIds = new LinkedHashSet<>();
 
-
   private CourseAggregate(String courseName, String description, UUID teacherId) {
     this.courseName = courseName;
     this.description = description;
@@ -80,9 +78,15 @@ public class CourseAggregate {
 
   public CourseAggregate publishCourse() {
     return new CourseAggregate(
-        id(), courseName(), description(), CourseStatus.LIVE, teacherId(), studentIds(), lessonIds(), quizIds());
+        id(),
+        courseName(),
+        description(),
+        CourseStatus.LIVE,
+        teacherId(),
+        studentIds(),
+        lessonIds(),
+        quizIds());
   }
-
 
   public CourseAggregate assignStudentToCourse(UUID student) {
     if (id == null) {
@@ -123,7 +127,7 @@ public class CourseAggregate {
       throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "lesson"));
     }
 
-    if(!lessonIds.contains(lesson)) {
+    if (!lessonIds.contains(lesson)) {
       throw new RuntimeException("Cannot remove a lesson which was not added previously");
     }
 
@@ -144,9 +148,15 @@ public class CourseAggregate {
       throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "description"));
     }
     return new CourseAggregate(
-        id(), courseName(), description, status(), teacherId(), studentIds(), lessonIds(), quizIds());
+        id(),
+        courseName(),
+        description,
+        status(),
+        teacherId(),
+        studentIds(),
+        lessonIds(),
+        quizIds());
   }
-
 
   public CourseAggregate addQuizToCourse(UUID quiz) {
     if (id == null) {
@@ -163,5 +173,4 @@ public class CourseAggregate {
     quizIds.remove(quiz);
     return this;
   }
-
 }

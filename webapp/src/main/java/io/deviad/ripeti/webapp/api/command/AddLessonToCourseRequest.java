@@ -1,6 +1,5 @@
 package io.deviad.ripeti.webapp.api.command;
 
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -15,6 +14,6 @@ import lombok.experimental.Accessors;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @With
 public class AddLessonToCourseRequest {
-    String lessonName;
-    String lessonContent;
+  String lessonName;
+  String lessonContent;
 }

@@ -149,8 +149,8 @@ public class CourseCommandRoutesManager {
     UUID lessonId = UUID.fromString(request.pathVariable("quizId"));
 
     return courseService
-            .removeQuizFromCourse(lessonId)
-            .onErrorResume(Mono::error)
-            .flatMap(x -> ServerResponse.ok().build());
+        .removeQuizFromCourse(lessonId)
+        .onErrorResume(Mono::error)
+        .flatMap(x -> ServerResponse.ok().build());
   }
 }
