@@ -1,5 +1,6 @@
 package io.deviad.ripeti.webapp.application.command;
 
+import io.deviad.ripeti.webapp.Utils;
 import io.deviad.ripeti.webapp.adapter.MappingUtils;
 import io.deviad.ripeti.webapp.api.command.AddLessonToCourseRequest;
 import io.deviad.ripeti.webapp.api.command.AddQuizToCourseRequest;
@@ -18,6 +19,9 @@ import io.deviad.ripeti.webapp.persistence.repository.LessonRepository;
 import io.deviad.ripeti.webapp.persistence.repository.QuestionRepository;
 import io.deviad.ripeti.webapp.persistence.repository.QuizRepository;
 import io.deviad.ripeti.webapp.persistence.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -27,6 +31,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
+import javax.validation.Validator;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -45,16 +50,21 @@ public class CourseCommandService {
   QuizRepository quizRepository;
   QuestionRepository questionRepository;
   AnswerRepository answerRepository;
+  Validator validator;
 
   @Transactional
-  public Mono<CourseAggregate> createCourse(CreateCourseRequest request) {
+  public Mono<CourseAggregate> createCourse(
+      @RequestBody(required = true)  CreateCourseRequest request) {
+
+    Utils.handleValidation(MappingUtils.MAPPER, validator, request);
+
     return courseRepository.save(
         CourseAggregate.createCourse(
             request.courseName(), request.courseDescription(), request.teacherId()));
   }
 
   @Transactional
-  public Mono<CourseAggregate> updateCourse(UpdateCourseRequest request) {
+  public Mono<CourseAggregate> updateCourse(@RequestBody(required = true) UpdateCourseRequest request) {
     return courseRepository
         .findById(request.courseId())
         .onErrorResume(Mono::error)
@@ -65,7 +75,7 @@ public class CourseCommandService {
   }
 
   @Transactional
-  public Mono<Optional<CourseAggregate>> getCourseById(UUID uuid) {
+  public Mono<Optional<CourseAggregate>> getCourseById(@Parameter(in = ParameterIn.PATH) UUID uuid) {
     return courseRepository
         .findById(uuid)
         .onErrorResume(Mono::error)
@@ -74,7 +84,7 @@ public class CourseCommandService {
   }
 
   @Transactional
-  public Mono<Void> deleteCourse(UUID courseId) {
+  public Mono<Void> deleteCourse(@Parameter(in = ParameterIn.PATH) UUID courseId) {
     return courseRepository
         .deleteById(courseId)
         .onErrorResume(Mono::error)
@@ -83,7 +93,7 @@ public class CourseCommandService {
   }
 
   @Transactional
-  public Mono<Void> assignUserToCourse(UUID userId, UUID courseId) {
+  public Mono<Void> assignUserToCourse(@Parameter(in = ParameterIn.PATH) UUID userId, UUID courseId) {
     Mono<CourseAggregate> course =
         courseRepository
             .findById(courseId)
@@ -102,7 +112,7 @@ public class CourseCommandService {
   }
 
   @Transactional
-  public Mono<Void> unassignUserFromCourse(UUID userId, UUID courseId) {
+  public Mono<Void> unassignUserFromCourse(@Parameter(in = ParameterIn.PATH) UUID userId, @Parameter(in = ParameterIn.PATH) UUID courseId) {
     Mono<CourseAggregate> course =
         courseRepository
             .findById(courseId)
@@ -110,18 +120,18 @@ public class CourseCommandService {
             .switchIfEmpty(Mono.error(new RuntimeException("Course does not exist")));
     Mono<UserAggregate> user =
         userRepository
-            .findById(courseId)
+            .findById(userId)
             .onErrorResume(Mono::error)
             .switchIfEmpty(Mono.error(new RuntimeException("User does not exist")));
 
     return course
         .flatMap(c -> Mono.zip(Mono.just(c), user))
-        .map(t -> t.getT1().removeStudentFromCourse(t.getT2().id()))
+        .map(t -> courseRepository.save(t.getT1().removeStudentFromCourse(t.getT2().id())))
         .flatMap(c -> Mono.empty());
   }
 
   @Transactional
-  public Mono<CourseAggregate> publishCourse(UUID courseId, UUID teacherId) {
+  public Mono<CourseAggregate> publishCourse(@Parameter(in = ParameterIn.PATH) UUID courseId, @Parameter(in = ParameterIn.PATH) UUID teacherId) {
 
     Mono<CourseAggregate> course =
         courseRepository
@@ -150,7 +160,7 @@ public class CourseCommandService {
   }
 
   @Transactional
-  public Mono<Void> addLessonToCourse(UUID courseId, AddLessonToCourseRequest lessonDetails) {
+  public Mono<Void> addLessonToCourse(@Parameter(in = ParameterIn.PATH) UUID courseId, @RequestBody(required = true) AddLessonToCourseRequest lessonDetails) {
 
     LessonEntity lessonEntity = MappingUtils.MAPPER.convertValue(lessonDetails, LessonEntity.class);
 
@@ -172,7 +182,7 @@ public class CourseCommandService {
   }
 
   @Transactional
-  public Mono<Void> removeLessonFromCourse(UUID lessonId) {
+  public Mono<Void> removeLessonFromCourse(@Parameter(in = ParameterIn.PATH) UUID lessonId) {
 
     Mono<LessonEntity> lesson =
         lessonRepository
@@ -184,7 +194,7 @@ public class CourseCommandService {
   }
 
   @Transactional
-  public Mono<Void> addQuizToCourse(UUID courseId, AddQuizToCourseRequest quizDetails) {
+  public Mono<Void> addQuizToCourse(@Parameter(in = ParameterIn.PATH) UUID courseId, @RequestBody(required = true) AddQuizToCourseRequest quizDetails) {
 
     return Mono.from(
             createInitialQuestions(quizDetails)
@@ -256,9 +266,7 @@ public class CourseCommandService {
 
   private Set<AnswerEntity> mapToAnswerEntity(Set<AnswerDto> answers) {
     return answers.stream()
-        .map(
-            adto ->
-                AnswerEntity.builder().correct(adto.correct()).title(adto.title()).build())
+        .map(adto -> AnswerEntity.builder().correct(adto.correct()).title(adto.title()).build())
         .collect(Collectors.toSet());
   }
 

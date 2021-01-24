@@ -7,6 +7,8 @@ import lombok.Value;
 import lombok.With;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotBlank;
+
 @Value
 @Accessors(fluent = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -14,6 +16,6 @@ import lombok.experimental.Accessors;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @With
 public class AddLessonToCourseRequest {
-  String lessonName;
-  String lessonContent;
+  @NotBlank String lessonName;
+  @NotBlank String lessonContent;
 }

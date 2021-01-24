@@ -122,19 +122,6 @@ public class CourseAggregate {
     return this;
   }
 
-  public CourseAggregate removeLessonFromCourse(UUID lesson) {
-    if (id == null) {
-      throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "lesson"));
-    }
-
-    if (!lessonIds.contains(lesson)) {
-      throw new RuntimeException("Cannot remove a lesson which was not added previously");
-    }
-
-    lessonIds.remove(lesson);
-    return this;
-  }
-
   public CourseAggregate changeCourseName(String name) {
     if (id == null) {
       throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "course"));
@@ -163,14 +150,6 @@ public class CourseAggregate {
       throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "quiz"));
     }
     quizIds.add(quiz);
-    return this;
-  }
-
-  public CourseAggregate removeQuizFromCourse(UUID quiz) {
-    if (id == null) {
-      throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "quiz"));
-    }
-    quizIds.remove(quiz);
     return this;
   }
 }

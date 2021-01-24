@@ -7,6 +7,9 @@ import lombok.Value;
 import lombok.With;
 import lombok.experimental.Accessors;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Value
@@ -16,7 +19,7 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @With
 public class AddQuizToCourseRequest {
-  String quizName;
-  String quizContent;
-  Set<QuestionRequestDto> questions;
+  @NotBlank String quizName;
+  @NotBlank String quizContent;
+  Set<@Valid @NotNull QuestionRequestDto> questions;
 }

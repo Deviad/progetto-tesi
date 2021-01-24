@@ -37,9 +37,8 @@ public class UserCommandService {
   @Transactional
   @SneakyThrows
   public Mono<UserInfoDto> registerUser(RegistrationRequest r) {
-    Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(r);
 
-    Utils.handleValidation(MappingUtils.MAPPER, violations);
+    Utils.handleValidation(MappingUtils.MAPPER, validator, r);
 
     var address =
         Address.builder()

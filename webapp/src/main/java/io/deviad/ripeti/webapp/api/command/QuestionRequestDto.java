@@ -2,10 +2,13 @@ package io.deviad.ripeti.webapp.api.command;
 
 import lombok.Value;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Value(staticConstructor = "of")
 public class QuestionRequestDto {
-  String title;
-  Set<AnswerDto> answers;
+  @NotBlank String title;
+  Set<@Valid @NotNull AnswerDto> answers;
 }

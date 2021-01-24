@@ -5,13 +5,16 @@ import io.deviad.ripeti.webapp.api.command.AnswerDto;
 import io.deviad.ripeti.webapp.api.queries.QuestionResponseDto;
 import io.deviad.ripeti.webapp.api.queries.QuizWithoutResults;
 import io.micrometer.core.annotation.Timed;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -29,12 +32,12 @@ public class QuizQueryService {
     R2dbcEntityOperations client;
 
 
- @Transactional(readOnly = true, propagation = Propagation.NESTED)
-  public Mono<Map<UUID, Collection<QuizWithoutResults>>> getAllQuizzes(String courseId) {
+ @Transactional
+  public Mono<Map<UUID, Collection<QuizWithoutResults>>> getAllQuizzes(@Parameter(in = ParameterIn.PATH, required = true) String courseId) {
 
     return getAllQuizEntitiesByCourseId(courseId)
             .onErrorResume(Flux::error)
-            .switchIfEmpty(Flux.error(new RuntimeException("No quiz found with provided courseId")))
+            .switchIfEmpty(Flux.error( new ResponseStatusException(HttpStatus.BAD_REQUEST, "No quiz found with provided courseId")))
         .flatMap(
              y -> {
                  final Flux<QuestionResponseDto> questions =

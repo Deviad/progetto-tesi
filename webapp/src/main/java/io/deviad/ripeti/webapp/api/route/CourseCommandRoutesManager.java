@@ -9,9 +9,12 @@ import io.deviad.ripeti.webapp.application.command.UserCommandService;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.RouterOperation;
+import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -31,6 +34,72 @@ public class CourseCommandRoutesManager {
   CourseCommandService courseService;
   UserCommandService userCommandService;
 
+  @RouterOperations({
+    @RouterOperation(
+        path = "/api/course",
+        method = RequestMethod.POST,
+        beanClass = CourseCommandService.class,
+        beanMethod = "createCourse",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE),
+    @RouterOperation(
+        path = "/api/course",
+        method = RequestMethod.PUT,
+        beanClass = CourseCommandService.class,
+        beanMethod = "updateCourse",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE),
+    @RouterOperation(
+        path = "/api/course/{courseId}",
+        method = RequestMethod.DELETE,
+        beanClass = CourseCommandService.class,
+        beanMethod = "deleteCourse"),
+    @RouterOperation(
+        path = "/api/course/{courseId}/publish/{teacherId}",
+        method = RequestMethod.PUT,
+        beanClass = CourseCommandService.class,
+        beanMethod = "publishCourse",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE),
+    @RouterOperation(
+        path = "/api/course/{courseId}/assignstudent/{studentId}",
+        method = RequestMethod.PUT,
+        beanClass = CourseCommandService.class,
+        beanMethod = "assignUserToCourse",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE),
+    @RouterOperation(
+        path = "/api/course/{courseId}/unassignstudent/{studentId}",
+        method = RequestMethod.PUT,
+        beanClass = CourseCommandService.class,
+        beanMethod = "unassignUserFromCourse",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE),
+    @RouterOperation(
+        path = "/api/course/{courseId}/addlesson",
+        method = RequestMethod.POST,
+        beanClass = CourseCommandService.class,
+        beanMethod = "addLessonToCourse",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE),
+    @RouterOperation(
+        path = "/api/course/removelesson/{lessonId}",
+        method = RequestMethod.DELETE,
+        beanClass = CourseCommandService.class,
+        beanMethod = "removeLessonFromCourse"),
+    @RouterOperation(
+        path = "/api/course/{courseId}/createquiz",
+        beanClass = CourseCommandService.class,
+        method = RequestMethod.POST,
+        beanMethod = "addQuizToCourse",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE),
+    @RouterOperation(
+        path = "/api/course/removequiz/{quizId}",
+        beanClass = CourseCommandService.class,
+        method = RequestMethod.DELETE,
+        beanMethod = "removeQuizFromCourse"),
+  })
   @Bean
   public RouterFunction<ServerResponse> courseCommandRoutes() {
     return route()
@@ -38,24 +107,43 @@ public class CourseCommandRoutesManager {
             "/api/course",
             RequestPredicates.contentType(MediaType.APPLICATION_JSON),
             this::createCourse)
-        .PUT(
-            "/api/course",
-            RequestPredicates.contentType(MediaType.APPLICATION_JSON),
-            this::handleUpdate)
-        .DELETE("/api/course", this::deleteCourse)
-        .PUT("/api/course/{courseId}/publish/{teacherId}", this::publishCourse)
-        .PUT("/api/course/{courseId}/assignstudent/{studentId}", this::assignStudentToCourse)
-        .POST(
-            "/api/course/{courseId}/addlesson",
-            RequestPredicates.contentType(MediaType.APPLICATION_JSON),
-            this::addLessonToCourse)
-        .DELETE("/api/course/removelesson/{lessonId}", this::removeLesson)
-        .POST(
-            "/api/course/{courseId}/createquiz",
-            RequestPredicates.contentType(MediaType.APPLICATION_JSON),
-            this::createQuiz)
-        .DELETE("/api/course/removequiz/{quizId}", this::removeQuiz)
-        .build();
+        .build()
+        .and(
+            route()
+                .PUT(
+                    "/api/course",
+                    RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+                    this::handleUpdate)
+                .build())
+        .and(route().DELETE("/api/course/{courseId}", this::deleteCourse).build())
+        .and(route().PUT("/api/course/{courseId}/publish/{teacherId}", this::publishCourse).build())
+        .and(
+            route()
+                .PUT(
+                    "/api/course/{courseId}/assignstudent/{studentId}", this::assignStudentToCourse)
+                .build())
+        .and(
+            route()
+                .PUT(
+                    "/api/course/{courseId}/unassignstudent/{studentId}",
+                    this::unassignUserFromCourse)
+                .build())
+        .and(
+            route()
+                .POST(
+                    "/api/course/{courseId}/addlesson",
+                    RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+                    this::addLessonToCourse)
+                .build())
+        .and(route().DELETE("/api/course/removelesson/{lessonId}", this::removeLesson).build())
+        .and(
+            route()
+                .POST(
+                    "/api/course/{courseId}/createquiz",
+                    RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+                    this::createQuiz)
+                .build()
+                .and(route().DELETE("/api/course/removequiz/{quizId}", this::removeQuiz).build()));
   }
 
   Mono<ServerResponse> createCourse(ServerRequest request) {
@@ -99,6 +187,16 @@ public class CourseCommandRoutesManager {
 
     return courseService
         .assignUserToCourse(studentId, courseId)
+        .onErrorResume(Mono::error)
+        .flatMap(r -> ServerResponse.ok().build());
+  }
+
+  Mono<ServerResponse> unassignUserFromCourse(ServerRequest request) {
+    UUID courseId = UUID.fromString(request.pathVariable("courseId"));
+    UUID studentId = UUID.fromString(request.pathVariable("studentId"));
+
+    return courseService
+        .unassignUserFromCourse(studentId, courseId)
         .onErrorResume(Mono::error)
         .flatMap(r -> ServerResponse.ok().build());
   }

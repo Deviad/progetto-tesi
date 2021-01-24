@@ -5,6 +5,8 @@ import io.deviad.ripeti.webapp.adapter.UserAdapters;
 import io.deviad.ripeti.webapp.api.queries.CourseInfo;
 import io.deviad.ripeti.webapp.api.queries.UserInfoDto;
 import io.micrometer.core.annotation.Timed;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
@@ -20,7 +22,7 @@ public class CourseQueryService {
         R2dbcEntityOperations client;
 
     @Timed("getAllEnrolledStudents")
-    public Flux<UserInfoDto> getAllEnrolledStudents(String courseId) {
+    public Flux<UserInfoDto> getAllEnrolledStudents(@Parameter(required = true, in = ParameterIn.PATH) String courseId) {
 
         //language=PostgreSQL
         String query =
@@ -36,7 +38,7 @@ public class CourseQueryService {
     }
 
     @Timed("getCourseById")
-    public Mono<CourseInfo> getCourseById(String courseId) {
+    public Mono<CourseInfo> getCourseById(@Parameter(required = true, in = ParameterIn.PATH) String courseId) {
         //language=PostgreSQL
         String query =
                 """
@@ -53,7 +55,7 @@ public class CourseQueryService {
 
 
     @Timed("getCourseByTeacherId")
-    public Flux<CourseInfo> getCoursesByTeacherId(String courseId) {
+    public Flux<CourseInfo> getCoursesByTeacherId(@Parameter(required = true, in = ParameterIn.PATH) String teacherId) {
         //language=PostgreSQL
         String query =
                 """
@@ -63,7 +65,7 @@ public class CourseQueryService {
                 """;
 
         return client.getDatabaseClient().sql(query)
-                .bind("$1", courseId)
+                .bind("$1", teacherId)
                 .map(CourseAdapters.COURSEINFO_FROM_ROW_MAP::apply)
                 .all();
     }
