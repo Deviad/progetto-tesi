@@ -16,9 +16,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -30,54 +30,39 @@ public class QuizQueryService {
 
 
  @Transactional(readOnly = true, propagation = Propagation.NESTED)
-  public Flux<QuizWithoutResults> getAllQuizzes(String courseId) {
-
+  public Mono<Map<UUID, Collection<QuizWithoutResults>>> getAllQuizzes(String courseId) {
 
     return getAllQuizEntitiesByCourseId(courseId)
             .onErrorResume(Flux::error)
             .switchIfEmpty(Flux.error(new RuntimeException("No quiz found with provided courseId")))
         .flatMap(
-            y -> {
-              final Flux<QuestionResponseDto> questions =
-                      getQuestionWithoutAnswer(y.id().toString()).onErrorResume(Mono::error);
-              return Flux.zip(Mono.just(y), questions);
-            })
-        .map(
+             y -> {
+                 final Flux<QuestionResponseDto> questions =
+                         getQuestionWithoutAnswer(y.id().toString()).onErrorResume(Mono::error);
+                 return Flux.zip(Mono.defer(()->Mono.just(y)).repeat(), questions.collect(Collectors.toSet()));
+             })
+        .flatMap(
             tuple -> {
-              var r = QuestionResponseDto.builder()
-                      .id(tuple.getT2().id())
-                      .title(tuple.getT2().title())
-                      .answers(tuple.getT2().answers())
-                      .build();
-              final Set<QuestionResponseDto> questions =
-                  Stream.of(
-                          tuple.getT1().questions(),
-                          Set.of(r))
-                      .flatMap(Stream::ofNullable)
-                      .flatMap(Collection::stream)
-                      .collect(Collectors.toSet());
-
               var quiz = tuple.getT1();
-              quiz = quiz.withQuestions(questions);
-              return quiz;
+              quiz = quiz.withQuestions(tuple.getT2());
+              return Flux.just(quiz);
             })
-        .flatMap(quiz-> Flux.zip(Flux.just(quiz),  combineQuestionsWithAnswers(quiz)))
-         .flatMap(tuple-> {
+        .flatMap(quiz-> Flux.zip(Mono.defer(()->Mono.just(quiz)).repeat(),  combineQuestionsWithAnswers(quiz).collect(Collectors.toSet())))
+        .flatMap(tuple-> {
              var q = tuple.getT1();
-             q = q.withQuestions(Set.of(tuple.getT2()));
+             q = q.withQuestions(tuple.getT2());
              return Flux.just(q);
-         });
+         })
+        .collectMultimap(QuizWithoutResults::id);
  }
 
     private Flux<QuestionResponseDto> combineQuestionsWithAnswers(QuizWithoutResults quiz) {
         return Flux.fromIterable(quiz.questions())
-                .flatMap(question-> Flux.zip(Mono.just(question), getAnswers(question.id().toString())))
+                .flatMap(question-> Flux.zip(Mono.defer(()->Mono.just(question)).repeat(), getAnswers(question.id().toString()).collect(Collectors.toSet())))
                 .flatMap(x-> {
                     var question = x.getT1();
 
-                    question = question.withAnswers(Stream.concat(x.getT1().answers().stream(), Set.of(x.getT2()).stream())
-                            .flatMap(Stream::ofNullable)
-                            .collect(Collectors.toSet()));
+                    question = question.withAnswers(x.getT2());
                     return Flux.just(question);
                 });
     }

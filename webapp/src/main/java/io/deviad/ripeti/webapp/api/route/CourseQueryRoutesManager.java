@@ -14,6 +14,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.stream.Collectors;
+
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -61,8 +63,8 @@ public class CourseQueryRoutesManager {
   Mono<ServerResponse> getQuizzesByCourseId(ServerRequest request) {
     return Mono.just(request.pathVariable("courseId"))
         .onErrorResume(Mono::error)
-        .map(r -> quizQueryService.getAllQuizzes(r))
+        .flatMap(r -> quizQueryService.getAllQuizzes(r))
         .switchIfEmpty(Mono.error(new RuntimeException("Cannot find quizzes")))
-        .flatMap(r -> ServerResponse.ok().body(r, QuizWithoutResults.class));
+        .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
 }

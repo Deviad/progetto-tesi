@@ -6,8 +6,10 @@ import io.deviad.ripeti.webapp.api.queries.QuizWithoutResults;
 import io.r2dbc.spi.Row;
 
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class QuizAdapters {
 
