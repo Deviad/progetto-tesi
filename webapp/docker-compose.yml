@@ -49,7 +49,7 @@ services:
     depends_on:
       - postgres-keycloak
     networks:
-      - agrilink_network
+      - ripeti-network
     restart: on-failure
 networks:
   ripeti-network:

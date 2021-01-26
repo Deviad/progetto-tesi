@@ -147,12 +147,23 @@ public class CourseCommandRoutesManager {
   }
 
   Mono<ServerResponse> createCourse(ServerRequest request) {
-    return request
-        .bodyToMono(CreateCourseRequest.class)
-        .onErrorResume(Mono::error)
-        .map(r -> courseService.createCourse(r))
-        .flatMap(Function.identity())
-        .flatMap(r -> ServerResponse.ok().bodyValue(r));
+
+    return request.principal()
+            .onErrorResume(Mono::error)
+            .flatMap(p -> Mono.zip(Mono.just(p), request.bodyToMono(CreateCourseRequest.class).onErrorResume(Mono::error)))
+            .map(r -> {
+             log.info("principal name is {}",  r.getT1().getName());
+              return courseService.createCourse(r.getT2());
+            })
+            .flatMap(Function.identity())
+            .flatMap(r -> ServerResponse.ok().bodyValue(r));
+
+//    return request
+//        .bodyToMono(CreateCourseRequest.class)
+//        .onErrorResume(Mono::error)
+//        .map(r -> courseService.createCourse(r))
+//        .flatMap(Function.identity())
+//        .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
 
   Mono<ServerResponse> deleteCourse(ServerRequest request) {
