@@ -1,6 +1,6 @@
 package io.deviad.ripeti.webapp.adapter;
 
-import io.deviad.ripeti.webapp.api.queries.CourseInfo;
+import io.deviad.ripeti.webapp.ui.queries.CourseInfo;
 import io.deviad.ripeti.webapp.domain.valueobject.course.CourseStatus;
 import io.r2dbc.spi.Row;
 

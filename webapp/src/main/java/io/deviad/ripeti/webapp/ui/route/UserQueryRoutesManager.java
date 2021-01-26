@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.api.route;
+package io.deviad.ripeti.webapp.ui.route;
 
 import io.deviad.ripeti.webapp.application.query.UserQueryService;
 import lombok.AllArgsConstructor;

@@ -1,8 +1,8 @@
 package io.deviad.ripeti.webapp.adapter;
 
-import io.deviad.ripeti.webapp.api.command.AnswerDto;
-import io.deviad.ripeti.webapp.api.queries.QuestionResponseDto;
-import io.deviad.ripeti.webapp.api.queries.QuizWithoutResults;
+import io.deviad.ripeti.webapp.ui.command.AnswerDto;
+import io.deviad.ripeti.webapp.ui.queries.QuestionResponseDto;
+import io.deviad.ripeti.webapp.ui.queries.QuizWithoutResults;
 import io.r2dbc.spi.Row;
 
 import java.util.LinkedHashSet;

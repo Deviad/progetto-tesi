@@ -3,13 +3,14 @@ package io.deviad.ripeti.webapp.application.command;
 import io.deviad.ripeti.webapp.Utils;
 import io.deviad.ripeti.webapp.adapter.MappingUtils;
 import io.deviad.ripeti.webapp.adapter.UserAdapters;
-import io.deviad.ripeti.webapp.api.command.RegistrationRequest;
-import io.deviad.ripeti.webapp.api.command.UpdatePasswordRequest;
-import io.deviad.ripeti.webapp.api.command.UpdateUserRequest;
-import io.deviad.ripeti.webapp.api.queries.UserInfoDto;
+import io.deviad.ripeti.webapp.api.KeycloakAdminClient;
 import io.deviad.ripeti.webapp.domain.aggregate.UserAggregate;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import io.deviad.ripeti.webapp.persistence.repository.UserRepository;
+import io.deviad.ripeti.webapp.ui.command.RegistrationRequest;
+import io.deviad.ripeti.webapp.ui.command.UpdatePasswordRequest;
+import io.deviad.ripeti.webapp.ui.command.UpdateUserRequest;
+import io.deviad.ripeti.webapp.ui.queries.UserInfoDto;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.Optional;
-import java.util.Set;
 
 import static io.deviad.ripeti.webapp.adapter.UserAdapters.mapToUserInfo;
 
@@ -33,6 +32,7 @@ public class UserCommandService {
 
   private UserRepository userRepository;
   private Validator validator;
+  private KeycloakAdminClient client;
 
   @Transactional
   @SneakyThrows
@@ -61,18 +61,20 @@ public class UserCommandService {
         // When token == null it does not trigger flatmap
         // therefore we return Optional.empty()
         .defaultIfEmpty(Optional.empty())
-        .flatMap(
-            x ->
-                userRepository.save(
-                    UserAggregate.builder()
-                        .username(r.username())
-                        .password(r.password())
-                        .email(r.email())
-                        .firstName(r.firstName())
-                        .lastName(r.lastName())
-                        .role(r.role())
-                        .address(address)
-                        .build()))
+        .then(client.save(r))
+        .onErrorResume(Mono::error)
+        .then(
+            userRepository.save(
+                UserAggregate.builder()
+                    .username(r.username())
+                    .password(r.password())
+                    .email(r.email())
+                    .firstName(r.firstName())
+                    .lastName(r.lastName())
+                    .role(r.role())
+                    .address(address)
+                    .build()))
+        .onErrorResume(Mono::error)
         .flatMap(u -> Mono.just(UserAdapters.mapToUserInfo(u)));
   }
 
@@ -82,6 +84,7 @@ public class UserCommandService {
 
     var userEntity = userRepository.getUserAggregateByUsername(r.username());
     return userEntity
+        .onErrorResume(Mono::error)
         .switchIfEmpty(Mono.error(new RuntimeException("User does not exist")))
         .map(x -> (Object) Mono.just(r.address()))
         .switchIfEmpty(saveWithoutAddress(r, userEntity))
@@ -90,9 +93,8 @@ public class UserCommandService {
 
   Mono<UserInfoDto> saveWithoutAddress(UpdateUserRequest r, Mono<UserAggregate> userEntity) {
     return userEntity
-        .onErrorResume(Mono::error)
         .map(x -> x.withFirstName(r.firstName()).withLastName(r.lastName()))
-        .flatMap(x -> userRepository.save(x))
+        .flatMap(x -> userRepository.save(x).onErrorResume(Mono::error))
         .map(
             x ->
                 UserInfoDto.of(
@@ -112,7 +114,7 @@ public class UserCommandService {
                             .firstAddressLine(r.address().firstAddressLine())
                             .secondAddressLine(r.address().secondAddressLine())
                             .build()))
-        .flatMap(x -> userRepository.save(x))
+        .flatMap(x -> userRepository.save(x).onErrorResume(Mono::error))
         .flatMap((t) -> Mono.just(mapToUserInfo(t)));
   }
 

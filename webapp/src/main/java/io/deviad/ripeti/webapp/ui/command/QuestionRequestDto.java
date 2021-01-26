@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.api.command;
+package io.deviad.ripeti.webapp.ui.command;
 
 import lombok.Value;
 

@@ -1,31 +1,28 @@
-package io.deviad.ripeti.webapp.api.queries;
+package io.deviad.ripeti.webapp.ui.command;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.deviad.ripeti.webapp.api.command.AnswerDto;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.With;
 import lombok.experimental.Accessors;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.UUID;
+import javax.validation.constraints.Pattern;
 
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Accessors(fluent = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-@Accessors(fluent = true)
-@Getter
-@With
-@AllArgsConstructor
-@NoArgsConstructor
-public class QuestionResponseDto {
-  UUID id;
-  String title;
-  Set<AnswerDto> answers = new LinkedHashSet<>();
+public class UpdatePasswordRequest {
+  @Pattern(regexp = "^[A-Za-z]{3,20}$")
+  String username;
+
+  @Pattern(
+      regexp =
+          "(?=.*[a-z]+)(?=.*[0-9]+)(?=.*[A-Z]+)(?=.*[!@#$%^&*()_+\\[\\]{}:\";,.<>?|=-_]+).{8,20}")
+  String password;
 }

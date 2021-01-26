@@ -1,9 +1,9 @@
 package io.deviad.ripeti.webapp.application.query;
 
 import io.deviad.ripeti.webapp.adapter.QuizAdapters;
-import io.deviad.ripeti.webapp.api.command.AnswerDto;
-import io.deviad.ripeti.webapp.api.queries.QuestionResponseDto;
-import io.deviad.ripeti.webapp.api.queries.QuizWithoutResults;
+import io.deviad.ripeti.webapp.ui.command.AnswerDto;
+import io.deviad.ripeti.webapp.ui.queries.QuestionResponseDto;
+import io.deviad.ripeti.webapp.ui.queries.QuizWithoutResults;
 import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

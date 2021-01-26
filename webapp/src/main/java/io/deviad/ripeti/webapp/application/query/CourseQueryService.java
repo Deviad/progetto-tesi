@@ -2,8 +2,8 @@ package io.deviad.ripeti.webapp.application.query;
 
 import io.deviad.ripeti.webapp.adapter.CourseAdapters;
 import io.deviad.ripeti.webapp.adapter.UserAdapters;
-import io.deviad.ripeti.webapp.api.queries.CourseInfo;
-import io.deviad.ripeti.webapp.api.queries.UserInfoDto;
+import io.deviad.ripeti.webapp.ui.queries.CourseInfo;
+import io.deviad.ripeti.webapp.ui.queries.UserInfoDto;
 import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

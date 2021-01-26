@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.api.queries;
+package io.deviad.ripeti.webapp.ui.queries;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Address;

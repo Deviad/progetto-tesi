@@ -1,7 +1,7 @@
-package io.deviad.ripeti.webapp.api.route;
+package io.deviad.ripeti.webapp.ui.route;
 
-import io.deviad.ripeti.webapp.api.command.RegistrationRequest;
-import io.deviad.ripeti.webapp.api.command.UpdateUserRequest;
+import io.deviad.ripeti.webapp.ui.command.RegistrationRequest;
+import io.deviad.ripeti.webapp.ui.command.UpdateUserRequest;
 import io.deviad.ripeti.webapp.application.command.UserCommandService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

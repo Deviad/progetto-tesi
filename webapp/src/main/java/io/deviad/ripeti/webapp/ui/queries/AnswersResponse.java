@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.api.queries;
+package io.deviad.ripeti.webapp.ui.queries;
 
 // public class AnswersResponse {
 //

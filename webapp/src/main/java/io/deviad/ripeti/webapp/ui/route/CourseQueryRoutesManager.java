@@ -1,7 +1,7 @@
-package io.deviad.ripeti.webapp.api.route;
+package io.deviad.ripeti.webapp.ui.route;
 
-import io.deviad.ripeti.webapp.api.queries.CourseInfo;
-import io.deviad.ripeti.webapp.api.queries.UserInfoDto;
+import io.deviad.ripeti.webapp.ui.queries.CourseInfo;
+import io.deviad.ripeti.webapp.ui.queries.UserInfoDto;
 import io.deviad.ripeti.webapp.application.query.CourseQueryService;
 import io.deviad.ripeti.webapp.application.query.QuizQueryService;
 import lombok.AllArgsConstructor;
@@ -16,8 +16,6 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-
-import java.util.stream.Collectors;
 
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 

@@ -1,9 +1,9 @@
-package io.deviad.ripeti.webapp.api.route;
+package io.deviad.ripeti.webapp.ui.route;
 
-import io.deviad.ripeti.webapp.api.command.AddLessonToCourseRequest;
-import io.deviad.ripeti.webapp.api.command.AddQuizToCourseRequest;
-import io.deviad.ripeti.webapp.api.command.CreateCourseRequest;
-import io.deviad.ripeti.webapp.api.command.UpdateCourseRequest;
+import io.deviad.ripeti.webapp.ui.command.AddLessonToCourseRequest;
+import io.deviad.ripeti.webapp.ui.command.AddQuizToCourseRequest;
+import io.deviad.ripeti.webapp.ui.command.CreateCourseRequest;
+import io.deviad.ripeti.webapp.ui.command.UpdateCourseRequest;
 import io.deviad.ripeti.webapp.application.command.CourseCommandService;
 import io.deviad.ripeti.webapp.application.command.UserCommandService;
 import lombok.AllArgsConstructor;
