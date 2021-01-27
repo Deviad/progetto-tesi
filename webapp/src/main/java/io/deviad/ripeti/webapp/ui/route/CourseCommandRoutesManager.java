@@ -14,6 +14,8 @@ import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -153,7 +155,7 @@ public class CourseCommandRoutesManager {
             .flatMap(p -> Mono.zip(Mono.just(p), request.bodyToMono(CreateCourseRequest.class).onErrorResume(Mono::error)))
             .map(r -> {
              log.info("principal name is {}",  r.getT1().getName());
-              return courseService.createCourse(r.getT2());
+              return courseService.createCourse(r.getT2(), (JwtAuthenticationToken) r.getT1());
             })
             .flatMap(Function.identity())
             .flatMap(r -> ServerResponse.ok().bodyValue(r));

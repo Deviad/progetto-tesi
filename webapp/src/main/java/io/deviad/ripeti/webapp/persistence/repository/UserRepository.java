@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface UserRepository extends R2dbcRepository<UserAggregate, UUID> {
 
   Mono<UserAggregate> getUserAggregateByUsername(String Username);
+  Mono<UserAggregate> getUserAggregateByEmail(String Username);
 }

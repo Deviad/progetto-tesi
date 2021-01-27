@@ -23,7 +23,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -42,6 +45,7 @@ import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CourseCommandService {
 
   CourseRepository courseRepository;
@@ -54,13 +58,24 @@ public class CourseCommandService {
 
   @Transactional
   public Mono<CourseAggregate> createCourse(
-      @RequestBody(required = true) CreateCourseRequest request) {
+          @RequestBody(required = true) CreateCourseRequest request, @Parameter(required = true, in=ParameterIn.HEADER) JwtAuthenticationToken token) {
 
     Utils.handleValidation(MappingUtils.MAPPER, validator, request);
 
-    return courseRepository.save(
-        CourseAggregate.createCourse(
-            request.courseName(), request.courseDescription(), request.teacherId()));
+    var principal = new OAuth2IntrospectionAuthenticatedPrincipal(token.getTokenAttributes(), token.getAuthorities());
+
+    String email = principal.getAttribute("email");
+
+    final Function<UUID, Mono<CourseAggregate>>  saveCourseAggregate = id -> courseRepository.save(
+            CourseAggregate.createCourse(
+                    request.courseName(), request.courseDescription(), id));
+
+    return userRepository.getUserAggregateByEmail(email)
+            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot find teacher")))
+            .onErrorResume(Mono::error)
+            .flatMap(t-> saveCourseAggregate.apply(t.id()).onErrorResume(Mono::error))
+            .flatMap(Mono::just);
+
   }
 
   @Transactional
@@ -68,7 +83,7 @@ public class CourseCommandService {
       @RequestBody(required = true) UpdateCourseRequest request) {
     return courseRepository
         .findById(request.courseId())
-        .switchIfEmpty(Mono.error(new RuntimeException("Course does not exist")))
+        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course does not exist")))
         .onErrorResume(Mono::error)
         .flatMap(
             x ->
