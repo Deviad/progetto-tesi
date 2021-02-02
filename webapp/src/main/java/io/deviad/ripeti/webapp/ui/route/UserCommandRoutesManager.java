@@ -1,9 +1,9 @@
 package io.deviad.ripeti.webapp.ui.route;
 
+import io.deviad.ripeti.webapp.application.command.UserCommandService;
 import io.deviad.ripeti.webapp.ui.command.RegistrationRequest;
 import io.deviad.ripeti.webapp.ui.command.UpdatePasswordRequest;
 import io.deviad.ripeti.webapp.ui.command.UpdateUserRequest;
-import io.deviad.ripeti.webapp.application.command.UserCommandService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +42,11 @@ public class UserCommandRoutesManager {
             "/api/user/changePassword",
             RequestPredicates.contentType(MediaType.APPLICATION_JSON),
             this::handleUpdatePassword)
+        .DELETE(
+                "/api/user/delete",
+                RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+                this::handleDeleteUser
+        )
         .build();
   }
 
@@ -64,6 +69,14 @@ public class UserCommandRoutesManager {
             .map(r -> userManagement.updatePassword(r.getT1(), (JwtAuthenticationToken)r.getT2()))
             .flatMap(Function.identity())
             .flatMap(r -> ServerResponse.ok().bodyValue(r));
+  }
+
+  Mono<ServerResponse> handleDeleteUser(ServerRequest request) {
+    return request
+            .principal()
+            .onErrorResume(Mono::error)
+            .flatMap(r->  userManagement.deleteUser((JwtAuthenticationToken) r))
+            .flatMap(r -> ServerResponse.ok().build());
   }
 
 

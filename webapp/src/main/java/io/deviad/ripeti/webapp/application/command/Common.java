@@ -19,7 +19,7 @@ public class Common {
     return repository
         .getUserAggregateByEmail(email)
         .switchIfEmpty(
-            Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Cannot find teacher")))
+            Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Cannot find user")))
         .onErrorResume(Mono::error);
   }
 

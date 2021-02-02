@@ -137,7 +137,7 @@ public class UserCommandService {
   }
 
   @Transactional
-  public Mono<Object> updatePassword(
+  public Mono<UserAggregate> updatePassword(
       @RequestBody(required = true) UpdatePasswordRequest r,
       @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
 
@@ -161,6 +161,18 @@ public class UserCommandService {
   }
 
   Mono<UserAggregate> savePassword(UpdatePasswordRequest r, Mono<UserAggregate> userEntity) {
-    return userEntity.map(x -> x.withPassword(r.password())).flatMap(x -> userRepository.save(x));
+    return userEntity
+        .map(x -> x.withPassword(r.password()))
+        .flatMap(x -> userRepository.save(x).onErrorResume(Mono::error));
+  }
+
+  @Transactional
+  public Mono<Void> deleteUser(@Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
+
+    final String email = common.getEmailFromToken(token);
+    var userEntity = common.getUserByEmail(email);
+
+    return userEntity.flatMap(x-> userRepository.delete(x));
+
   }
 }
