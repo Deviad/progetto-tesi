@@ -40,8 +40,7 @@ public class CourseQueryRoutesManager {
                   method = RequestMethod.GET,
                   beanClass = CourseQueryService.class,
                   beanMethod = "getAllEnrolledStudents",
-                  produces = MediaType.APPLICATION_JSON_VALUE)
-          ,
+                  produces = MediaType.APPLICATION_JSON_VALUE),
           @RouterOperation(
                   path = "/api/course/teacher/{teacherId}",
                   method = RequestMethod.GET,

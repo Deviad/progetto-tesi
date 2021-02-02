@@ -18,8 +18,6 @@ import javax.validation.constraints.Pattern;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class UpdatePasswordRequest {
-  @Pattern(regexp = "^[A-Za-z]{3,20}$")
-  String username;
 
   @Pattern(
       regexp =

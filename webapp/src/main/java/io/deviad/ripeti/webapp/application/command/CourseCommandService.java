@@ -8,6 +8,7 @@ import io.deviad.ripeti.webapp.domain.entity.AnswerEntity;
 import io.deviad.ripeti.webapp.domain.entity.LessonEntity;
 import io.deviad.ripeti.webapp.domain.entity.QuestionEntity;
 import io.deviad.ripeti.webapp.domain.entity.QuizEntity;
+import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import io.deviad.ripeti.webapp.persistence.repository.AnswerRepository;
 import io.deviad.ripeti.webapp.persistence.repository.CourseRepository;
 import io.deviad.ripeti.webapp.persistence.repository.LessonRepository;
@@ -36,7 +37,8 @@ import reactor.util.function.Tuple2;
 
 import javax.validation.Validator;
 import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -55,66 +57,67 @@ public class CourseCommandService {
   QuestionRepository questionRepository;
   AnswerRepository answerRepository;
   Validator validator;
+  Common common;
 
   @Transactional
   public Mono<CourseAggregate> createCourse(
-          @RequestBody(required = true) CreateCourseRequest request, @Parameter(required = true, in=ParameterIn.HEADER) JwtAuthenticationToken token) {
+      @RequestBody(required = true) CreateCourseRequest request,
+      @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
 
     Utils.handleValidation(MappingUtils.MAPPER, validator, request);
 
-    var principal = new OAuth2IntrospectionAuthenticatedPrincipal(token.getTokenAttributes(), token.getAuthorities());
+    String email = common.getEmailFromToken(token);
 
-    String email = principal.getAttribute("email");
-
-    final Function<UUID, Mono<CourseAggregate>>  saveCourseAggregate = id -> courseRepository.save(
-            CourseAggregate.createCourse(
+    final Function<UUID, Mono<CourseAggregate>> saveCourseAggregate =
+        id ->
+            courseRepository.save(
+                CourseAggregate.createCourse(
                     request.courseName(), request.courseDescription(), id));
 
-    return userRepository.getUserAggregateByEmail(email)
-            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot find teacher")))
-            .onErrorResume(Mono::error)
-            .flatMap(t-> saveCourseAggregate.apply(t.id()).onErrorResume(Mono::error))
-            .flatMap(Mono::just);
-
+    return common
+        .getUserByEmail(email)
+        .filter(t -> t.role().equals(Role.PROFESOR))
+        .switchIfEmpty(
+            Mono.error(
+                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not a teacher")))
+        .onErrorResume(Mono::error)
+        .flatMap(t -> saveCourseAggregate.apply(t.id()).onErrorResume(Mono::error))
+        .flatMap(Mono::just);
   }
 
   @Transactional
   public Mono<CourseAggregate> updateCourse(
-      @RequestBody(required = true) UpdateCourseRequest request) {
-    return courseRepository
-        .findById(request.courseId())
-        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course does not exist")))
-        .onErrorResume(Mono::error)
+      @Parameter(in = ParameterIn.PATH) UUID courseId,
+      @RequestBody(required = true) UpdateCourseRequest request,
+      @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
+
+    Utils.handleValidation(MappingUtils.MAPPER, validator, request);
+
+    String email = common.getEmailFromToken(token);
+
+    return verifyCourseOwner(courseId, email)
         .flatMap(
             x ->
                 courseRepository
                     .save(
-                        x.updateCourseInformation(
-                            request.courseName(), request.courseDescription()))
+                        x.getT1()
+                            .updateCourseInformation(
+                                request.courseName(), request.courseDescription()))
                     .onErrorResume(Mono::error));
   }
 
   @Transactional
-  public Mono<Optional<CourseAggregate>> getCourseById(
-      @Parameter(in = ParameterIn.PATH) UUID uuid) {
-    return courseRepository
-        .findById(uuid)
-        .onErrorResume(Mono::error)
-        .flatMap(x -> Mono.just(Optional.of(x)))
-        .defaultIfEmpty(Optional.empty());
-  }
-
-  @Transactional
-  public Mono<Void> deleteCourse(@Parameter(in = ParameterIn.PATH) UUID courseId) {
-    return courseRepository
-        .deleteById(courseId)
-        .onErrorResume(Mono::error)
-        .switchIfEmpty(Mono.error(new RuntimeException("Course does not exist")))
+  public Mono<Void> deleteCourse(
+      @Parameter(in = ParameterIn.PATH) UUID courseId,
+      @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
+    String email = common.getEmailFromToken(token);
+    return verifyCourseOwner(courseId, email)
+        .flatMap(x -> courseRepository.deleteById(courseId).onErrorResume(Mono::error))
         .flatMap(x -> Mono.empty());
   }
 
   @Transactional
-  public Mono<Void> assignUserToCourse(
+  public Mono<Void> assignStudentToCourse(
       @Parameter(in = ParameterIn.PATH) UUID userId, UUID courseId) {
     Mono<CourseAggregate> course =
         courseRepository
@@ -161,60 +164,46 @@ public class CourseCommandService {
   @Transactional
   public Mono<CourseAggregate> publishCourse(
       @Parameter(in = ParameterIn.PATH) UUID courseId,
-      @Parameter(in = ParameterIn.PATH) UUID teacherId) {
+      @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
 
-    Mono<CourseAggregate> course =
-        courseRepository
-            .findById(courseId)
-            .onErrorResume(Mono::error)
-            .switchIfEmpty(Mono.error(new RuntimeException("Course does not exist")));
+    final String email = common.getEmailFromToken(token);
 
-    Mono<UserAggregate> user =
-        userRepository
-            .findById(teacherId)
-            .onErrorResume(Mono::error)
-            .switchIfEmpty(Mono.error(new RuntimeException("Teacher does not exist")));
-
-    return user.flatMap(x -> Mono.zip(Mono.just(x), course))
-        .flatMap(
-            x -> {
-              if (!x.getT2().teacherId().equals(x.getT1().id())) {
-                return Mono.error(
-                    new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST, "You do not own this course"));
-              }
-              return course;
-            })
-        .onErrorResume(Mono::error)
-        .flatMap(x -> courseRepository.save(x.publishCourse()));
+    return verifyCourseOwner(courseId, email)
+        .flatMap(t -> courseRepository.save(t.getT1().publishCourse()));
   }
 
   @Transactional
-  public Mono<Void> addLessonToCourse(
+  public Mono<CourseAggregate> addLessonToCourse(
       @Parameter(in = ParameterIn.PATH) UUID courseId,
-      @RequestBody(required = true) AddLessonToCourseRequest lessonDetails) {
+      @RequestBody(required = true) AddLessonToCourseRequest lessonDetails,
+      @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
 
     LessonEntity lessonEntity = MappingUtils.MAPPER.convertValue(lessonDetails, LessonEntity.class);
 
-    Mono<CourseAggregate> course =
-        courseRepository
-            .findById(courseId)
-            .onErrorResume(Mono::error)
-            .switchIfEmpty(Mono.error(new RuntimeException("Course does not exist")));
+    final String email = common.getEmailFromToken(token);
+
     Mono<LessonEntity> lesson = lessonRepository.save(lessonEntity).onErrorResume(Mono::error);
 
-    return course
-        .flatMap(c -> Mono.zip(Mono.just(c), lesson))
+    return verifyCourseOwner(courseId, email)
+        .flatMap(t -> Mono.zip(Mono.just(t.getT1()), lesson))
         .flatMap(
             t -> {
               t.getT1().addLessonToCourse(t.getT2().id());
               return courseRepository.save(t.getT1());
             })
-        .flatMap(c -> Mono.empty());
+        .flatMap(Mono::just);
   }
 
   @Transactional
-  public Mono<Void> removeLessonFromCourse(@Parameter(in = ParameterIn.PATH) UUID lessonId) {
+  public Mono<Void> removeLessonFromCourse(
+      @Parameter(in = ParameterIn.PATH) UUID lessonId,
+      @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
+
+    final OAuth2IntrospectionAuthenticatedPrincipal principal = common.getPrincipalFromToken(token);
+    if (!isTeacher(principal)) {
+      return Mono.error(
+          new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only teachers can do this"));
+    }
 
     Mono<LessonEntity> lesson =
         lessonRepository
@@ -228,14 +217,21 @@ public class CourseCommandService {
   @Transactional
   public Mono<Void> addQuizToCourse(
       @Parameter(in = ParameterIn.PATH) UUID courseId,
-      @RequestBody(required = true) AddQuizToCourseRequest quizDetails) {
+      @RequestBody(required = true) AddQuizToCourseRequest quizDetails,
+      @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
+
+    final OAuth2IntrospectionAuthenticatedPrincipal principal = common.getPrincipalFromToken(token);
+    if (!isTeacher(principal)) {
+      return Mono.error(
+          new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only teachers can do this"));
+    }
 
     return Mono.from(
             createInitialQuestions(quizDetails)
                 .flatMap(questionEntities -> saveAnswers(quizDetails, questionEntities))
                 .flatMap(tuple -> Mono.from(updateQuestionsWithAnswers(tuple))))
         .flatMap(saveUpdatedQuestions(questionRepository))
-        .flatMap(getSetMonoFunction(quizDetails, quizRepository))
+        .flatMap(saveQuiz(quizDetails, quizRepository))
         .flatMap(
             qiz ->
                 Mono.zip(
@@ -252,7 +248,29 @@ public class CourseCommandService {
         .then(Mono.empty());
   }
 
-  private static Function<Set<UUID>, Mono<? extends QuizEntity>> getSetMonoFunction(
+  @Transactional
+  public Mono<Void> removeQuizFromCourse(
+      @Parameter(in = ParameterIn.PATH) UUID quizId,
+      @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
+
+    final OAuth2IntrospectionAuthenticatedPrincipal principal = common.getPrincipalFromToken(token);
+    if (!isTeacher(principal)) {
+      return Mono.error(
+          new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only teachers can do this"));
+    }
+
+    Mono<QuizEntity> quiz =
+        quizRepository
+            .findById(quizId)
+            .onErrorResume(Mono::error)
+            .switchIfEmpty(Mono.error(new RuntimeException("Quiz does not exist")));
+
+    return quiz.then(quizRepository.deleteById(quizId))
+        .onErrorResume(Mono::error)
+        .then(Mono.empty());
+  }
+
+  private static Function<Set<UUID>, Mono<QuizEntity>> saveQuiz(
       AddQuizToCourseRequest quizDetails, QuizRepository quizRepository) {
     return qs ->
         quizRepository
@@ -265,7 +283,7 @@ public class CourseCommandService {
             .onErrorResume(Mono::error);
   }
 
-  private static Function<Set<QuestionEntity>, Mono<? extends Set<UUID>>> saveUpdatedQuestions(
+  private static Function<Set<QuestionEntity>, Mono<Set<UUID>>> saveUpdatedQuestions(
       QuestionRepository questionRepository) {
     return questions ->
         questionRepository
@@ -322,17 +340,40 @@ public class CourseCommandService {
         .collect(Collectors.toSet());
   }
 
-  @Transactional
-  public Mono<Void> removeQuizFromCourse(UUID quizId) {
-
-    Mono<QuizEntity> quiz =
-        quizRepository
-            .findById(quizId)
-            .onErrorResume(Mono::error)
-            .switchIfEmpty(Mono.error(new RuntimeException("Quiz does not exist")));
-
-    return quiz.then(quizRepository.deleteById(quizId))
+  private Mono<CourseAggregate> getCourseByCourseId(UUID courseId) {
+    return courseRepository
+        .findById(courseId)
         .onErrorResume(Mono::error)
-        .then(Mono.empty());
+        .switchIfEmpty(
+            Mono.error(
+                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course does not exist")));
+  }
+
+  private Mono<Tuple2<CourseAggregate, UserAggregate>> verifyCourseOwner(
+      @Parameter(in = ParameterIn.PATH) UUID courseId, String email) {
+    return isTeacherOfCourse(courseId, email)
+        .filter(tuple -> tuple.getT1().teacherId().equals(tuple.getT2().id()))
+        .switchIfEmpty(
+            Mono.error(
+                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You don't own this course")))
+        .onErrorResume(Mono::error);
+  }
+
+  private Mono<Tuple2<CourseAggregate, UserAggregate>> isTeacherOfCourse(
+      UUID courseId, String email) {
+    return getCourseByCourseId(courseId)
+        .flatMap(c -> Mono.zip(Mono.just(c), common.getUserByEmail(email)))
+        .filter(tuple -> tuple.getT2().role().equals(Role.PROFESOR))
+        .switchIfEmpty(
+            Mono.error(
+                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not a teacher")))
+        .onErrorResume(Mono::error);
+  }
+
+  boolean isTeacher(OAuth2IntrospectionAuthenticatedPrincipal principal) {
+    return ((List)
+            ((Map) ((Map) principal.getClaims().get("resource_access")).get("ripeti-web"))
+                .get("roles"))
+        .contains(Role.PROFESOR.name());
   }
 }

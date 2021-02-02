@@ -11,13 +11,20 @@ import io.deviad.ripeti.webapp.ui.command.RegistrationRequest;
 import io.deviad.ripeti.webapp.ui.command.UpdatePasswordRequest;
 import io.deviad.ripeti.webapp.ui.command.UpdateUserRequest;
 import io.deviad.ripeti.webapp.ui.queries.UserInfoDto;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import javax.validation.Validator;
 import java.util.Optional;
@@ -33,10 +40,11 @@ public class UserCommandService {
   private UserRepository userRepository;
   private Validator validator;
   private KeycloakAdminClient client;
+  private Common common;
 
   @Transactional
   @SneakyThrows
-  public Mono<UserInfoDto> registerUser(RegistrationRequest r) {
+  public Mono<UserInfoDto> registerUser(@RequestBody(required = true) RegistrationRequest r) {
 
     Utils.handleValidation(MappingUtils.MAPPER, validator, r);
 
@@ -54,7 +62,9 @@ public class UserCommandService {
         .flatMap(
             x -> {
               if (x != null) {
-                return Mono.error(() -> new Throwable("User already exists"));
+                return Mono.error(
+                    () ->
+                        new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already exists"));
               }
               return Mono.empty();
             })
@@ -80,15 +90,24 @@ public class UserCommandService {
 
   @Transactional
   @SneakyThrows
-  public Mono<UserInfoDto> updateUser(UpdateUserRequest r) {
+  public Mono<UserInfoDto> updateUser(
+      @RequestBody(required = true) UpdateUserRequest r, JwtAuthenticationToken token) {
 
-    var userEntity = userRepository.getUserAggregateByUsername(r.username());
+    final String email = common.getEmailFromToken(token);
+
+    var userEntity =
+        userRepository
+            .getUserAggregateByEmail(email)
+            .onErrorResume(Mono::error)
+            .switchIfEmpty(
+                Mono.error(
+                    new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not exist")));
+
     return userEntity
-        .onErrorResume(Mono::error)
-        .switchIfEmpty(Mono.error(new RuntimeException("User does not exist")))
         .map(x -> (Object) Mono.just(r.address()))
-        .switchIfEmpty(saveWithoutAddress(r, userEntity))
-        .flatMap(x -> saveWithAddress(r, userEntity));
+        .switchIfEmpty(saveWithoutAddress(r, userEntity).onErrorResume(Mono::error))
+        .flatMap(x -> Mono.zip(saveWithAddress(r, userEntity), client.update(email, r)))
+        .map(Tuple2::getT1);
   }
 
   Mono<UserInfoDto> saveWithoutAddress(UpdateUserRequest r, Mono<UserAggregate> userEntity) {
@@ -103,7 +122,6 @@ public class UserCommandService {
 
   Mono<UserInfoDto> saveWithAddress(UpdateUserRequest r, Mono<UserAggregate> userEntity) {
     return userEntity
-        .onErrorResume(Mono::error)
         .map(
             x ->
                 x.withFirstName(r.firstName())
@@ -115,16 +133,31 @@ public class UserCommandService {
                             .secondAddressLine(r.address().secondAddressLine())
                             .build()))
         .flatMap(x -> userRepository.save(x).onErrorResume(Mono::error))
-        .flatMap((t) -> Mono.just(mapToUserInfo(t)));
+        .flatMap(t -> Mono.just(mapToUserInfo(t)));
   }
 
   @Transactional
-  public Mono<UserAggregate> updatePassword(UpdatePasswordRequest r) {
-    var userEntity = userRepository.getUserAggregateByUsername(r.username());
+  public Mono<Object> updatePassword(
+      @RequestBody(required = true) UpdatePasswordRequest r,
+      @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
+
+    final String email = common.getEmailFromToken(token);
+
+    var userEntity =
+        userRepository
+            .getUserAggregateByEmail(email)
+            .onErrorResume(Mono::error)
+            .switchIfEmpty(
+                Mono.error(
+                    new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not exist")));
 
     return userEntity
-        .switchIfEmpty(Mono.error(new RuntimeException("User does not exist")))
-        .flatMap(x -> savePassword(r, userEntity));
+        .flatMap(
+            x ->
+                Mono.zip(
+                    savePassword(r, userEntity),
+                    client.updatePassword(email, r).onErrorResume(Mono::error)))
+        .map(Tuple2::getT1);
   }
 
   Mono<UserAggregate> savePassword(UpdatePasswordRequest r, Mono<UserAggregate> userEntity) {

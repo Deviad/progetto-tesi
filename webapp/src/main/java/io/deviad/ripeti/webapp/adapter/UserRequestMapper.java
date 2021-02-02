@@ -2,6 +2,8 @@ package io.deviad.ripeti.webapp.adapter;
 
 import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import io.deviad.ripeti.webapp.ui.command.RegistrationRequest;
+import io.deviad.ripeti.webapp.ui.command.UpdatePasswordRequest;
+import io.deviad.ripeti.webapp.ui.command.UpdateUserRequest;
 import lombok.NoArgsConstructor;
 import org.keycloak.common.util.Time;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -17,6 +19,7 @@ public class UserRequestMapper {
     if (registrationRequest == null) {
       return null;
     }
+
     UserRepresentation userRepresentation = new UserRepresentation();
     userRepresentation.setFirstName(registrationRequest.firstName());
     userRepresentation.setLastName(registrationRequest.lastName());
@@ -36,6 +39,22 @@ public class UserRequestMapper {
     return userRepresentation;
   }
 
+  public UserRepresentation mapToUserRepresentation(UserRepresentation userRepresentation, UpdateUserRequest updateRequest) {
+    if (updateRequest == null) {
+      return null;
+    }
+    userRepresentation.setFirstName(updateRequest.firstName());
+    userRepresentation.setLastName(updateRequest.lastName());
+    userRepresentation.setEmail(updateRequest.email());
+    userRepresentation.setUsername(updateRequest.username());
+    userRepresentation.setEmailVerified(false);
+    userRepresentation.setAttributes(getAttributes());
+    userRepresentation.setEnabled(true);
+    userRepresentation.setCreatedTimestamp(getCreatedTimestamp());
+
+    return userRepresentation;
+  }
+
   Map<String, List<String>> getAttributes() {
     return Collections.singletonMap("locale", Collections.singletonList("en"));
   }
@@ -45,6 +64,6 @@ public class UserRequestMapper {
   }
 
   Map<String, List<String>> getApplicationRoles(Role role) {
-    return Collections.singletonMap("agrilink-web", List.of(role.name()));
+    return Collections.singletonMap("ripeti-web", List.of(role.name()));
   }
 }

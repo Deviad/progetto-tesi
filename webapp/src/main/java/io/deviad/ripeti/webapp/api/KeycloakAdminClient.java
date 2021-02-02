@@ -2,6 +2,8 @@ package io.deviad.ripeti.webapp.api;
 
 import io.deviad.ripeti.webapp.adapter.UserRequestMapper;
 import io.deviad.ripeti.webapp.ui.command.RegistrationRequest;
+import io.deviad.ripeti.webapp.ui.command.UpdatePasswordRequest;
+import io.deviad.ripeti.webapp.ui.command.UpdateUserRequest;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.OAuth2Constants;
@@ -36,7 +38,6 @@ public class KeycloakAdminClient {
   private Keycloak keycloak;
   private RealmResource realmResource;
 
-
   @PostConstruct
   void init() {
     mapper = new UserRequestMapper();
@@ -51,8 +52,7 @@ public class KeycloakAdminClient {
             .password("password") //
             .build();
 
-   this.realmResource = keycloak.realm(realm);
-
+    this.realmResource = keycloak.realm(realm);
   }
 
   public Mono<Object> save(RegistrationRequest registrationRequest) {
@@ -98,21 +98,48 @@ public class KeycloakAdminClient {
     return Mono.empty();
   }
 
-  public Mono<Object> update(String userEmail) {
+  public Mono<Object> update(String email, UpdateUserRequest updateUserRequest) {
     RealmResource realmResource = keycloak.realm(realm);
     UsersResource usersResource = realmResource.users();
 
-    final List<UserRepresentation> search = usersResource.search(userEmail);
+    final List<UserRepresentation> search = usersResource.search(email);
     if (search.isEmpty()) {
       return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot find user"));
     }
 
     final UserRepresentation utilizator = search.get(0);
     UserResource userResource =
-            Try.ofSupplier(() -> usersResource.get(utilizator.getId()))
-                    .getOrElseThrow((Function<Throwable, RuntimeException>) RuntimeException::new);
-    userResource.update(utilizator);
+        Try.ofSupplier(() -> usersResource.get(utilizator.getId()))
+            .getOrElseThrow((Function<Throwable, RuntimeException>) RuntimeException::new);
+
+    userResource.update(mapper.mapToUserRepresentation(utilizator, updateUserRequest));
     return Mono.empty();
   }
 
+  public Mono<Object> updatePassword(String email, UpdatePasswordRequest updateUserRequest) {
+    RealmResource realmResource = keycloak.realm(realm);
+    UsersResource usersResource = realmResource.users();
+
+    final List<UserRepresentation> search = usersResource.search(email);
+    if (search.isEmpty()) {
+      return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot find user"));
+    }
+
+    final UserRepresentation utilizator = search.get(0);
+    UserResource userResource =
+        Try.ofSupplier(() -> usersResource.get(utilizator.getId()))
+            .getOrElseThrow((Function<Throwable, RuntimeException>) RuntimeException::new);
+
+    // Define password credential
+    CredentialRepresentation passwordCred = new CredentialRepresentation();
+    passwordCred.setTemporary(false);
+    passwordCred.setType(CredentialRepresentation.PASSWORD);
+    passwordCred.setValue(updateUserRequest.password());
+
+    // Set password credential
+    userResource.resetPassword(passwordCred);
+
+    userResource.update(utilizator);
+    return Mono.empty();
+  }
 }
