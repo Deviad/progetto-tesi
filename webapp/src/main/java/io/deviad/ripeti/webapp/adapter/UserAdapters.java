@@ -1,9 +1,9 @@
 package io.deviad.ripeti.webapp.adapter;
 
-import io.deviad.ripeti.webapp.ui.queries.UserInfoDto;
 import io.deviad.ripeti.webapp.domain.aggregate.UserAggregate;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
+import io.deviad.ripeti.webapp.ui.queries.UserInfoDto;
 import io.r2dbc.spi.Row;
 
 import java.util.function.BiFunction;

@@ -193,7 +193,8 @@ public class CourseCommandRoutesManager {
         .map(
             t -> {
               log.info("principal name is {}", t.getT1().getName());
-              return courseService.updateCourse(UUID.fromString(courseId), t.getT2(), (JwtAuthenticationToken) t.getT1());
+              return courseService.updateCourse(
+                  UUID.fromString(courseId), t.getT2(), (JwtAuthenticationToken) t.getT1());
             })
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
@@ -266,29 +267,29 @@ public class CourseCommandRoutesManager {
   Mono<ServerResponse> createQuiz(ServerRequest request) {
     UUID courseId = UUID.fromString(request.pathVariable("courseId"));
 
-   return request
-            .principal()
-            .onErrorResume(Mono::error)
-            .flatMap(
-                    p ->
-                            Mono.zip(
-                                    Mono.just(p),
-                                    request.bodyToMono(AddQuizToCourseRequest.class).onErrorResume(Mono::error)))
-            .flatMap(t -> courseService.addQuizToCourse(courseId, t.getT2(), (JwtAuthenticationToken)t.getT1()))
-            .flatMap(x -> ServerResponse.ok().build());
-
-
+    return request
+        .principal()
+        .onErrorResume(Mono::error)
+        .flatMap(
+            p ->
+                Mono.zip(
+                    Mono.just(p),
+                    request.bodyToMono(AddQuizToCourseRequest.class).onErrorResume(Mono::error)))
+        .flatMap(
+            t ->
+                courseService.addQuizToCourse(
+                    courseId, t.getT2(), (JwtAuthenticationToken) t.getT1()))
+        .flatMap(x -> ServerResponse.ok().build());
   }
 
   @SneakyThrows
   Mono<ServerResponse> removeQuiz(ServerRequest request) {
     UUID quizId = UUID.fromString(request.pathVariable("quizId"));
 
-   return request
-            .principal()
-            .onErrorResume(Mono::error)
-            .flatMap(p -> courseService.removeQuizFromCourse(quizId, (JwtAuthenticationToken)p))
-            .flatMap(x -> ServerResponse.ok().build());
-
+    return request
+        .principal()
+        .onErrorResume(Mono::error)
+        .flatMap(p -> courseService.removeQuizFromCourse(quizId, (JwtAuthenticationToken) p))
+        .flatMap(x -> ServerResponse.ok().build());
   }
 }

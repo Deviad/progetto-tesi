@@ -2,7 +2,6 @@ package io.deviad.ripeti.webapp.adapter;
 
 import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import io.deviad.ripeti.webapp.ui.command.RegistrationRequest;
-import io.deviad.ripeti.webapp.ui.command.UpdatePasswordRequest;
 import io.deviad.ripeti.webapp.ui.command.UpdateUserRequest;
 import lombok.NoArgsConstructor;
 import org.keycloak.common.util.Time;
@@ -39,7 +38,8 @@ public class UserRequestMapper {
     return userRepresentation;
   }
 
-  public UserRepresentation mapToUserRepresentation(UserRepresentation userRepresentation, UpdateUserRequest updateRequest) {
+  public UserRepresentation mapToUserRepresentation(
+      UserRepresentation userRepresentation, UpdateUserRequest updateRequest) {
     if (updateRequest == null) {
       return null;
     }

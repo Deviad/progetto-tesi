@@ -43,10 +43,9 @@ public class UserCommandRoutesManager {
             RequestPredicates.contentType(MediaType.APPLICATION_JSON),
             this::handleUpdatePassword)
         .DELETE(
-                "/api/user/delete",
-                RequestPredicates.contentType(MediaType.APPLICATION_JSON),
-                this::handleDeleteUser
-        )
+            "/api/user/delete",
+            RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+            this::handleDeleteUser)
         .build();
   }
 
@@ -59,34 +58,32 @@ public class UserCommandRoutesManager {
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
 
-
   Mono<ServerResponse> handleUpdatePassword(ServerRequest request) {
 
     return request
-            .bodyToMono(UpdatePasswordRequest.class)
-            .onErrorResume(Mono::error)
-            .flatMap(r-> Mono.zip(Mono.just(r), request.principal().onErrorResume(Mono::error)))
-            .map(r -> userManagement.updatePassword(r.getT1(), (JwtAuthenticationToken)r.getT2()))
-            .flatMap(Function.identity())
-            .flatMap(r -> ServerResponse.ok().bodyValue(r));
+        .bodyToMono(UpdatePasswordRequest.class)
+        .onErrorResume(Mono::error)
+        .flatMap(r -> Mono.zip(Mono.just(r), request.principal().onErrorResume(Mono::error)))
+        .map(r -> userManagement.updatePassword(r.getT1(), (JwtAuthenticationToken) r.getT2()))
+        .flatMap(Function.identity())
+        .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
 
   Mono<ServerResponse> handleDeleteUser(ServerRequest request) {
     return request
-            .principal()
-            .onErrorResume(Mono::error)
-            .flatMap(r->  userManagement.deleteUser((JwtAuthenticationToken) r))
-            .flatMap(r -> ServerResponse.ok().build());
+        .principal()
+        .onErrorResume(Mono::error)
+        .flatMap(r -> userManagement.deleteUser((JwtAuthenticationToken) r))
+        .flatMap(r -> ServerResponse.ok().build());
   }
-
 
   Mono<ServerResponse> handleUpdate(ServerRequest request) {
 
     return request
         .bodyToMono(UpdateUserRequest.class)
         .onErrorResume(Mono::error)
-        .flatMap(r-> Mono.zip(Mono.just(r), request.principal().onErrorResume(Mono::error)))
-        .map(r -> userManagement.updateUser(r.getT1(), (JwtAuthenticationToken)r.getT2()))
+        .flatMap(r -> Mono.zip(Mono.just(r), request.principal().onErrorResume(Mono::error)))
+        .map(r -> userManagement.updateUser(r.getT1(), (JwtAuthenticationToken) r.getT2()))
         .flatMap(Function.identity())
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }

@@ -1,9 +1,9 @@
 package io.deviad.ripeti.webapp.ui.route;
 
-import io.deviad.ripeti.webapp.ui.queries.CourseInfo;
-import io.deviad.ripeti.webapp.ui.queries.UserInfoDto;
 import io.deviad.ripeti.webapp.application.query.CourseQueryService;
 import io.deviad.ripeti.webapp.application.query.QuizQueryService;
+import io.deviad.ripeti.webapp.ui.queries.CourseInfo;
+import io.deviad.ripeti.webapp.ui.queries.UserInfoDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.RouterOperation;
@@ -27,34 +27,32 @@ public class CourseQueryRoutesManager {
   CourseQueryService queryService;
   QuizQueryService quizQueryService;
 
-
   @RouterOperations({
-          @RouterOperation(
-                  path = "/api/course/{courseId}",
-                  method = RequestMethod.GET,
-                  beanClass = CourseQueryService.class,
-                  beanMethod = "getCourseById",
-                  produces = MediaType.APPLICATION_JSON_VALUE),
-          @RouterOperation(
-                  path = "/api/course/{courseId}/getstudents",
-                  method = RequestMethod.GET,
-                  beanClass = CourseQueryService.class,
-                  beanMethod = "getAllEnrolledStudents",
-                  produces = MediaType.APPLICATION_JSON_VALUE),
-          @RouterOperation(
-                  path = "/api/course/teacher/{teacherId}",
-                  method = RequestMethod.GET,
-                  beanClass = CourseQueryService.class,
-                  beanMethod = "getCoursesByTeacherId",
-                  produces = MediaType.APPLICATION_JSON_VALUE),
-          @RouterOperation(
-                  path = "/api/course/{courseId}/getquizzes",
-                  method = RequestMethod.GET,
-                  beanClass = QuizQueryService.class,
-                  beanMethod = "getAllQuizzes",
-                  produces = MediaType.APPLICATION_JSON_VALUE)
+    @RouterOperation(
+        path = "/api/course/{courseId}",
+        method = RequestMethod.GET,
+        beanClass = CourseQueryService.class,
+        beanMethod = "getCourseById",
+        produces = MediaType.APPLICATION_JSON_VALUE),
+    @RouterOperation(
+        path = "/api/course/{courseId}/getstudents",
+        method = RequestMethod.GET,
+        beanClass = CourseQueryService.class,
+        beanMethod = "getAllEnrolledStudents",
+        produces = MediaType.APPLICATION_JSON_VALUE),
+    @RouterOperation(
+        path = "/api/course/teacher/{teacherId}",
+        method = RequestMethod.GET,
+        beanClass = CourseQueryService.class,
+        beanMethod = "getCoursesByTeacherId",
+        produces = MediaType.APPLICATION_JSON_VALUE),
+    @RouterOperation(
+        path = "/api/course/{courseId}/getquizzes",
+        method = RequestMethod.GET,
+        beanClass = QuizQueryService.class,
+        beanMethod = "getAllQuizzes",
+        produces = MediaType.APPLICATION_JSON_VALUE)
   })
-
   @Bean
   public RouterFunction<ServerResponse> courseQueryRoutes() {
     return route()

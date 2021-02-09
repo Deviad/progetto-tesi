@@ -6,5 +6,5 @@ import org.springframework.data.r2dbc.repository.R2dbcRepository;
 
 import java.util.UUID;
 
-@Tag(name="Lessons")
+@Tag(name = "Lessons")
 public interface LessonRepository extends R2dbcRepository<LessonEntity, UUID> {}

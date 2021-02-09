@@ -10,20 +10,21 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
-public class OAuth2ResourceServerConfig  {
+public class OAuth2ResourceServerConfig {
 
-    @Bean
-    SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http
-                .authorizeExchange()
-                .anyExchange().authenticated()
-                .and()
-                .csrf().disable()
-                .oauth2ResourceServer()
-                .jwt()
+  @Bean
+  SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+    http.authorizeExchange()
+        .anyExchange()
+        .authenticated()
+        .and()
+        .csrf()
+        .disable()
+        .oauth2ResourceServer()
+        .jwt()
         .and();
-        return http.build();
-    }
+    return http.build();
+  }
 
-    // JWT token store
+  // JWT token store
 }

@@ -167,12 +167,12 @@ public class UserCommandService {
   }
 
   @Transactional
-  public Mono<Void> deleteUser(@Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
+  public Mono<Void> deleteUser(
+      @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
 
     final String email = common.getEmailFromToken(token);
     var userEntity = common.getUserByEmail(email);
 
-    return userEntity.flatMap(x-> userRepository.delete(x));
-
+    return userEntity.flatMap(x -> userRepository.delete(x));
   }
 }

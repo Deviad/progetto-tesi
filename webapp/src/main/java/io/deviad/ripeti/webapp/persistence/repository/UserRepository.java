@@ -6,10 +6,11 @@ import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
-@Tag(name="Users")
 
+@Tag(name = "Users")
 public interface UserRepository extends R2dbcRepository<UserAggregate, UUID> {
 
   Mono<UserAggregate> getUserAggregateByUsername(String Username);
+
   Mono<UserAggregate> getUserAggregateByEmail(String Username);
 }
