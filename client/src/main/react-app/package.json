@@ -1,0 +1,67 @@
+{
+  "name": "react-app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@ant-design/icons": "^4.2.2",
+    "@rjsf/antd": "^2.4.0",
+    "@rjsf/core": "^2.4.0",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.5.0",
+    "@testing-library/user-event": "^7.2.1",
+    "@types/jest": "^24.9.1",
+    "@types/json-schema": "^7.0.6",
+    "@types/node": "^12.12.62",
+    "@types/react": "^16.9.49",
+    "@types/react-dom": "^16.9.8",
+    "antd": "^4.6.6",
+    "cross-env": "^7.0.2",
+    "dayjs": "^1.8.36",
+    "link-module-alias": "^1.2.0",
+    "npm-run-all": "^4.1.5",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-jsonschema-form": "^1.8.1",
+    "react-scripts": "3.4.3",
+    "react-scripts-x": "^1.0.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^3.7.5",
+    "yarn": "^1.22.5"
+  },
+  "scripts": {
+    "predeploy": "npm install npm-run-all || true && npm install rimraf && rimraf ./node_modules || true && npm install yarn && yarn install || true",
+    "preinstall": "command -v link-module-alias && link-module-alias clean || true",
+    "postinstall": "link-module-alias",
+    "start": "cross-env NODE_ENV=development react-scripts-x start",
+    "build": "cross-env NODE_ENV=production react-scripts-x build",
+    "test": "cross-env react-scripts-x test",
+    "lint": " eslint --fix --ext .js src/ || true && prettier --write 'src/**/*.{ts,tsx}'",
+    "deploy": "node ./node_modules/npm-run-all/bin/npm-run-all/index.js preinstall postinstall build"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.0.0",
+    "postcss-assets": "^5.0.0",
+    "postcss-color-function": "^4.1.0",
+    "postcss-import": "^12.0.1",
+    "postcss-initial": "^3.0.2",
+    "postcss-math": "^0.0.10",
+    "postcss-mixins": "^7.0.0",
+    "postcss-nested": "^5.0.0",
+    "postcss-simple-vars": "^6.0.0"
+  }
+}
