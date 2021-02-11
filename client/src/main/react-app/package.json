@@ -29,7 +29,7 @@
     "yarn": "^1.22.5"
   },
   "scripts": {
-    "predeploy": "npm install npm-run-all || true && npm install rimraf && rimraf ./node_modules || true && npm install yarn && yarn install || true",
+    "predeploy": "npm install npm-run-all || true && npm install || true",
     "preinstall": "command -v link-module-alias && link-module-alias clean || true",
     "postinstall": "link-module-alias",
     "start": "cross-env NODE_ENV=development react-scripts-x start",

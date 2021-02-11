@@ -64,6 +64,106 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.2.10.RELEASE</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <addResources>true</addResources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.10.0</version>
+                <executions>
+                    <execution>
+                        <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+                    <execution>
+                        <id>npm predeploy</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <workingDirectory>target/react-app-src</workingDirectory>
+                            <arguments>config set strict-ssl false</arguments>
+                            <arguments>run deploy</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <nodeVersion>v12.18.4</nodeVersion>
+                    <npmVersion>6.14.6</npmVersion>
+                    <installDirectory>target</installDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <!--
+                        Copy of the /frontendResources directory, coming from GIT, in /target directory
+                        executed before the compiling and build of frontend resources
+                        That dir will be the working directory of npm, bower, grunt
+                        in order to avoid the creation of the direcotries node, node_modules, bower_components, ...
+                        (they may be committed in repository)
+                    -->
+                    <execution>
+                        <id>copy-frontendResources-toStagingDir-beforeBuild</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/react-app</directory>
+                                    <filtering>false</filtering>
+                                    <excludes>
+                                        <exclude>node_modules/**</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${basedir}/target/react-app-src</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <!--
+                        Copy of the /frontendResourcesStagingDir/grunt_output directory in /target/ directory
+                        executed after build of frontend resources and before the war pachage creation
+                        it contains the output of grunt install execution
+                    -->
+                    <execution>
+                        <id>copy-frontendResources-afterBuild</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/target/react-app-src/build</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${basedir}/target/classes/react</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

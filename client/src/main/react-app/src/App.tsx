@@ -70,6 +70,7 @@ const uiSchema = {
 };
 
 const log = (type: any) => console.log.bind(console, type);
+const onSubmit = (data: any) => log(data);
 
 function App() {
     return (
@@ -83,7 +84,7 @@ function App() {
                          {/* @ts-ignore */}
                          <Form schema={schema} uiSchema={uiSchema}
                                onChange={log("changed")}
-                               onSubmit={log("submitted")}
+                               onSubmit={onSubmit}
                                onError={log("errors")}/>
                      </Col>
                  </Row>
