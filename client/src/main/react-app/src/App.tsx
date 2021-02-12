@@ -162,7 +162,8 @@ const proprietati: Record<string, string> = {
     ".role": "Rol",
     ".address.firstAddressLine": "Strada si numar",
     ".address.secondAddressLine": "Bloc, Scara, etc.",
-    ".address.city": "Oras"
+    ".address.city": "Oras",
+    ".address.country": "Tara"
 }
 
 function schimbaMesajDeEroare(key: string, error: EroareLipseste | EroareDeLimita | EroareDePattern) {
