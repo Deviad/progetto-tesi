@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {RefObject, useEffect, useRef} from 'react';
 import {FormProps, withTheme} from '@rjsf/core';
 // @ts-ignore
 import {Theme as AntDTheme} from '@rjsf/antd';
@@ -95,6 +95,7 @@ const schema = {
                 },
                 "country": {
                     "type": "string",
+                    "title": "Tara",
                     "enum": [
                         "ROMANIA"
                     ]
@@ -106,7 +107,6 @@ const schema = {
 
 const uiSchema = {
     "firstName": {
-        "ui:autofocus": true,
         "ui:emptyValue": "",
         "ui:autocomplete": "given-name"
     },
@@ -199,7 +199,19 @@ const onSubmit = (form: FormProps<any>) => {
     console.log("evt", form);
 };
 
+const autofocusPePrimulCamp = (formRef: RefObject<HTMLFormElement>) => {
+    const input = Object.values(formRef?.current?.formElement)
+        .find((x: any) => x.id === 'root_firstName') as NonNullable<HTMLInputElement>;
+    input.focus();
+}
+
 function App() {
+
+    const formRef: RefObject<HTMLFormElement> = useRef(null);
+    useEffect(() => {
+        autofocusPePrimulCamp(formRef);
+    }, []);
+
     return (
         <Layout>
             <Layout.Header>
@@ -220,6 +232,7 @@ function App() {
                     <Col span={10} flex="auto">
                         {/* @ts-ignore */}
                         <Form schema={schema} uiSchema={uiSchema}
+                              ref={formRef}
                               onSubmit={onSubmit}
                               showErrorList={false}
                               transformErrors={transformaEroarile}
