@@ -21,7 +21,6 @@ const schema = {
         "firstName",
         "lastName",
         "email",
-        "address",
         "username",
         "role",
         "password"
@@ -66,6 +65,41 @@ const schema = {
                 "Student",
                 "Profesor",
             ]
+        },
+        "address": {
+            "required": [
+                "firstAddressLine",
+                "secondAddressLine",
+                "city",
+                "country"
+
+            ],
+            "type": "object",
+            "title": "Adresa",
+            "properties": {
+                "firstAddressLine": {
+                    "type": "string",
+                    "title": "Strada si numar",
+                    "minLength": 3,
+                },
+                "secondAddressLine": {
+                    "type": "string",
+                    "title": "Bloc, Scara, etc.",
+                    "minLength": 3,
+                },
+                "city": {
+                    "type": "string",
+                    "title": "Oras",
+                    "minLength": 3,
+                    "pattern": "[a-zA-Z]+"
+                },
+                "country": {
+                    "type": "string",
+                    "enum": [
+                        "ROMANIA"
+                    ]
+                }
+            }
         }
     }
 };
@@ -82,7 +116,7 @@ const uiSchema = {
     },
     "password": {
         "ui:widget": "password",
-        "ui:help":  `parola trebuia sa aiba o lungime de cel 
+        "ui:help": `parola trebuia sa aiba o lungime de cel 
             putin 8 caractere, sa aiba cel putin o litera mare, 1 numar si 
             1 caracter special`
     },
@@ -120,12 +154,15 @@ type EroareGeneric = EroareLipseste | EroareDeLimita | EroareDePattern
 
 
 const proprietati: Record<string, string> = {
-    ".firstName": "prenume",
-    ".lastName": "nume de familie",
-    ".username": "nume utilizator",
-    ".email": "email",
-    ".password": "parola secreta",
-    ".role": "rol"
+    ".firstName": "Prenume",
+    ".lastName": "Nume de familie",
+    ".username": "Nume utilizator",
+    ".email": "Email",
+    ".password": "Parola secreta",
+    ".role": "Rol",
+    ".address.firstAddressLine": "Strada si numar",
+    ".address.secondAddressLine": "Bloc, Scara, etc.",
+    ".address.city": "Oras"
 }
 
 function schimbaMesajDeEroare(key: string, error: EroareLipseste | EroareDeLimita | EroareDePattern) {
@@ -138,7 +175,6 @@ function schimbaMesajDeEroare(key: string, error: EroareLipseste | EroareDeLimit
             `parola trebuia sa aiba o lungime de cel 
             putin 8 caractere, sa aiba cel putin o litera mare, 1 numar si 
             1 caracter special`
-
     }
     if (!(key in map)) {
         return error.message;
