@@ -12,11 +12,19 @@ import Title from "antd/es/typography/Title";
 const Form = withTheme(AntDTheme);
 
 
+const emailPattern = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+const passwordPattern = "(?=.*[a-z]+)(?=.*[0-9]+)(?=.*[A-Z]+)(?=.*[!@#$%^&*()_+\\[\\]{}:\";,.<>?|=-_]+).{8,20}"
+
 const schema = {
     "type": "object",
     "required": [
         "firstName",
-        "lastName"
+        "lastName",
+        "email",
+        "address",
+        "username",
+        "role",
+        "password"
     ],
     "properties": {
         "firstName": {
@@ -31,10 +39,33 @@ const schema = {
             "minLength": 3,
             "pattern": "[a-zA-Z]+"
         },
-        "telephone": {
+        "username": {
             "type": "string",
-            "title": "Telefon",
-            "minLength": 10,
+            "title": "Numele utilizatorlui",
+            "minLength": 3,
+            "pattern": "[a-zA-Z]+"
+        },
+        "email": {
+            "type": "string",
+            "title": "Email",
+            "pattern": emailPattern,
+        },
+        "password": {
+            "type": "string",
+            "title": "Parola",
+            "pattern": passwordPattern,
+        },
+        "role": {
+            "title": "Sunt un",
+            "type": "string",
+            "enum": [
+                "STUDENT",
+                "PROFESSOR",
+            ],
+            "enumNames": [
+                "Student",
+                "Profesor",
+            ]
         }
     }
 };
@@ -49,22 +80,15 @@ const uiSchema = {
         "ui:emptyValue": "",
         "ui:autocomplete": "family-name"
     },
-    "age": {
-        "ui:widget": "updown",
-        "ui:title": "Age of person",
-        "ui:description": "(earthian year)"
-    },
     "password": {
         "ui:widget": "password",
-        "ui:help": "Hint: Make it strong!"
+        "ui:help":  `parola trebuia sa aiba o lungime de cel 
+            putin 8 caractere, sa aiba cel putin o litera mare, 1 numar si 
+            1 caracter special`
     },
-    "date": {
-        "ui:widget": "alt-datetime"
-    },
-    "telephone": {
-        "ui:options": {
-            "inputType": "tel"
-        }
+
+    "role": {
+        "ui:help": "Alege daca esti student sau profesor"
     }
 };
 
@@ -94,14 +118,30 @@ interface EroareDePattern extends EroareDeBaza {
 
 type EroareGeneric = EroareLipseste | EroareDeLimita | EroareDePattern
 
+
+const proprietati: Record<string, string> = {
+    ".firstName": "prenume",
+    ".lastName": "nume de familie",
+    ".username": "nume utilizator",
+    ".email": "email",
+    ".password": "parola secreta",
+    ".role": "rol"
+}
+
 function schimbaMesajDeEroare(key: string, error: EroareLipseste | EroareDeLimita | EroareDePattern) {
     const map = {
-        "required": `${error.property} este un camp obligator`,
-        "minLength": `${error.property} trebuie sa contina cel putin ${(error as EroareDeLimita).params.limit} caractere`,
-        "pattern[a-zA-Z]+": `${(error as EroareDePattern).property} poate contine doar litere`
+        "required": `${proprietati[error.property]} este un camp obligator`,
+        "minLength": `${proprietati[error.property]} trebuie sa contina cel putin ${(error as EroareDeLimita).params.limit} caractere`,
+        "pattern[a-zA-Z]+": `${proprietati[(error as EroareDePattern).property]} poate contine doar litere`,
+        [`pattern${emailPattern}`]: "Adresa de mail nu este valida",
+        [`pattern${passwordPattern}`]:
+            `parola trebuia sa aiba o lungime de cel 
+            putin 8 caractere, sa aiba cel putin o litera mare, 1 numar si 
+            1 caracter special`
+
     }
     if (!(key in map)) {
-        throw new Error(`Campul error name nu este corect`);
+        return error.message;
     }
     return (map as Record<string, string>)[key]
 }
