@@ -15,17 +15,17 @@ const Form = withTheme(AntDTheme);
 const schema = {
     "type": "object",
     "required": [
-        "prenume",
-        "nume"
+        "firstName",
+        "lastName"
     ],
     "properties": {
-        "prenume": {
+        "firstName": {
             "type": "string",
             "title": "Prenume",
             "minLength": 3,
             "pattern": "[a-zA-Z]+"
         },
-        "nume": {
+        "lastName": {
             "type": "string",
             "title": "Nume",
             "minLength": 3,
@@ -40,14 +40,14 @@ const schema = {
 };
 
 const uiSchema = {
-    "prenume": {
+    "firstName": {
         "ui:autofocus": true,
         "ui:emptyValue": "",
-        "ui:autocomplete": "prenume"
+        "ui:autocomplete": "given-name"
     },
-    "nume": {
+    "lastName": {
         "ui:emptyValue": "",
-        "ui:autocomplete": "nume"
+        "ui:autocomplete": "family-name"
     },
     "age": {
         "ui:widget": "updown",
@@ -94,26 +94,24 @@ interface EroareDePattern extends EroareDeBaza {
 
 type EroareGeneric = EroareLipseste | EroareDeLimita | EroareDePattern
 
-function schimbaMesajDeEroare(error: EroareLipseste | EroareDeLimita | EroareDePattern) {
-    if (error.name === "required") {
-
-        error.message = `${error.property} este un camp obligator`
+function schimbaMesajDeEroare(key: string, error: EroareLipseste | EroareDeLimita | EroareDePattern) {
+    const map = {
+        "required": `${error.property} este un camp obligator`,
+        "minLength": `${error.property} trebuie sa contina cel putin ${(error as EroareDeLimita).params.limit} caractere`,
+        "pattern[a-zA-Z]+": `${(error as EroareDePattern).property} poate contine doar litere`
     }
-
-    else if (error.name === "minLength") {
-        error.message = `${error.property} trebuie sa contina cel putin ${error.params.limit} caractere`
+    if (!(key in map)) {
+        throw new Error(`Campul error name nu este corect`);
     }
-
-    else if (error.name === "pattern" && error.params.pattern === "[a-zA-Z]+") {
-        error.message = `${error.property} poate contine doar litere`;
-    }
+    return (map as Record<string, string>)[key]
 }
 
 const transformaEroarile = (errors: [
     EroareGeneric
 ]) => {
     return errors.map(error => {
-        schimbaMesajDeEroare(error);
+        const ekey = error.name + ((error as any)?.params?.pattern ? (error as any).params.pattern : "");
+        error.message = schimbaMesajDeEroare(ekey, error);
         return error;
     });
 }
