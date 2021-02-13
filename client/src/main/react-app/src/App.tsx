@@ -8,6 +8,7 @@ import {Col, Layout, PageHeader, Row, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import {httpPost} from "./httpClient";
 import {MediaType} from "./types";
+import {BASE_URL, USER_ENDPOINT} from "./constants";
 
 // Make modifications to the theme with your own fields and widgets
 
@@ -199,8 +200,7 @@ const transformaEroarile = (errors: [
 // const log = (type: any) => console.log.bind(console, type);
 const onSubmit = async (form: FormProps<any>) => {
     await httpPost( {
-        //TODO: trebuie sa fie dinamic: dev 3000, prod 5050
-        url: 'http://localhost:5050/api/user',
+        url: `${BASE_URL}${USER_ENDPOINT}`,
         bodyArg: form.formData,
         postReqType: MediaType.JSON
     });

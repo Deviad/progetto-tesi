@@ -8,10 +8,10 @@ export enum MediaType {
 export type RequestType = 'POST' | 'GET' | 'DELETE' | 'PUT';
 
 export type Request = {
-    method: RequestType;
+    method: Nullable<RequestType>;
     mode?: 'cors';
     headers?: Record<string, any>;
-    body?: string | object;
+    body: string | object;
 }
 
 export type HttpPostReqParams = {
@@ -19,3 +19,7 @@ export type HttpPostReqParams = {
     bodyArg: Record<any, any>;
     postReqType: MediaType;
 }
+
+export type HttpPutReqParams = HttpPostReqParams;
+
+
