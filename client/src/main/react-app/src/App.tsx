@@ -1,4 +1,4 @@
-import React, {RefObject, useEffect, useRef} from 'react';
+import React, {FC, RefObject, useEffect, useRef} from 'react';
 import {FormProps, withTheme} from '@rjsf/core';
 // @ts-ignore
 import {Theme as AntDTheme} from '@rjsf/antd';
@@ -6,6 +6,8 @@ import {Theme as AntDTheme} from '@rjsf/antd';
 import './App.css'
 import {Col, Layout, PageHeader, Row, Typography} from "antd";
 import Title from "antd/es/typography/Title";
+import {httpPost} from "./httpClient";
+import {MediaType} from "./types";
 
 // Make modifications to the theme with your own fields and widgets
 
@@ -195,8 +197,12 @@ const transformaEroarile = (errors: [
 
 
 // const log = (type: any) => console.log.bind(console, type);
-const onSubmit = (form: FormProps<any>) => {
-    console.log("evt", form);
+const onSubmit = async (form: FormProps<any>) => {
+    await httpPost( {
+        url: '/api/something',
+        bodyArg: form.formData,
+        postReqType: MediaType.JSON
+    });
 };
 
 const autofocusPePrimulCamp = (formRef: RefObject<HTMLFormElement>) => {
@@ -205,8 +211,7 @@ const autofocusPePrimulCamp = (formRef: RefObject<HTMLFormElement>) => {
     input.focus();
 }
 
-function App() {
-
+const App: FC = () => {
     const formRef: RefObject<HTMLFormElement> = useRef(null);
     useEffect(() => {
         autofocusPePrimulCamp(formRef);
