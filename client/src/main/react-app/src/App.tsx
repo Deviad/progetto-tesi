@@ -175,7 +175,7 @@ function schimbaMesajDeEroare(key: string, error: EroareLipseste | EroareDeLimit
         "pattern[a-zA-Z]+": `${proprietati[(error as EroareDePattern).property]} poate contine doar litere`,
         [`pattern${emailPattern}`]: "Adresa de mail nu este valida",
         [`pattern${passwordPattern}`]:
-            `parola trebuia sa aiba o lungime de cel 
+            `parola trebuie sa aiba o lungime de cel 
             putin 8 caractere, sa aiba cel putin o litera mare, 1 numar si 
             1 caracter special`
     }
