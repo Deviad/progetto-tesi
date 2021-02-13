@@ -18,9 +18,17 @@ public class OAuth2ResourceServerConfig {
     http.authorizeExchange()
         .pathMatchers("/swagger**", "/webjars/swagger-ui/**", "/v3/api-docs/**").permitAll()
         .pathMatchers(HttpMethod.POST, "/api/user**").permitAll()
+        .pathMatchers(HttpMethod.OPTIONS, "/api/user**").permitAll()
+
         .pathMatchers(HttpMethod.GET, "/api/user**", "/api/user/**").authenticated()
+        .pathMatchers(HttpMethod.OPTIONS, "/api/user**", "/api/user/**").authenticated()
+
         .pathMatchers(HttpMethod.PUT, "/api/user**").authenticated()
+        .pathMatchers(HttpMethod.OPTIONS, "/api/user**").authenticated()
+
         .pathMatchers(HttpMethod.DELETE, "/api/user**").authenticated()
+        .pathMatchers(HttpMethod.OPTIONS, "/api/user**").authenticated()
+
         .pathMatchers( "/api/course**", "/api/course/**").authenticated()
         .and()
         .csrf()

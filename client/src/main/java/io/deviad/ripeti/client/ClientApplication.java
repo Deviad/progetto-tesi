@@ -5,16 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.ResourceHandlerRegistry;
-import org.springframework.web.reactive.config.ViewResolverRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
-import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
-import org.springframework.web.reactive.result.view.RedirectView;
-import org.springframework.web.reactive.result.view.UrlBasedViewResolver;
-import org.springframework.web.reactive.result.view.View;
-import org.springframework.web.reactive.result.view.ViewResolver;
-import reactor.core.publisher.Mono;
-
-import java.util.Locale;
 
 @SpringBootApplication
 @EnableWebFlux

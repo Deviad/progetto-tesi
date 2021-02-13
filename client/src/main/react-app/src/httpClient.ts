@@ -1,5 +1,5 @@
 import {HttpPostReqParams, MediaType, Nullable, Request} from "./types";
-import {Log} from "./Log";
+import {Log} from "./utils/Log";
 
 export enum ContentType {
     JSON_UTF8 = "application/json;charset=UTF-8",
@@ -38,7 +38,7 @@ export const httpGet = async <T> (url: string): Promise<(boolean | Nullable<T>)[
             headers: addContentType(ContentType.JSON_UTF8),
         });
         const responseOk = Math.floor(response.status / 100) === 2;
-        const body: T = await response.json();
+        const body: Nullable<T> = await response.json();
         return ([responseOk, body] as (boolean | Nullable<T>)[]);
     } catch (error) {
         Log.error(error);
@@ -59,7 +59,7 @@ export const httpPost = async <T>  (params: HttpPostReqParams): Promise<(boolean
         }
         const response: Response = await fetch(url, reqConfig);
         const responseOk = Math.floor(response.status / 100) === 2;
-        const body: T = await response.json();
+        const body: Nullable<T> = await response.json();
         return ([responseOk, body] as (boolean | Nullable<T>)[]);
     } catch (error) {
         Log.error(error);
@@ -76,7 +76,7 @@ export const httpPut = async <T> (url: string, bodyArg: Record<any, any>): Promi
             body: JSON.stringify(bodyArg),
         });
         const responseOk = Math.floor(response.status / 100) === 2;
-        const body: T = await response.json();
+        const body: Nullable<T> = await response.json();
         return ([responseOk, body] as (boolean | Nullable<T>)[]);
     } catch (error) {
         Log.error(error);
@@ -92,7 +92,7 @@ export const httpDelete = async (url: string): Promise<(boolean)[]> => {
             headers: addContentType(ContentType.JSON_UTF8),
         });
         const responseOk = Math.floor(response.status / 100) === 2;
-        return ([responseOk] as (boolean)[]);
+        return ([responseOk] as boolean[]);
     } catch (error) {
         Log.error(error);
         return [false, error];
