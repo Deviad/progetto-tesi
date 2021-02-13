@@ -199,7 +199,9 @@ const transformaEroarile = (errors: [
 // const log = (type: any) => console.log.bind(console, type);
 const onSubmit = async (form: FormProps<any>) => {
     await httpPost( {
-        url: '/api/something',
+        //TODO: trebuie sa fie dinamic: dev 3000, prod 5050
+
+        url: 'http://localhost:5050/api/user',
         bodyArg: form.formData,
         postReqType: MediaType.JSON
     });
