@@ -1,6 +1,7 @@
 package io.deviad.ripeti.webapp.ui.route;
 
 import io.deviad.ripeti.webapp.application.command.UserCommandService;
+import io.deviad.ripeti.webapp.ui.Utils;
 import io.deviad.ripeti.webapp.ui.command.RegistrationRequest;
 import io.deviad.ripeti.webapp.ui.command.UpdatePasswordRequest;
 import io.deviad.ripeti.webapp.ui.command.UpdateUserRequest;
@@ -63,16 +64,14 @@ public class UserCommandRoutesManager {
     return request
         .bodyToMono(UpdatePasswordRequest.class)
         .onErrorResume(Mono::error)
-        .flatMap(r -> Mono.zip(Mono.just(r), request.principal().onErrorResume(Mono::error)))
+        .flatMap(r -> Mono.zip(Mono.just(r), Utils.fetchPrincipal(request)))
         .map(r -> userManagement.updatePassword(r.getT1(), (JwtAuthenticationToken) r.getT2()))
         .flatMap(Function.identity())
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
 
   Mono<ServerResponse> handleDeleteUser(ServerRequest request) {
-    return request
-        .principal()
-        .onErrorResume(Mono::error)
+    return Utils.fetchPrincipal(request)
         .flatMap(r -> userManagement.deleteUser((JwtAuthenticationToken) r))
         .flatMap(r -> ServerResponse.ok().build());
   }
@@ -82,9 +81,11 @@ public class UserCommandRoutesManager {
     return request
         .bodyToMono(UpdateUserRequest.class)
         .onErrorResume(Mono::error)
-        .flatMap(r -> Mono.zip(Mono.just(r), request.principal().onErrorResume(Mono::error)))
-        .map(r -> userManagement.updateUser(r.getT1(), (JwtAuthenticationToken) r.getT2()))
+        .flatMap(r -> Mono.zip(Mono.just(r).onErrorResume(Mono::error),
+                Utils.fetchPrincipal(request)))
+        .map(r -> userManagement.updateUser(r.getT1(), (JwtAuthenticationToken) r.getT2()).onErrorResume(Mono::error))
         .flatMap(Function.identity())
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
+
 }

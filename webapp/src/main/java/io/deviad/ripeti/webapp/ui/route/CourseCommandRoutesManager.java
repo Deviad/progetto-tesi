@@ -2,6 +2,7 @@ package io.deviad.ripeti.webapp.ui.route;
 
 import io.deviad.ripeti.webapp.application.command.CourseCommandService;
 import io.deviad.ripeti.webapp.application.command.UserCommandService;
+import io.deviad.ripeti.webapp.ui.Utils;
 import io.deviad.ripeti.webapp.ui.command.AddLessonToCourseRequest;
 import io.deviad.ripeti.webapp.ui.command.AddQuizToCourseRequest;
 import io.deviad.ripeti.webapp.ui.command.CreateCourseRequest;
@@ -149,9 +150,7 @@ public class CourseCommandRoutesManager {
 
   Mono<ServerResponse> createCourse(ServerRequest request) {
 
-    return request
-        .principal()
-        .onErrorResume(Mono::error)
+    return Utils.fetchPrincipal(request)
         .flatMap(
             p ->
                 Mono.zip(
@@ -168,9 +167,7 @@ public class CourseCommandRoutesManager {
 
   Mono<ServerResponse> deleteCourse(ServerRequest request) {
     String courseId = request.pathVariable("id");
-    return request
-        .principal()
-        .onErrorResume(Mono::error)
+    return Utils.fetchPrincipal(request)
         .flatMap(
             p ->
                 courseService
@@ -182,9 +179,7 @@ public class CourseCommandRoutesManager {
   Mono<ServerResponse> handleUpdate(ServerRequest request) {
     String courseId = request.pathVariable("id");
 
-    return request
-        .principal()
-        .onErrorResume(Mono::error)
+    return Utils.fetchPrincipal(request)
         .flatMap(
             p ->
                 Mono.zip(
@@ -223,9 +218,7 @@ public class CourseCommandRoutesManager {
   Mono<ServerResponse> publishCourse(ServerRequest request) {
     UUID courseId = UUID.fromString(request.pathVariable("courseId"));
 
-    return request
-        .principal()
-        .onErrorResume(Mono::error)
+    return Utils.fetchPrincipal(request)
         .flatMap(p -> courseService.publishCourse(courseId, (JwtAuthenticationToken) p))
         .flatMap(x -> ServerResponse.ok().bodyValue(x));
   }
@@ -234,9 +227,7 @@ public class CourseCommandRoutesManager {
   Mono<ServerResponse> addLessonToCourse(ServerRequest request) {
     UUID courseId = UUID.fromString(request.pathVariable("courseId"));
 
-    return request
-        .principal()
-        .onErrorResume(Mono::error)
+    return Utils.fetchPrincipal(request)
         .flatMap(
             p ->
                 Mono.zip(
@@ -253,9 +244,7 @@ public class CourseCommandRoutesManager {
   Mono<ServerResponse> removeLesson(ServerRequest request) {
     UUID lessonId = UUID.fromString(request.pathVariable("lessonId"));
 
-    return request
-        .principal()
-        .onErrorResume(Mono::error)
+    return Utils.fetchPrincipal(request)
         .flatMap(
             p ->
                 courseService
@@ -267,9 +256,7 @@ public class CourseCommandRoutesManager {
   Mono<ServerResponse> createQuiz(ServerRequest request) {
     UUID courseId = UUID.fromString(request.pathVariable("courseId"));
 
-    return request
-        .principal()
-        .onErrorResume(Mono::error)
+    return Utils.fetchPrincipal(request)
         .flatMap(
             p ->
                 Mono.zip(
@@ -286,9 +273,7 @@ public class CourseCommandRoutesManager {
   Mono<ServerResponse> removeQuiz(ServerRequest request) {
     UUID quizId = UUID.fromString(request.pathVariable("quizId"));
 
-    return request
-        .principal()
-        .onErrorResume(Mono::error)
+    return Utils.fetchPrincipal(request)
         .flatMap(p -> courseService.removeQuizFromCourse(quizId, (JwtAuthenticationToken) p))
         .flatMap(x -> ServerResponse.ok().build());
   }
