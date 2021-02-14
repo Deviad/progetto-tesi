@@ -1,5 +1,6 @@
 import {HttpPostReqParams, MediaType, Nullable, Request} from "./types";
 import {Log} from "./utils/Log";
+import {utils} from "./utils";
 
 export enum ContentType {
     JSON_UTF8 = "application/json;charset=UTF-8",
@@ -29,7 +30,7 @@ export const createReq = <T extends Nullable<'POST'> | Nullable<'PUT'>, FDATA ex
             method: httpMethod ?? "POST",
             mode: 'cors',
             headers: addContentType(ContentType.JSON_UTF8),
-            body: toFormUrlEncoded(bodyArg as NonNullable<object>),
+            body: utils.toFormUrlEncoded(bodyArg as NonNullable<object>),
         }),
     };
     return config[(postReqType)]();
@@ -111,8 +112,3 @@ export const serializeDateAccordingToContentType = <HTTPMETHOD extends Nullable<
     return reqConfig;
 }
 
-export const toFormUrlEncoded = <BODY extends NonNullable<object>> (object: BODY) => {
-        return Object.entries(object)
-            .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-            .join('&');
-}

@@ -23,3 +23,20 @@ export type HttpPostReqParams = {
 export type HttpPutReqParams = HttpPostReqParams;
 
 
+export interface UserState extends User {
+    isLoading: boolean
+    error: Nullable<string>
+}
+
+export interface User {
+    username: Nullable<string>,
+    email: Nullable<string>,
+}
+
+export const userInitialState: UserState = {
+    username: null,
+    email: null,
+    isLoading: false,
+    error: null,
+
+}
