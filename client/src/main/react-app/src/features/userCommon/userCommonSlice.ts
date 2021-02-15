@@ -1,63 +1,68 @@
 import {createSlice, Dispatch, PayloadAction} from '@reduxjs/toolkit'
 
 import {AppThunk} from "../../app/store";
-import {User, userInitialState, UserState} from "../../types";
+import {AccessToken, AuthorizationResponse, Nullable, UserState} from "../../types";
 import {utils} from "../../utils";
 import * as H from 'history';
+import {getAppFailure, getAppLoading} from '../../app/appSharedSlice';
+import jwtDecode from "jwt-decode";
 
-function startLoading(state: UserState) {
-    state.isLoading = true
+export const userInitialState: UserState = {
+    username: null,
+    email: null,
+    expirationTime: null,
+    accessToken: null,
+    refreshToken: null,
+    refreshExpirationTime: null,
+    issuedAt: null,
+    expiresAt: null,
 }
 
-function loadingFailed(state: UserState, action: PayloadAction<string>) {
-    state.isLoading = false
-    state.error = action.payload
-}
 
 const user = createSlice({
     name: 'user',
     initialState: userInitialState,
     reducers: {
-        getUserStart: startLoading,
-        getUserSuccess(state, {payload}: PayloadAction<User>) {
-            const {username, email} = payload
+        getUserSuccess(state, {payload}: PayloadAction<UserState>) {
+            const {username, email, issuedAt, expiresAt, expirationTime, accessToken, refreshToken, refreshExpirationTime} = payload
             state.username = username;
             state.email = email;
-            state.isLoading = false
-            state.error = null
+            state.expirationTime = expirationTime;
+            state.issuedAt = issuedAt;
+            state.expiresAt = expiresAt;
+            state.accessToken = accessToken;
+            state.refreshToken = refreshToken;
+            state.refreshExpirationTime = refreshExpirationTime;
         },
-        getUserFailure: loadingFailed,
     }
 })
 
 export const {
-    getUserStart,
     getUserSuccess,
-    getUserFailure,
 } = user.actions
 
 export default user.reducer
 
 export const fetchUser = (
-    user: User,
+    user: UserState,
     history: H.History
 ): AppThunk => async (dispatch: Dispatch) => {
 
     try {
-        dispatch(getUserStart());
+        dispatch(getAppLoading());
         const currentUser = await handleLocalAuth(user);
         dispatch(getUserSuccess(currentUser));
         history.push("/user-profile")
     } catch (err) {
-        dispatch(getUserFailure(err.toString()))
-        throw new Error("Could not fetch token: " + err);
+        dispatch(getAppFailure(err.toString()))
+        history.push("/error")
     }
 }
 
 
-const handleLocalAuth = (user: User): Promise<User> => {
+const handleLocalAuth = (user: UserState): Promise<UserState> => {
 
-    if (user?.email != null) {
+    if (user.email != null) {
         return Promise.resolve(user);
     }
 
@@ -69,11 +74,11 @@ const handleLocalAuth = (user: User): Promise<User> => {
         'client_secret': 'b8cc4bab-c1c5-4af4-9456-bec7f81a5bda',
     });
 
-    const authorizeUrl = `http://localhost:8884/auth/realms/agrilink/protocol/openid-connect/token`;
+    const authorizeUrl = `http://localhost:8884/auth/realms/ripeti/protocol/openid-connect/token`;
     return fetch(authorizeUrl, {
         // credentials: "include",
         method: "POST",
-        mode: 'no-cors',
+        mode: 'cors',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             // 'Target-URL': `http://localhost:8884/auth/realms/agrilink/protocol/openid-connect/token`
@@ -86,20 +91,30 @@ const handleLocalAuth = (user: User): Promise<User> => {
             if (((res.status / 100) | 0) === 2) {
                 return res;
             }
-
+            if (res.status === 0) {
+                throw new Error("Cannot establish a connection or CORS error")
+            }
             throw new Error(JSON.stringify(res));
-
-
         })
         .catch(error => {
             console.log('Request failed', error);
-            throw new Error(error);
+            throw new Error(error.message);
         })
-        .then(res => (typeof res === 'object') && res.json())
-        .then((user: User) => {
-            console.log('Request succeeded with JSON response', user);
-            utils.storage.setItem("user", JSON.stringify(user));
-            return user;
+        .then(res => (res as Response).json())
+        .then((auth: AuthorizationResponse) => {
+            const access: AccessToken = jwtDecode(auth.access_token);
+            const result: UserState = {
+                email: access.email,
+                expirationTime: auth.expires_in,
+                expiresAt: access.exp,
+                issuedAt: access.iat,
+                refreshExpirationTime: auth.refresh_expires_in,
+                refreshToken: auth.refresh_token,
+                accessToken: auth.access_token,
+                username:  access.preferred_username,
+            }
+            console.log('Request succeeded with JSON response', auth);
+            utils.storage.setItem("user", JSON.stringify(auth));
+            return result as UserState;
         })
-
 };

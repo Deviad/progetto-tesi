@@ -7,6 +7,7 @@ import Oauth2 from "./features/oauth2";
 import {Registration} from "./features/registration/Registration";
 import {Login} from "./features/login/Login";
 import {Route, Switch} from "react-router-dom";
+import {ErrorComponent} from "./features/common/Error";
 
 
 const NotFound = () => <div>Page not Found</div>;
@@ -34,6 +35,9 @@ const App: FC = () => {
                 </Route>
                 <Route path="/register">
                     <Registration/>
+                </Route>
+                <Route path="/error">
+                    <ErrorComponent/>
                 </Route>
                 <Route path={`*`} component={NotFound} />
             </Switch>

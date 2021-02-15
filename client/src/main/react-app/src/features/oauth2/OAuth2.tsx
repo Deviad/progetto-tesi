@@ -28,8 +28,7 @@ const Authorization = () => {
     return (<div>Authorization</div>);
 };
 
-
-const Token = React.memo(() => {
+const Token = () => {
 
     const cache = useRef<Nullable<User>>(null);
 
@@ -39,21 +38,19 @@ const Token = React.memo(() => {
     const user = useSelector((state: RootState) => state.user);
     const cFetchUser = useCallback((user, history) => dispatch(fetchUser(user, history)), [dispatch, history]);
 
-    if(shallowEqual(user, cache.current)) {
-        return <div>Token</div>;
-    }
+
 
     useEffect(() => {
-        cFetchUser(user, history)
-    }, [user]);
-
-    useEffect(() => {
+        if(shallowEqual(user, cache.current)) {
+            return;
+        }
+        cFetchUser(user, history);
         cache.current = user;
-    });
-
+    }, [user]);
     return (<div>Token</div>);
+};
 
-});
+const MemoizedToken = React.memo(Token);
 
 const OAuth2 = () =>
 
@@ -62,7 +59,7 @@ const OAuth2 = () =>
             <Authorization/>
         </Route>
         <Route path="*/token">
-            <Token/>
+            <MemoizedToken/>
         </Route>
     </>);
 

@@ -11,8 +11,8 @@ const UserProfile = () => {
 
     return (
         <div>
-            User is <br />
-            {JSON.stringify(user)}
+            User is <br/>
+            <pre>{JSON.stringify(user, null, 2)}</pre>
         </div>
     );
 

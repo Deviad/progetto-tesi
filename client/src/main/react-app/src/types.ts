@@ -22,10 +22,18 @@ export type HttpPostReqParams = {
 
 export type HttpPutReqParams = HttpPostReqParams;
 
-
 export interface UserState extends User {
-    isLoading: boolean
-    error: Nullable<string>
+    issuedAt: Nullable<number>;
+    expiresAt: Nullable<number>;
+    refreshExpirationTime: Nullable<number>;
+    expirationTime: Nullable<number>;
+    accessToken: Nullable<string>;
+    refreshToken: Nullable<string>;
+}
+
+export interface SharedState {
+    isLoading: boolean,
+    error: Nullable<string>;
 }
 
 export interface User {
@@ -33,10 +41,79 @@ export interface User {
     email: Nullable<string>,
 }
 
-export const userInitialState: UserState = {
-    username: null,
-    email: null,
-    isLoading: false,
-    error: null,
-
+export interface AuthorizationResponse {
+    access_token: string;
+    expires_in: number;
+    id_token: string;
+    "not-before-policy": number;
+    refresh_expires_in: number;
+    refresh_token: string;
+    scope: string;
+    session_state: string;
+    token_type: string;
 }
+
+/*
+    Here is an example with all the fields completed.
+
+    acr: "0"
+    allowed-origins: (2) ["*", "/!*"]
+    aud: "account"
+    auth_time: 1613382663
+    azp: "ripeti-web"
+    email: "izzio@11gmail233322.com"
+    email_verified: true
+    exp: 1613383035
+    family_name: "Pugaasliese"
+    given_name: "Davidae"
+    iat: 1613382735
+    iss: "http://localhost:8884/auth/realms/ripeti"
+    jti: "8c1b9b8b-7c0b-4829-a695-45f16103de45"
+    locale: "en"
+    name: "Davidae Pugaasliese"
+    nbf: 0
+    preferred_username: "izzio"
+    resource_access:
+        account:
+    roles: (3) ["manage-account", "manage-account-links", "view-profile"]
+    __proto__: Object
+    ripeti-web:
+        roles: ["PROFESOR"]
+    __proto__: Object
+    __proto__: Object
+    scope: "openid email profile"
+    session_state: "2b08d01e-5792-4867-8fd7-2f3a2c566bbb"
+    sub: "fafd791f-ec63-4250-8659-8be9221b088d"
+    typ: "Bearer"
+*/
+export interface AccessToken {
+    acr: number;
+    "allow-origins": string[],
+    aud: string;
+    auth_time: number;
+    azp: string;
+    email: string;
+    email_verified: string;
+    exp: number;
+    family_name: string;
+    given_name: string;
+    iat: number;
+    iss: string;
+    jti: string;
+    locale: string;
+    name: string;
+    preferred_username: string
+    resource_access: {
+        account: {
+            roles: string[] //["manage-account", "manage-account-links", "view-profile"]
+        },
+        [key: string]: {
+            roles: string[]; //professor or student
+        }
+    }
+    scope: string;
+    session_state: string;
+    sub: string;
+    typ: string; //Bearer
+}
+

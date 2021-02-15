@@ -1,5 +1,5 @@
 import {HttpPostReqParams, MediaType, Nullable, Request} from "./types";
-import {Log} from "./utils/Log";
+import {Log} from "./utils";
 import {utils} from "./utils";
 
 export enum ContentType {
