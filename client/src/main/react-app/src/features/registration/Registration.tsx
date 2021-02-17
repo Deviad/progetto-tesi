@@ -1,5 +1,5 @@
 import React, {FC, RefObject, useEffect, useRef} from "react";
-import {Col, Layout, Row, Typography} from "antd";
+import {Col, Row, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import {FormProps, withTheme} from "@rjsf/core";
 import {httpPost} from "../../httpClient";
@@ -183,7 +183,6 @@ function schimbaMesajDeEroare(key: string, error: EroareLipseste | EroareDeLimit
 }
 
 
-
 const autofocusPePrimulCamp = (formRef: RefObject<HTMLFormElement>) => {
     const input = Object.values(formRef?.current?.formElement)
         .find((x: any) => x.id === 'root_firstName') as NonNullable<HTMLInputElement>;
@@ -191,7 +190,7 @@ const autofocusPePrimulCamp = (formRef: RefObject<HTMLFormElement>) => {
 }
 
 const onSubmit = async (form: FormProps<any>) => {
-    await httpPost( {
+    await httpPost({
         url: `${BASE_URL}${USER_ENDPOINT}`,
         bodyArg: form.formData,
         postReqType: MediaType.JSON
@@ -212,9 +211,9 @@ export const Registration: FC = () => {
         autofocusPePrimulCamp(formRef);
     }, []);
 
-    return (<Layout.Content>
-        <Row gutter={[16, 16]} align="middle" justify="center">
-            <Col span={10} flex="auto">
+    return (<>
+        <Row align="middle" justify="center">
+            <Col span={12} flex="auto">
                 <Typography>
                     <Title>
                         Inregistreazate
@@ -222,8 +221,8 @@ export const Registration: FC = () => {
                 </Typography>
             </Col>
         </Row>
-        <Row gutter={[16, 16]} align="middle" justify="center">
-            <Col span={10} flex="auto">
+        <Row align="middle" justify="center">
+            <Col span={12} flex="auto">
                 {/* @ts-ignore */}
                 <Form schema={schema} uiSchema={uiSchema}
                       ref={formRef}
@@ -233,7 +232,7 @@ export const Registration: FC = () => {
                 />
             </Col>
         </Row>
-    </Layout.Content>)
+    </>)
 
 
 }
