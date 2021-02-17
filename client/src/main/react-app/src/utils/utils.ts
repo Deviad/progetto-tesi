@@ -12,14 +12,35 @@ const utils = (function () {
     }
 
     const getParameterByName = (name: string, url?: string): Nullable<string> => {
-        if (!url) url = window.location.href;
+        if (!url) {
+            url = window.location.href;
+        }
+
+        /*
+            "[" "]" reprezinta simbolele proprie al limbajului Javascript,
+            de aceea trebuie sa le escape-uim, astfel incat sa fie interpretate
+            doar ca un sir de caractere.
+         */
         name = name.replace(/[\[\]]/g, '\\$&');
-        const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-            results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, ' '));
-    }
+
+        const parser = document.createElement('a');
+        parser.href = url;
+
+        /*
+            Aici folosesc un espedient fiindca .search
+            permite direct de a extrage bucata de query string din un url.
+         */
+
+        const query = parser.search.substring(1);
+        const vars = query.split('&');
+        for (let i = 0; i < vars.length; i++) {
+            const pair = vars[i].split('=');
+            if (pair[0] === name) {
+                return decodeURIComponent(pair[1]);
+            }
+        }
+        return null;
+    };
 
     const cookieStorage = (function cookieStorage() {
 
@@ -135,7 +156,7 @@ const utils = (function () {
             return false
         } else {
             const accessToken = decodeAccessToken(serAuthResp);
-            return  Math.floor(Date.now() / 1000) < accessToken.exp;
+            return Math.floor(Date.now() / 1000) < accessToken.exp;
 
         }
     }
