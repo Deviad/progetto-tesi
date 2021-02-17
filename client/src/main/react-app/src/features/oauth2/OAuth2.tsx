@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 
 // @ts-ignore
 import {useRoutes} from 'hookrouter';
@@ -36,12 +36,12 @@ const Token = () => {
     const history = useHistory();
 
     const user = useSelector((state: RootState) => state.user);
-    const cFetchUser = useCallback((user, history) => dispatch(fetchUser(user, history)), [dispatch, history]);
-
+    const cFetchUser = useCallback((user, history) => dispatch(fetchUser(user, history)), []);
 
 
     useEffect(() => {
-        if(shallowEqual(user, cache.current)) {
+        console.log("storedUser", utils.storage.getItem("auth_res"));
+        if (shallowEqual(user, cache.current)) {
             return;
         }
         cFetchUser(user, history);
@@ -54,7 +54,7 @@ const MemoizedToken = React.memo(Token);
 
 const OAuth2 = () =>
 
-     (<>
+    (<>
         <Route path="*/authorization">
             <Authorization/>
         </Route>

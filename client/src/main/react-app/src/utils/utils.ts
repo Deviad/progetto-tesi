@@ -1,7 +1,9 @@
 import * as Cookies from "js-cookie";
-import {Nullable} from "../types";
+import {AccessToken, AuthorizationResponse, Nullable, UserState} from "../types";
+import {isEmpty, isNil} from "lodash";
+import jwtDecode from "jwt-decode";
 
-const utils = (function() {
+const utils = (function () {
 
     const toFormUrlEncoded = <BODY extends NonNullable<object>>(object: BODY) => {
         return Object.entries(object)
@@ -25,11 +27,11 @@ const utils = (function() {
             secure: true
         };
 
-        const setItem = (key: string, value:any) => Cookies.set(key, value, options);
+        const setItem = (key: string, value: any) => Cookies.set(key, value, options);
 
         const getItem = (key: string) => Cookies.get(key);
 
-        const removeItem = (key:string) => Cookies.remove(key, options);
+        const removeItem = (key: string) => Cookies.remove(key, options);
 
         const key = (index: number) => {
             let allKeys = Object.keys(Cookies.getJSON());
@@ -56,8 +58,7 @@ const utils = (function() {
             storage.setItem(x, x);
             storage.removeItem(x);
             return true;
-        }
-        catch (e) {
+        } catch (e) {
             return e instanceof DOMException && (
                     // everything except Firefox
                 e.code === 22 ||
@@ -86,7 +87,7 @@ const utils = (function() {
 
     const endpointFactory = () => ({
         get resource() {
-            if(process.env.NODE_ENV === 'production') {
+            if (process.env.NODE_ENV === 'production') {
                 return 'http://localhost:5051/react/user-profile'
             } else {
                 return 'http://localhost:3000/user-profile'
@@ -94,18 +95,59 @@ const utils = (function() {
         },
 
         get tokenRedirect() {
-            if(process.env.NODE_ENV === 'production') {
+            if (process.env.NODE_ENV === 'production') {
                 return 'http://localhost:5051/react/oauth/token'
             } else {
                 return 'http://localhost:3000/oauth/token'
             }
-        }})
+        }
+    })
 
+    const getUserStateFromAuthResponse = (auth: AuthorizationResponse) => {
+        const access: AccessToken = jwtDecode(auth.access_token);
+        const result: UserState = {
+            email: access.email,
+            expirationTime: auth.expires_in,
+            expiresAt: access.exp,
+            issuedAt: access.iat,
+            refreshExpirationTime: auth.refresh_expires_in,
+            refreshToken: auth.refresh_token,
+            accessToken: auth.access_token,
+            username: access.preferred_username,
+        }
+        return result;
+    }
+
+    const decodeAuthResp = (serAuthResp: string): AuthorizationResponse => {
+        return JSON.parse(serAuthResp) as AuthorizationResponse;
+    }
+
+    const decodeAccessToken = (serAuthResp: string): AccessToken => {
+        const deserAuthResp = decodeAuthResp(serAuthResp);
+
+        return jwtDecode(deserAuthResp.access_token);
+    }
+
+    const isValidStoredToken = () => {
+        const serAuthResp = utils.storage.getItem("auth_res");
+
+        if (isNil(serAuthResp) || isEmpty(serAuthResp)) {
+            return false
+        } else {
+            const accessToken = decodeAccessToken(serAuthResp);
+            return  Math.floor(Date.now() / 1000) < accessToken.exp;
+
+        }
+    }
 
     return {
         toFormUrlEncoded,
         getParameterByName,
         endpointFactory,
+        isValidStoredToken,
+        decodeAuthResp,
+        decodeAccessToken,
+        getUserStateFromAuthResponse,
         get storage() {
             return storageFactory.getStorage();
         }
@@ -114,3 +156,4 @@ const utils = (function() {
 })();
 
 export {utils};
+

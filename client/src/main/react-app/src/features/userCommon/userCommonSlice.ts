@@ -1,11 +1,10 @@
 import {createSlice, Dispatch, PayloadAction} from '@reduxjs/toolkit'
 
 import {AppThunk} from "../../app/store";
-import {AccessToken, AuthorizationResponse, Nullable, UserState} from "../../types";
+import {AuthorizationResponse, UserState} from "../../types";
 import {utils} from "../../utils";
 import * as H from 'history';
 import {getAppFailure, getAppLoading} from '../../app/appSharedSlice';
-import jwtDecode from "jwt-decode";
 
 export const userInitialState: UserState = {
     username: null,
@@ -102,19 +101,9 @@ const handleLocalAuth = (user: UserState): Promise<UserState> => {
         })
         .then(res => (res as Response).json())
         .then((auth: AuthorizationResponse) => {
-            const access: AccessToken = jwtDecode(auth.access_token);
-            const result: UserState = {
-                email: access.email,
-                expirationTime: auth.expires_in,
-                expiresAt: access.exp,
-                issuedAt: access.iat,
-                refreshExpirationTime: auth.refresh_expires_in,
-                refreshToken: auth.refresh_token,
-                accessToken: auth.access_token,
-                username:  access.preferred_username,
-            }
+            const result = utils.getUserStateFromAuthResponse(auth);
             console.log('Request succeeded with JSON response', auth);
-            utils.storage.setItem("user", JSON.stringify(auth));
+            utils.storage.setItem("auth_res", JSON.stringify(auth));
             return result as UserState;
         })
 };

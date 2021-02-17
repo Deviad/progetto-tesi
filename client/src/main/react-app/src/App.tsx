@@ -2,17 +2,19 @@ import React, {FC} from 'react';
 
 import './App.css'
 import {Layout, PageHeader} from "antd";
-import UserProfile from "./features/userProfile";
 import Oauth2 from "./features/oauth2";
 import {Registration} from "./features/registration/Registration";
 import {Login} from "./features/login/Login";
 import {Route, Switch} from "react-router-dom";
 import {ErrorComponent} from "./features/common/Error";
+import {AuthGuard} from "./features/oauth2/AuthGuard";
 
 
 const NotFound = () => <div>Page not Found</div>;
 
 const App: FC = () => {
+
+    const guardedPaths = ["/user-profile"]
 
     return (
         <Layout>
@@ -28,18 +30,22 @@ const App: FC = () => {
                     <Login/>
                 </Route>
                 <Route path="/oauth">
-                   <Oauth2/>
+                    <Oauth2/>
                 </Route>
-                <Route path="/user-profile">
-                    <UserProfile />
-                </Route>
+
+                {guardedPaths.map(r=> (
+                    <Route path={r}>
+                        <AuthGuard />
+                    </Route>
+                ))}
+
                 <Route path="/register">
                     <Registration/>
                 </Route>
                 <Route path="/error">
                     <ErrorComponent/>
                 </Route>
-                <Route path={`*`} component={NotFound} />
+                <Route path={`*`} component={NotFound}/>
             </Switch>
         </Layout>
     );
