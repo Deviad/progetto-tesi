@@ -3,169 +3,32 @@ import {Col, Row, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import {FormProps, withTheme} from "@rjsf/core";
 import {httpPost} from "../../httpClient";
-import {BASE_URL, USER_ENDPOINT} from "../../constants";
-import {MediaType} from "../../types";
+import {
+    BASE_URL,
+    emailPattern,
+    passwordPattern,
+    proprietati,
+    registrationSchema,
+    registrationUiSchema,
+    USER_ENDPOINT
+} from "../../constants";
+import {EroareDeLimita, EroareDePattern, EroareGeneric, MediaType} from "../../types";
 // @ts-ignore
 import {Theme as AntDTheme} from '@rjsf/antd';
 
 const Form = withTheme(AntDTheme);
 
 
-const emailPattern = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
-const passwordPattern = "(?=.*[a-z]+)(?=.*[0-9]+)(?=.*[A-Z]+)(?=.*[!@#$%^&*()_+\\[\\]{}:\";,.<>?|=-_]+).{8,20}"
+// Aici folosesc un escamotage pentru ca sintaxa nativ nu supoarta:
+//
+// const ceva = <T extends unknown> (key: string, error: EroareGeneric<T>) {}
+// arunca eroare unclosed `T` tag
+// de aceea folosesc <T extends unknown>
+// deci dupa primul T neaparat trebuie sa folosim extend
+// este o constrangere al limbajului
 
-const schema = {
-    "type": "object",
-    "required": [
-        "firstName",
-        "lastName",
-        "email",
-        "username",
-        "role",
-        "password"
-    ],
-    "properties": {
-        "firstName": {
-            "type": "string",
-            "title": "Prenume",
-            "minLength": 3,
-            "pattern": "[a-zA-Z]+"
-        },
-        "lastName": {
-            "type": "string",
-            "title": "Nume",
-            "minLength": 3,
-            "pattern": "[a-zA-Z]+"
-        },
-        "username": {
-            "type": "string",
-            "title": "Numele utilizatorlui",
-            "minLength": 3,
-            "pattern": "[a-zA-Z]+"
-        },
-        "email": {
-            "type": "string",
-            "title": "Email",
-            "pattern": emailPattern,
-        },
-        "password": {
-            "type": "string",
-            "title": "Parola",
-            "pattern": passwordPattern,
-        },
-        "role": {
-            "title": "Sunt un",
-            "type": "string",
-            "enum": [
-                "STUDENT",
-                "PROFESSOR",
-            ],
-            "enumNames": [
-                "Student",
-                "Profesor",
-            ]
-        },
-        "address": {
-            "required": [
-                "firstAddressLine",
-                "secondAddressLine",
-                "city",
-                "country"
+const schimbaMesajDeEroare = <T extends unknown> (key: string, error: EroareGeneric<T>) => {
 
-            ],
-            "type": "object",
-            "title": "Adresa",
-            "properties": {
-                "firstAddressLine": {
-                    "type": "string",
-                    "title": "Strada si numar",
-                    "minLength": 3,
-                },
-                "secondAddressLine": {
-                    "type": "string",
-                    "title": "Bloc, Scara, etc.",
-                    "minLength": 3,
-                },
-                "city": {
-                    "type": "string",
-                    "title": "Oras",
-                    "minLength": 3,
-                    "pattern": "[a-zA-Z]+"
-                },
-                "country": {
-                    "type": "string",
-                    "title": "Tara",
-                    "enum": [
-                        "ROMANIA"
-                    ]
-                }
-            }
-        }
-    }
-};
-
-const uiSchema = {
-    "firstName": {
-        "ui:emptyValue": "",
-        "ui:autocomplete": "given-name"
-    },
-    "lastName": {
-        "ui:emptyValue": "",
-        "ui:autocomplete": "family-name"
-    },
-    "password": {
-        "ui:widget": "password",
-        "ui:help": `parola trebuia sa aiba o lungime de cel 
-            putin 8 caractere, sa aiba cel putin o litera mare, 1 numar si 
-            1 caracter special`
-    },
-
-    "role": {
-        "ui:help": "Alege daca esti student sau profesor"
-    }
-};
-
-
-interface EroareDeBaza {
-    message: string,
-    property: string,
-}
-
-interface EroareLipseste extends EroareDeBaza {
-    name: "required"
-}
-
-interface EroareDeLimita extends EroareDeBaza {
-    name: "minLength",
-    params: {
-        limit: number
-    }
-}
-
-interface EroareDePattern extends EroareDeBaza {
-    name: "pattern",
-    params: {
-        pattern: string;
-    }
-}
-
-type EroareGeneric = EroareLipseste | EroareDeLimita | EroareDePattern
-
-
-const proprietati: Record<string, string> = {
-    ".firstName": "Prenume",
-    ".lastName": "Nume de familie",
-    ".username": "Nume utilizator",
-    ".email": "Email",
-    ".password": "Parola secreta",
-    ".role": "Rol",
-    ".address.firstAddressLine": "Strada si numar",
-    ".address.secondAddressLine": "Bloc, Scara, etc.",
-    ".address.city": "Oras",
-    ".address.country": "Tara"
-}
-
-function schimbaMesajDeEroare(key: string, error: EroareLipseste | EroareDeLimita | EroareDePattern) {
     const map = {
         "required": `${proprietati[error.property]} este un camp obligator`,
         "minLength": `${proprietati[error.property]} trebuie sa contina cel putin ${(error as EroareDeLimita).params.limit} caractere`,
@@ -197,7 +60,7 @@ const onSubmit = async (form: FormProps<any>) => {
     });
 };
 
-const transformaEroarile = (errors: EroareGeneric[]) => {
+const transformaEroarile = <T extends unknown> (errors: EroareGeneric<T>[]) => {
     return errors.map(error => {
         const ekey = error.name + ((error as any)?.params?.pattern ? (error as any).params.pattern : "");
         error.message = schimbaMesajDeEroare(ekey, error);
@@ -223,8 +86,8 @@ export const Registration: FC = () => {
         </Row>
         <Row align="middle" justify="center">
             <Col span={12} flex="auto">
-                {/* @ts-ignore */}
-                <Form schema={schema} uiSchema={uiSchema}
+                { /* @ts-ignore */}
+                <Form schema={registrationSchema} uiSchema={registrationUiSchema}
                       ref={formRef}
                       onSubmit={onSubmit}
                       showErrorList={false}
@@ -233,7 +96,5 @@ export const Registration: FC = () => {
             </Col>
         </Row>
     </>)
-
-
 }
 

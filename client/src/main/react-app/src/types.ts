@@ -1,4 +1,33 @@
+import {AjvError} from "@rjsf/core";
+
 export type Nullable<T> = T | undefined | null;
+
+export interface EroareDeBaza extends AjvError{
+    message: string,
+    property: string,
+}
+
+
+export interface EroareLipseste extends EroareDeBaza {
+    name: "required"
+}
+
+export interface EroareDeLimita extends EroareDeBaza {
+    name: "minLength",
+    params: {
+        limit: number
+    }
+}
+
+export interface EroareDePattern extends EroareDeBaza {
+    name: "pattern",
+    params: {
+        pattern: string;
+    }
+}
+
+export type EroareGeneric<T> = T extends EroareLipseste | EroareDeLimita | EroareDePattern ? AjvError : AjvError;
+
 
 export enum MediaType {
     JSON = 'JSON',
@@ -29,6 +58,8 @@ export interface UserState extends User {
     expirationTime: Nullable<number>;
     accessToken: Nullable<string>;
     refreshToken: Nullable<string>;
+    firstName: Nullable<string>;
+    lastName: Nullable<string>;
 }
 
 export interface SharedState {

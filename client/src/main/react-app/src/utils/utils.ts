@@ -135,6 +135,8 @@ const utils = (function () {
             refreshToken: auth.refresh_token,
             accessToken: auth.access_token,
             username: access.preferred_username,
+            firstName: access.given_name,
+            lastName: access.family_name,
         }
         return result;
     }
@@ -156,6 +158,9 @@ const utils = (function () {
             return false
         } else {
             const accessToken = decodeAccessToken(serAuthResp);
+
+            // Date.now() intorce timpul curent in millisecunde, de aceea
+            // trebuie sa facem o conversie din ms la s.
             return Math.floor(Date.now() / 1000) < accessToken.exp;
 
         }
