@@ -13,14 +13,11 @@ import {Route, useHistory} from "react-router-dom";
 const Authorization = () => {
     console.log('NODE_ENV', process.env.NODE_ENV);
     const urlencodedParams = utils.toFormUrlEncoded({
-        "response_type": "code",
-        "client_id": "ripeti-web",
-        'scope': 'openid',
         "redirect_uri": utils.endpointFactory().tokenRedirect
         // "state": oauth2Ely5Utils.cookieStorage.getItem("XSRF-TOKEN")
     });
 
-    const url = `http://localhost:8884/auth/realms/ripeti/protocol/openid-connect/auth/?${urlencodedParams}`;
+    const url = `http://localhost:8080/custom-oauth/auth/?${urlencodedParams}`;
 
     useEffect(() => {
         document.location.href = url;

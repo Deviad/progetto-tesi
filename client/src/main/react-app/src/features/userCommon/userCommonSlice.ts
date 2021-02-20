@@ -70,14 +70,11 @@ const handleLocalAuth = (user: UserState): Promise<UserState> => {
     }
 
     const urlencodedParams = utils.toFormUrlEncoded({
-        'grant_type': 'authorization_code',
         'code': (utils.getParameterByName("code") as string),
         'redirect_uri': utils.endpointFactory().tokenRedirect,
-        'client_id': 'ripeti-web',
-        'client_secret': 'b8cc4bab-c1c5-4af4-9456-bec7f81a5bda',
     });
 
-    const authorizeUrl = `http://localhost:8884/auth/realms/ripeti/protocol/openid-connect/token`;
+    const authorizeUrl = `http://localhost:8080/custom-oauth/token`;
     return fetch(authorizeUrl, {
         // credentials: "include",
         method: "POST",
