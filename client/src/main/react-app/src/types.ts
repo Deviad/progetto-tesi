@@ -43,10 +43,17 @@ export type Request = {
     body: string | object;
 }
 
+
+export type HttpGetRequestParams = {
+    url: string;
+    headers?: Record<string, string>;
+}
+
 export type HttpPostReqParams = {
     url: string;
     bodyArg: Record<any, any>;
     postReqType: MediaType;
+    headers?: Record<string, string>
 }
 
 export type HttpPutReqParams = HttpPostReqParams;
@@ -61,6 +68,22 @@ export interface UserState extends User {
     firstName: Nullable<string>;
     lastName: Nullable<string>;
 }
+
+type Address = {
+    firstAddressLine: string;
+    secondAddressLine: string;
+    city: string;
+    country: string;
+}
+
+export interface UseProfileFormData {
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    address: Address;
+}
+
 
 export interface SharedState {
     isLoading: boolean,
@@ -147,4 +170,5 @@ export interface AccessToken {
     sub: string;
     typ: string; //Bearer
 }
+
 

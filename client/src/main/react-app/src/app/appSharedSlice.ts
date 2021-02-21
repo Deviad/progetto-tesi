@@ -40,6 +40,7 @@ const shared = createSlice({
 
 export const {
     getAppLoading,
+    getStopLoading,
     getAppFailure,
     resetAppState,
 } = shared.actions

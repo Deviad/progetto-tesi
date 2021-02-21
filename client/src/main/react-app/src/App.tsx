@@ -12,7 +12,7 @@ import {AuthGuard} from "./features/oauth2/AuthGuard";
 
 const NotFound = () => <div>Page not Found</div>;
 
-const App: FC = () => {
+const App: FC = (props: any) => {
 
     const guardedPaths = ["/user-profile"]
 

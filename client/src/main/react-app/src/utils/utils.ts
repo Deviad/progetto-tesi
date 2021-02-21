@@ -166,6 +166,10 @@ const utils = (function () {
         }
     }
 
+    const isTrue = (obj: any) => {
+        return !(obj === null || obj === undefined || obj === "" || (obj.constructor === Object && Object.keys(obj).length === 0) || (Object.prototype.toString.call(obj) === "[object Array]" && obj.length === 0));
+    }
+
     return {
         toFormUrlEncoded,
         getParameterByName,
@@ -174,6 +178,7 @@ const utils = (function () {
         decodeAuthResp,
         decodeAccessToken,
         getUserStateFromAuthResponse,
+        isTrue,
         get storage() {
             return storageFactory.getStorage();
         }
