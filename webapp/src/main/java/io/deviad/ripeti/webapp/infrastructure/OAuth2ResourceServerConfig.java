@@ -2,6 +2,7 @@ package io.deviad.ripeti.webapp.infrastructure;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -14,20 +15,17 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class OAuth2ResourceServerConfig {
 
   @Bean
+  @Order(0)
   SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
     http.authorizeExchange()
         .pathMatchers("/swagger**", "/webjars/swagger-ui/**", "/v3/api-docs/**").permitAll()
+        .pathMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
         .pathMatchers(HttpMethod.POST, "/api/user**").permitAll()
-        .pathMatchers(HttpMethod.OPTIONS, "/api/user**").permitAll()
-
         .pathMatchers(HttpMethod.GET, "/api/user**", "/api/user/**").authenticated()
-        .pathMatchers(HttpMethod.OPTIONS, "/api/user**", "/api/user/**").authenticated()
 
-        .pathMatchers(HttpMethod.PUT, "/api/user**").authenticated()
-        .pathMatchers(HttpMethod.OPTIONS, "/api/user**").authenticated()
+        .pathMatchers(HttpMethod.PUT, "/api/user**", "/api/user/**").authenticated()
 
         .pathMatchers(HttpMethod.DELETE, "/api/user**").authenticated()
-        .pathMatchers(HttpMethod.OPTIONS, "/api/user**").authenticated()
 
         .pathMatchers( "/api/course**", "/api/course/**").authenticated()
         .and()

@@ -21,9 +21,9 @@ function loadingFailed(state: SharedState, action: PayloadAction<string>) {
     state.error = action.payload
 }
 
-function clearState(state: SharedState, action: PayloadAction<string>) {
+function clearState(state: SharedState) {
     state.isLoading = false
-    state.error = action.payload
+    state.error = null
 }
 
 

@@ -1,5 +1,8 @@
 package io.deviad.ripeti.webapp.application.command;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectReader;
 import io.deviad.ripeti.webapp.Utils;
 import io.deviad.ripeti.webapp.adapter.MappingUtils;
 import io.deviad.ripeti.webapp.adapter.UserAdapters;
@@ -14,6 +17,7 @@ import io.deviad.ripeti.webapp.ui.queries.UserInfoDto;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.vavr.API;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -98,42 +102,42 @@ public class UserCommandService {
     var userEntity =
         userRepository
             .getUserAggregateByEmail(email)
-            .onErrorResume(Mono::error)
             .switchIfEmpty(
                 Mono.error(
-                    new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not exist")));
+                    new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not exist")))
+            .onErrorResume(Mono::error);
 
     return userEntity
-        .map(x -> (Object) Mono.just(r.address()))
+        .flatMap(x -> r.address() != null ?  Mono.just(x) : Mono.empty())
         .switchIfEmpty(saveWithoutAddress(r, userEntity).onErrorResume(Mono::error))
-        .flatMap(x -> Mono.zip(saveWithAddress(r, userEntity), client.update(email, r)))
+        .flatMap(
+            x ->
+                Mono.zip(
+                    saveWithAddress(r, x).onErrorResume(Mono::error),
+                    client.update(email, r).onErrorResume(Mono::error)))
         .map(Tuple2::getT1);
   }
 
-  Mono<UserInfoDto> saveWithoutAddress(UpdateUserRequest r, Mono<UserAggregate> userEntity) {
+  Mono<UserAggregate> saveWithoutAddress(UpdateUserRequest r, Mono<UserAggregate> userEntity) {
     return userEntity
         .map(x -> x.withFirstName(r.firstName()).withLastName(r.lastName()))
-        .flatMap(x -> userRepository.save(x).onErrorResume(Mono::error))
-        .map(
-            x ->
-                UserInfoDto.of(
-                    x.username(), x.email(), x.firstName(), x.lastName(), x.role(), null));
+        .flatMap(x -> userRepository.save(x).onErrorResume(Mono::error));
   }
 
-  Mono<UserInfoDto> saveWithAddress(UpdateUserRequest r, Mono<UserAggregate> userEntity) {
-    return userEntity
-        .map(
-            x ->
-                x.withFirstName(r.firstName())
-                    .withLastName(r.lastName())
-                    .withEmail(r.email())
-                    .withAddress(
-                        Address.builder()
-                            .firstAddressLine(r.address().firstAddressLine())
-                            .secondAddressLine(r.address().secondAddressLine())
-                            .build()))
-        .flatMap(x -> userRepository.save(x).onErrorResume(Mono::error))
-        .flatMap(t -> Mono.just(mapToUserInfo(t)));
+  Mono<UserInfoDto> saveWithAddress(UpdateUserRequest r, UserAggregate userEntity) {
+    return Mono.just(userEntity)
+        .flatMap(
+            x -> {
+              final ObjectReader objectReader = MappingUtils.MAPPER.readerForUpdating(x);
+              return Mono.just(API.unchecked(()-> objectReader.readValue(writeCurrentEntityValues(r), UserAggregate.class))
+                      .get());
+            })
+        .map(x -> userRepository.save(x).subscribe())
+        .then(Mono.empty());
+  }
+  @SneakyThrows
+  private String writeCurrentEntityValues(UpdateUserRequest u) {
+    return MappingUtils.create().setSerializationInclusion(JsonInclude.Include.NON_EMPTY).writeValueAsString(u);
   }
 
   @Transactional
@@ -163,7 +167,8 @@ public class UserCommandService {
   Mono<UserAggregate> savePassword(UpdatePasswordRequest r, Mono<UserAggregate> userEntity) {
     return userEntity
         .map(x -> x.withPassword(r.password()))
-        .flatMap(x -> userRepository.save(x).onErrorResume(Mono::error));
+        .map(x -> userRepository.save(x).onErrorResume(Mono::error).subscribe())
+        .then(Mono.empty());
   }
 
   @Transactional
@@ -173,6 +178,6 @@ public class UserCommandService {
     final String email = common.getEmailFromToken(token);
     var userEntity = common.getUserByEmail(email);
 
-    return userEntity.flatMap(x -> userRepository.delete(x));
+    return userEntity.map(x -> userRepository.delete(x).subscribe()).then(Mono.empty());
   }
 }

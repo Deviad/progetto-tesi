@@ -154,10 +154,10 @@ const utils = (function () {
     const isValidStoredToken = () => {
         const serAuthResp = utils.storage.getItem("auth_res");
 
-        if (isNil(serAuthResp) || isEmpty(serAuthResp)) {
+        if (utils.isNotTrue(serAuthResp)) {
             return false
         } else {
-            const accessToken = decodeAccessToken(serAuthResp);
+            const accessToken = decodeAccessToken(serAuthResp as string);
 
             // Date.now() intorce timpul curent in millisecunde, de aceea
             // trebuie sa facem o conversie din ms la s.
@@ -166,9 +166,15 @@ const utils = (function () {
         }
     }
 
-    const isTrue = (obj: any) => {
-        return !(obj === null || obj === undefined || obj === "" || (obj.constructor === Object && Object.keys(obj).length === 0) || (Object.prototype.toString.call(obj) === "[object Array]" && obj.length === 0));
+    const isTrue = (obj: any): boolean => {
+        return !(obj === null ||
+            obj === undefined ||
+            obj === "" ||
+            (obj.constructor === Object && Object.keys(obj).length === 0) ||
+            (Object.prototype.toString.call(obj) === "[object Array]" && obj.length === 0));
     }
+
+    const isNotTrue = (obj: any) => !isTrue(obj)
 
     return {
         toFormUrlEncoded,
@@ -179,6 +185,7 @@ const utils = (function () {
         decodeAccessToken,
         getUserStateFromAuthResponse,
         isTrue,
+        isNotTrue,
         get storage() {
             return storageFactory.getStorage();
         }

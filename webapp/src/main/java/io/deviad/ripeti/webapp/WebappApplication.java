@@ -9,16 +9,23 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.reactive.config.CorsRegistry;
+import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import reactor.tools.agent.ReactorDebugAgent;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @SpringBootApplication
 @EnableAspectJAutoProxy(exposeProxy = true, proxyTargetClass = true)
+@EnableWebFlux
 public class WebappApplication {
   public static void main(String[] args) {
     ReactorDebugAgent.init();
@@ -62,7 +69,13 @@ public class WebappApplication {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "http://localhost:8080");
+                .allowedOrigins("http://localhost:3000", "http://localhost:8080")
+                .allowedMethods(
+                        HttpMethod.OPTIONS.name(),
+                        HttpMethod.GET.name(),
+                        HttpMethod.POST.name(),
+                        HttpMethod.PUT.name(),
+                        HttpMethod.PATCH.name());
       }
     };
   }

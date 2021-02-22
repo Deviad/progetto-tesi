@@ -36,7 +36,7 @@ export const createReq = <T extends Nullable<'POST'> | Nullable<'PUT'>, FDATA ex
 };
 
 
-export const httpGet = async <RESPONSE>(params: HttpGetRequestParams): Promise<{ body: RESPONSE | undefined | null; status: boolean, error: undefined | any }> => {
+export const httpGet = async <RESPONSE>(params: HttpGetRequestParams): Promise<{ body: RESPONSE | undefined | null; status: boolean }> => {
 
     const {url, headers = {}} = params;
 
@@ -47,70 +47,84 @@ export const httpGet = async <RESPONSE>(params: HttpGetRequestParams): Promise<{
             headers: addContentType(ContentType.JSON_UTF8, headers),
         });
         const responseOk = Math.floor(response.status / 100) === 2;
-        const body: Nullable<RESPONSE> = await response.json();
+
+        let body: Nullable<RESPONSE> = null;
+        try {
+            body = await response.json();
+        } catch (error) {
+            console.log(error);
+            return {
+                status: responseOk,
+                body
+            }
+        }
         return {
             status: responseOk,
             body,
-            error: undefined
         };
     } catch (error) {
         Log.error(error);
-        return {
-            body: undefined,
-            status: false,
-            error
-        };
+        throw error;
     }
 };
 
 
-export const httpPost = async <RESPONSE>(params: HttpPostReqParams): Promise<{ body: RESPONSE | undefined | null; error: undefined; status: boolean }> => {
+export const httpPost = async <RESPONSE>(params: HttpPostReqParams): Promise<{ body: RESPONSE | undefined | null; status: boolean }> => {
 
     const {url, bodyArg, postReqType, headers = {}} = params;
     try {
         let reqConfig = serializeDateAccordingToContentType<"POST", Record<string, any>>(postReqType, bodyArg, "POST", headers);
         const response: Response = await fetch(url, reqConfig);
         const responseOk = Math.floor(response.status / 100) === 2;
-        const body: Nullable<RESPONSE> = await response.json();
+        let body: Nullable<RESPONSE> = null;
+        try {
+            body = await response.json();
+        } catch (error) {
+            console.log(error);
+            return {
+                status: responseOk,
+                body
+            }
+        }
         return {
             status: responseOk,
-            body,
-            error: undefined
+            body
         };
     } catch (error) {
         Log.error(error);
-        return {
-            body: undefined,
-            status: false,
-            error
-        };
+        throw error;
+
     }
 };
 
-export const httpPut = async <RESPONSE>(params: HttpPostReqParams): Promise<{ body: RESPONSE | undefined | null; error: undefined; status: boolean }> => {
+export const httpPut = async <RESPONSE>(params: HttpPostReqParams): Promise<{ body: RESPONSE | undefined | null; status: boolean }> => {
 
     const {url, bodyArg, postReqType, headers = {}} = params;
     try {
         let reqConfig = serializeDateAccordingToContentType<"PUT", Record<string, any>>(postReqType, bodyArg, "PUT", headers);
         const response: Response = await fetch(url, reqConfig);
         const responseOk = Math.floor(response.status / 100) === 2;
-        const body: Nullable<RESPONSE> = await response.json();
+        let body: Nullable<RESPONSE> = null;
+        try {
+            body = await response.json();
+        } catch (error) {
+            console.log(error);
+            return {
+                status: responseOk,
+                body
+            }
+        }
         return {
             status: responseOk,
             body,
-            error: undefined
         };
     } catch (error) {
         Log.error(error);
-        return {
-            body: undefined,
-            status: false,
-            error
-        };
+        throw error;
     }
 };
 
-export const httpDelete = async (url: string): Promise<{ error: undefined; status: boolean }> => {
+export const httpDelete = async (url: string): Promise<{ status: boolean }> => {
     try {
         const response: Response = await fetch(url, {
             method: 'DELETE',
@@ -120,14 +134,10 @@ export const httpDelete = async (url: string): Promise<{ error: undefined; statu
         const responseOk = Math.floor(response.status / 100) === 2;
         return {
             status: responseOk,
-            error: undefined
         };
     } catch (error) {
         Log.error(error);
-        return {
-            status: false,
-            error
-        };
+        throw error;
     }
 };
 

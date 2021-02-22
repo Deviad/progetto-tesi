@@ -24,6 +24,14 @@ public class MappingUtils {
     MAPPER.addMixIn(DataSize.class, DataSizeMixin.class);
   }
 
+  public static ObjectMapper create() {
+    return new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+            .addMixIn(DataSize.class, DataSizeMixin.class);
+  }
+
+
   /** Method to deserialize JSON content from given String into required type. */
   @SneakyThrows(IOException.class)
   public static <T> T fromJson(String jsonString, Class<T> toValueType) {

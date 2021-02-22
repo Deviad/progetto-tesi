@@ -7,13 +7,13 @@ import {
     MediaType,
     Nullable,
     UseProfileFormData,
-    User
+    User, UserState
 } from "../../types";
 import {RootState} from "../../app/rootReducer";
 import {Avatar, Button, Col, Row, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import {FormProps, withTheme} from "@rjsf/core";
-import {httpGet, httpPut} from "../../httpClient";
+import {httpGet, httpPost, httpPut} from "../../httpClient";
 import {
     BASE_URL,
     emailPattern,
@@ -29,22 +29,15 @@ import {omit} from "lodash";
 import {Theme as AntDTheme} from '@rjsf/antd';
 import {PoweroffOutlined} from "@ant-design/icons";
 import {utils} from "../../utils";
-import {getAppLoading, getStopLoading} from "../../app/appSharedSlice";
+import {getAppFailure, getAppLoading, getStopLoading} from "../../app/appSharedSlice";
 import {useHistory} from "react-router-dom";
+import { Dispatch } from "redux";
 
 const Form = withTheme(AntDTheme);
 
 const firstLetter = (arg: string) => {
     return arg.split(" ").map(str => str.substr(0, 1).toUpperCase()).join("");
 }
-
-const onSubmit = async (form: FormProps<any>) => {
-    await httpPut({
-        url: `${BASE_URL}${USER_ENDPOINT}`,
-        bodyArg: form.formData,
-        postReqType: MediaType.JSON
-    });
-};
 
 const schimbaMesajDeEroare = <T extends unknown>(key: string, error: EroareGeneric<T>) => {
     const map = {
@@ -72,12 +65,15 @@ const transformaEroarile = <T extends unknown>(errors: EroareGeneric<T>[]) => {
 }
 
 const profileSchema = (schema: any) => {
-    return omit(schema, "properties.password", "properties.username")
+    const tmp: any = omit(schema, "properties.password", "properties.username", "required.password", "required.username")
+
+    tmp.required = tmp.required.filter((x: string)=>x !== "password").filter((x: string)=> x !== "username")
+    return tmp;
 }
 
 const profileUiSchema = (schema: any, uiSchema: any) => {
 
-    return omit(uiSchema, "password")
+    return omit(uiSchema, "password", "username");
 }
 
 export const handleGetUserData = async (accessToken: Nullable<string>, username: Nullable<string>) => {
@@ -108,7 +104,36 @@ export const userProfileInitialState: UseProfileFormData = {
         secondAddressLine: ""
     }
 }
+async function getData(dispatch: Dispatch<any>, setFData: Function, user: UserState) {
+    const {body, status} = await handleGetUserData(user.accessToken, user.username);
+    if(body && !status) {
+        console.log(body);
+        return;
+    } else if(body) {
+        if (utils.isTrue(body)) {
+            setFData(body);
+            dispatch(getStopLoading());
+        }
+    }
+}
 
+const onSubmit = (dispatch: Dispatch<any>, setFData: Function, setDisabled: Function, user: UserState) => (form: FormProps<any>) => {
+    dispatch(getAppLoading());
+    httpPut({
+        url: `${BASE_URL}${USER_ENDPOINT}`,
+        bodyArg: form.formData,
+        postReqType: MediaType.JSON,
+        headers: {
+            "Authorization": `Bearer ${user.accessToken}`,
+        }
+    })
+        .then(x=> getData(dispatch, setFData, user))
+        .then(x=> setDisabled(true))
+        .catch(err=>{
+            dispatch(getAppFailure(err.toString()));
+        })
+    ;
+}
 
 const UserProfile = () => {
     const user = useSelector((state: RootState) => state.user);
@@ -123,23 +148,14 @@ const UserProfile = () => {
 
     useEffect(() => {
         dispatch(getAppLoading());
-        async function getData() {
-            const {body} = await handleGetUserData(user.accessToken, user.username);
-            if(body) {
-                if (utils.isTrue(body)) {
-                    setFData(body);
-                    dispatch(getStopLoading());
-                }
-            }
-        }
+
         if(utils.isTrue(user.accessToken) && utils.isTrue(user.accessToken)) {
-            getData();
+            getData(dispatch, setFData, user);
         }
 
     }, [fData.email, user.accessToken]);
 
     console.log("User", user);
-    // @ts-ignore
     return (
         <>
             <Row>
@@ -184,9 +200,10 @@ const UserProfile = () => {
             </Row>
             <Row align="middle" justify="center">
                 <Col span={12} flex="auto">
-                    { /* @ts-ignore */}
+                    {  /* @ts-ignore */  }
                     {( !fData?.email) ? <Form schema={profileSchema(registrationSchema)} uiSchema={profileUiSchema(registrationUiSchema)}
-                          onSubmit={onSubmit}
+                     /* @ts-ignore */
+                          onSubmit={onSubmit(dispatch, setFData, user)}
                           noHtml5Validate={true}
                           liveValidate={true}
                           showErrorList={false}
@@ -195,7 +212,8 @@ const UserProfile = () => {
 
                     /> : /* @ts-ignore */
                         <Form schema={profileSchema(registrationSchema)} uiSchema={profileUiSchema(registrationUiSchema)}
-                                 onSubmit={onSubmit}
+                            /* @ts-ignore */
+                              onSubmit={onSubmit(dispatch, setFData, setDisabled, user)}
                                  noHtml5Validate={true}
                                  liveValidate={true}
                                  showErrorList={false}

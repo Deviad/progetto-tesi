@@ -22,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.function.Function;
@@ -102,9 +103,9 @@ public class KeycloakAdminClient {
     RealmResource realmResource = keycloak.realm(realm);
     UsersResource usersResource = realmResource.users();
 
-    final List<UserRepresentation> search = usersResource.search(email);
+    final List<UserRepresentation> search = usersResource.search(null, null, null, email, 0, 1);
     if (search.isEmpty()) {
-      return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot find user"));
+      return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keycloak: Cannot find user"));
     }
 
     final UserRepresentation utilizator = search.get(0);
