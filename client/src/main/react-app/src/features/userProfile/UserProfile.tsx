@@ -36,7 +36,7 @@ import { Dispatch } from "redux";
 const Form = withTheme(AntDTheme);
 
 const firstLetter = (arg: string) => {
-    return arg.split(" ").map(str => str.substr(0, 1).toUpperCase()).join("");
+    return arg.split(" ").map(str => str.substr(0, 1).toUpperCase())[0];
 }
 
 const schimbaMesajDeEroare = <T extends unknown>(key: string, error: EroareGeneric<T>) => {
@@ -176,7 +176,7 @@ const UserProfile = () => {
                 }}>
                     <Avatar style={{backgroundColor: "#00a2ae", verticalAlign: 'middle', marginRight: "1rem"}}
                             size="large" gap={20}>
-                        {firstLetter(`${user.firstName} ${user.lastName}`)}
+                        {firstLetter(`${user.firstName}`) + firstLetter(`${user.lastName}`)}
                     </Avatar>
                 </Col>
             </Row>

@@ -4,7 +4,7 @@ export const BASE_URL = "http://localhost:5050/api";
 export const USER_ENDPOINT = "/user"
 
 export const emailPattern = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
-export const passwordPattern = "(?=.*[a-z]+)(?=.*[0-9]+)(?=.*[A-Z]+)(?=.*[!@#$%^&*()_+\\[\\]{}:\";,.<>?|=-_]+).{8,20}"
+export const passwordPattern = "^(?=.*[a-z])(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}:\";,.<>?|=_])[a-zA-Z0-9!@#$%^&*()_+{}:\";,.<>?|=-_]{8,20}$"
 
 
 export const registrationSchema = {
@@ -22,19 +22,19 @@ export const registrationSchema = {
             "type": "string",
             "title": "Prenume",
             "minLength": 3,
-            "pattern": "[a-zA-Z]+"
+            "pattern": "^[a-zA-Z ]+$"
         },
         "lastName": {
             "type": "string",
             "title": "Nume",
             "minLength": 3,
-            "pattern": "[a-zA-Z]+"
+            "pattern": "^[a-zA-Z ]+$"
         },
         "username": {
             "type": "string",
             "title": "Numele utilizatorlui",
             "minLength": 3,
-            "pattern": "[a-zA-Z]+"
+            "pattern": "^[a-zA-Z]+$"
         },
         "email": {
             "type": "string",
@@ -73,17 +73,20 @@ export const registrationSchema = {
                     "type": "string",
                     "title": "Strada si numar",
                     "minLength": 3,
+                    "maxLength": 100,
                 },
                 "secondAddressLine": {
                     "type": "string",
                     "title": "Bloc, Scara, etc.",
                     "minLength": 3,
+                    "maxLength": 100,
                 },
                 "city": {
                     "type": "string",
                     "title": "Oras",
                     "minLength": 3,
-                    "pattern": "[a-zA-Z]+"
+                    "maxLength": 20,
+                    "pattern": "^[a-zA-Z ]+$"
                 },
                 "country": {
                     "type": "string",
@@ -107,11 +110,10 @@ export const registrationUiSchema = {
     },
     "password": {
         "ui:widget": "password",
-        "ui:help": `parola trebuia sa aiba o lungime de cel 
-            putin 8 caractere, sa aiba cel putin o litera mare, 1 numar si 
-            1 caracter special`
+        // "ui:help": `parola trebuia sa aiba o lungime de cel
+        //     putin 8 caractere, sa aiba cel putin o litera mare, 1 numar si
+        //     1 caracter special`
     },
-
     "role": {
         "ui:help": "Alege daca esti student sau profesor"
     }

@@ -6,7 +6,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.Accessors;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
@@ -17,18 +20,21 @@ import javax.validation.constraints.Pattern;
 @Value
 @Builder
 public class Address {
-  @Pattern(regexp = "^[A-Za-z0-9,.]{3,50}$")
   @NotBlank
+  @Length(min=3, max = 100)
   String firstAddressLine;
 
-  @Pattern(regexp = "^[A-Za-z0-9,.]{3,50}$")
+  @NotBlank
+  @Length(min=3, max = 100)
   String secondAddressLine;
 
   @NotBlank
-  @Pattern(regexp = "^[A-Za-z]{3,20}$")
+  @Length(min=3, max=20)
+  @Pattern(regexp = "^[A-Za-z ]+$")
   String city;
 
   @NotBlank
-  @Pattern(regexp = "^[A-Za-z]{3,20}$")
+  @Length(min=3, max=20)
+  @Pattern(regexp = "^[A-Za-z ]+$")
   String country;
 }

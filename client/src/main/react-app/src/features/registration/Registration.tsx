@@ -15,6 +15,9 @@ import {
 import {EroareDeLimita, EroareDePattern, EroareGeneric, MediaType} from "../../types";
 // @ts-ignore
 import {Theme as AntDTheme} from '@rjsf/antd';
+import * as H from 'history';
+import {useHistory} from "react-router-dom";
+
 
 const Form = withTheme(AntDTheme);
 
@@ -52,12 +55,12 @@ const autofocusPePrimulCamp = (formRef: RefObject<HTMLFormElement>) => {
     input.focus();
 }
 
-const onSubmit = async (form: FormProps<any>) => {
+const onSubmit = (history: H.History) => async (form: FormProps<any>) => {
     await httpPost({
         url: `${BASE_URL}${USER_ENDPOINT}`,
         bodyArg: form.formData,
         postReqType: MediaType.JSON
-    });
+    }).then(() => history.push("/user-profile"));
 };
 
 const transformaEroarile = <T extends unknown> (errors: EroareGeneric<T>[]) => {
@@ -70,6 +73,9 @@ const transformaEroarile = <T extends unknown> (errors: EroareGeneric<T>[]) => {
 
 export const Registration: FC = () => {
     const formRef: RefObject<HTMLFormElement> = useRef(null);
+
+    const history = useHistory();
+
     useEffect(() => {
         autofocusPePrimulCamp(formRef);
     }, []);
@@ -89,7 +95,8 @@ export const Registration: FC = () => {
                 { /* @ts-ignore */}
                 <Form schema={registrationSchema} uiSchema={registrationUiSchema}
                       ref={formRef}
-                      onSubmit={onSubmit}
+                      liveValidate={true}
+                      onSubmit={onSubmit(history)}
                       showErrorList={false}
                       transformErrors={transformaEroarile}
                 />

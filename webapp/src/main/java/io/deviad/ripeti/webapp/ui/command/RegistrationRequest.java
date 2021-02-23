@@ -7,8 +7,10 @@ import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import lombok.Value;
 import lombok.experimental.Accessors;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -24,13 +26,14 @@ import javax.validation.constraints.Pattern;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class RegistrationRequest {
   @NotBlank
-  @Pattern(regexp = "^[A-Za-z]{3,20}$")
+  @Length(min = 3, max = 20)
+  @Pattern(regexp = "^[A-Za-z ]+$")
   String username;
 
   @NotBlank
   @Pattern(
       regexp =
-          "(?=.*[a-z]+)(?=.*[0-9]+)(?=.*[A-Z]+)(?=.*[!@#$%^&*()_+\\[\\]{}:\";,.<>?|=-_]+).{8,20}")
+          "^(?=.*[a-z])(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}:\";,.<>?|=])[a-zA-Z0-9!@#$%^&*()_+{}:\";,.<>?|=-_]{8,20}$")
   String password;
 
   /*
@@ -42,11 +45,13 @@ public class RegistrationRequest {
   @NotBlank
   String email;
 
-  @Pattern(regexp = "^[A-Za-z]{3,20}$")
+  @Length(min = 3, max = 20)
+  @Pattern(regexp = "^[A-Za-z ]+$")
   @NotBlank
   String firstName;
 
-  @Pattern(regexp = "^[A-Za-z]{3,20}$")
+  @Length(min = 3, max = 20)
+  @Pattern(regexp = "^[A-Za-z ]+$")
   @NotBlank
   String lastName;
 
