@@ -7,13 +7,14 @@ import {
     MediaType,
     Nullable,
     UseProfileFormData,
-    User, UserState
+    User,
+    UserState
 } from "../../types";
 import {RootState} from "../../app/rootReducer";
 import {Avatar, Button, Col, Row, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import {FormProps, withTheme} from "@rjsf/core";
-import {httpGet, httpPost, httpPut} from "../../httpClient";
+import {httpGet, httpPut} from "../../httpClient";
 import {
     BASE_URL,
     emailPattern,
@@ -29,9 +30,8 @@ import {omit} from "lodash";
 import {Theme as AntDTheme} from '@rjsf/antd';
 import {PoweroffOutlined} from "@ant-design/icons";
 import {utils} from "../../utils";
-import {getAppFailure, getAppLoading, getStopLoading} from "../../app/appSharedSlice";
-import {useHistory} from "react-router-dom";
-import { Dispatch } from "redux";
+import {getAppFailure, getAppLoading, getStopLoading, getSetCurrentPage} from "../../app/appSharedSlice";
+import {Dispatch} from "redux";
 
 const Form = withTheme(AntDTheme);
 
@@ -148,6 +148,7 @@ const UserProfile = () => {
 
     useEffect(() => {
         dispatch(getAppLoading());
+        dispatch(getSetCurrentPage("user-profile"))
 
         if(utils.isTrue(user.accessToken) && utils.isTrue(user.accessToken)) {
             getData(dispatch, setFData, user);

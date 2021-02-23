@@ -88,6 +88,7 @@ export interface UseProfileFormData {
 export interface SharedState {
     isLoading: boolean,
     error: Nullable<string>;
+    currentPage: Nullable<string>;
 }
 
 export interface User {

@@ -17,6 +17,8 @@ import {EroareDeLimita, EroareDePattern, EroareGeneric, MediaType} from "../../t
 import {Theme as AntDTheme} from '@rjsf/antd';
 import * as H from 'history';
 import {useHistory} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {getSetCurrentPage} from "../../app/appSharedSlice";
 
 
 const Form = withTheme(AntDTheme);
@@ -76,7 +78,10 @@ export const Registration: FC = () => {
 
     const history = useHistory();
 
+    const dispatch = useDispatch();
+
     useEffect(() => {
+        dispatch(getSetCurrentPage("register"));
         autofocusPePrimulCamp(formRef);
     }, []);
 

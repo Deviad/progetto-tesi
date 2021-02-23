@@ -5,6 +5,7 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 export const sharedInitialState = {
     error: null,
     isLoading: false,
+    currentPage: null,
 }
 
 
@@ -26,6 +27,10 @@ function clearState(state: SharedState) {
     state.error = null
 }
 
+function setCurrentPage(state: SharedState, action: PayloadAction<string>) {
+    state.currentPage = action.payload;
+}
+
 
 const shared = createSlice({
     name: 'shared',
@@ -35,6 +40,7 @@ const shared = createSlice({
         getAppFailure: loadingFailed,
         resetAppState: clearState,
         getStopLoading: stopLoading,
+        getSetCurrentPage: setCurrentPage
     }
 })
 
@@ -43,6 +49,7 @@ export const {
     getStopLoading,
     getAppFailure,
     resetAppState,
+    getSetCurrentPage,
 } = shared.actions
 
 export default shared.reducer
