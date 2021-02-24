@@ -12,7 +12,7 @@ import {
     registrationUiSchema,
     USER_ENDPOINT
 } from "../../constants";
-import {EroareDeLimita, EroareDePattern, EroareGeneric, MediaType} from "../../types";
+import {EroareDeLimita, EroareDePattern, EroareGeneric, MediaType, PagePathName} from "../../types";
 // @ts-ignore
 import {Theme as AntDTheme} from '@rjsf/antd';
 import * as H from 'history';
@@ -62,7 +62,7 @@ const onSubmit = (history: H.History) => async (form: FormProps<any>) => {
         url: `${BASE_URL}${USER_ENDPOINT}`,
         bodyArg: form.formData,
         postReqType: MediaType.JSON
-    }).then(() => history.push("/user-profile"));
+    }).then(() => history.push(PagePathName.USER_PROFILE));
 };
 
 const transformaEroarile = <T extends unknown> (errors: EroareGeneric<T>[]) => {

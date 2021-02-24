@@ -172,4 +172,18 @@ export interface AccessToken {
     typ: string; //Bearer
 }
 
+export enum PageSlug {
+    REGISTER = "register",
+    HOME = "home",
+    USER_PROFILE = "user-profile",
+    ERROR = "error",
+}
+
+export enum PagePathName {
+    REGISTER = "/register",
+    HOME = "/home",
+    USER_PROFILE = "/user-profile",
+    ERROR = "/error",
+}
+
 

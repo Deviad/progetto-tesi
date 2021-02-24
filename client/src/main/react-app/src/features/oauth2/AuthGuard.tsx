@@ -5,6 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../app/rootReducer";
 import {utils} from "../../utils";
 import {getUserSuccess} from "../userCommon/userCommonSlice";
+import {PagePathName} from "../../types";
 
 
 export const AuthGuard: FC = () => {
@@ -27,7 +28,7 @@ export const AuthGuard: FC = () => {
 
     return (
         <Switch>
-            <Route path="/user-profile">
+            <Route path={PagePathName.USER_PROFILE}>
                 <UserProfile/>
             </Route>
         </Switch>

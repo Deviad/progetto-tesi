@@ -5,7 +5,7 @@ import {
     EroareDePattern,
     EroareGeneric,
     MediaType,
-    Nullable,
+    Nullable, PageSlug,
     UseProfileFormData,
     User,
     UserState
@@ -148,7 +148,7 @@ const UserProfile = () => {
 
     useEffect(() => {
         dispatch(getAppLoading());
-        dispatch(getSetCurrentPage("user-profile"))
+        dispatch(getSetCurrentPage(PageSlug.USER_PROFILE))
 
         if(utils.isTrue(user.accessToken) && utils.isTrue(user.accessToken)) {
             getData(dispatch, setFData, user);

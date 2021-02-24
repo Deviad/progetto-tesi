@@ -8,14 +8,21 @@ import {Route, Switch, useHistory} from "react-router-dom";
 import {ErrorComponent} from "./features/common/Error";
 import {AuthGuard} from "./features/oauth2/AuthGuard";
 import * as H from 'history';
-import {utils} from "./utils";
 import {useSelector} from "react-redux";
 import {RootState} from "./app/rootReducer";
+import {PagePathName, PageSlug} from "./types";
+import {Login} from "./features/login/Login";
+import {
+    handleClick,
+    renderLogInMenuButton,
+    renderLogOutMenuButton,
+    renderRegisterMenuButton,
+    renderUserProfileButton
+} from "./appServices";
 
 const NotFound = () => <div>Page not Found</div>;
 
-
-const App: FC = (props: any) => {
+const App: FC = () => {
 
     const history: H.History = useHistory();
 
@@ -23,42 +30,27 @@ const App: FC = (props: any) => {
 
     const currentPage = useSelector((state: RootState) => state.shared.currentPage);
 
-    const handleClick = (e: any) => {
-        console.log('click ', e);
-        setMenuState({current: e.key});
-    };
-
-    const guardedPaths = ["/user-profile"]
+    const guardedPaths = [PagePathName.USER_PROFILE]
 
     useEffect(() => {
         setMenuState({current: currentPage === null ? "" : currentPage as unknown as string});
     }, [currentPage])
 
-    const renderLogOutMenuButton = () => {
-        const user = utils.storage.getItem("auth_res");
-        return utils.isTrue(user) &&
-            <Menu.Item key="logout" onClick={() => history.push("/logout")}>
-                Logout
-            </Menu.Item>;
-    }
 
     return (
         <Layout>
             <Layout.Header className="header">
-                <Menu onClick={handleClick} selectedKeys={[menuState.current]} mode="horizontal" theme="dark" style={{
+                <Menu onClick={handleClick(setMenuState)} selectedKeys={[menuState.current]} mode="horizontal" theme="dark" style={{
                     display: "flex",
                     justifyContent: "flex-end"
                 }}>
-                    <Menu.Item key="home" onClick={() => history.push("/")}>
+                    <Menu.Item key={PageSlug.HOME} onClick={() => history.push("/")}>
                         Home
                     </Menu.Item>
-                    <Menu.Item key="register" onClick={() => history.push("/register")}>
-                        Register
-                    </Menu.Item>
-                    {renderLogOutMenuButton()}
-                    <Menu.Item key="user-profile" onClick={() => history.push("/user-profile")}>
-                        User Profile
-                    </Menu.Item>
+                    {renderRegisterMenuButton(history)}
+                    {renderLogInMenuButton(history)}
+                    {renderLogOutMenuButton(history)}
+                    {renderUserProfileButton(history)}
                 </Menu>
             </Layout.Header>
             <PageHeader>
@@ -80,6 +72,10 @@ const App: FC = (props: any) => {
                                     <AuthGuard/>
                                 </Route>
                             ))}
+
+                            <Route path="/login">
+                                <Login/>
+                            </Route>
 
                             <Route path="/register">
                                 <Registration/>

@@ -1,5 +1,5 @@
 import * as Cookies from "js-cookie";
-import {AccessToken, AuthorizationResponse, Nullable, UserState} from "../types";
+import {AccessToken, AuthorizationResponse, Nullable, PageSlug, UserState} from "../types";
 import {isEmpty, isNil} from "lodash";
 import jwtDecode from "jwt-decode";
 
@@ -109,9 +109,9 @@ const utils = (function () {
     const endpointFactory = () => ({
         get resource() {
             if (process.env.NODE_ENV === 'production') {
-                return 'http://localhost:5051/react/user-profile'
+                return `http://localhost:5051/react/${PageSlug.USER_PROFILE}`
             } else {
-                return 'http://localhost:3000/user-profile'
+                return `http://localhost:3000/${PageSlug.USER_PROFILE}`
             }
         },
 

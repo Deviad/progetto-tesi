@@ -1,7 +1,7 @@
 import {createSlice, Dispatch, PayloadAction} from '@reduxjs/toolkit'
 
 import {AppThunk} from "../../app/store";
-import {AuthorizationResponse, UserState} from "../../types";
+import {AuthorizationResponse, PagePathName, UserState} from "../../types";
 import {utils} from "../../utils";
 import * as H from 'history';
 import {getAppFailure, getAppLoading} from '../../app/appSharedSlice';
@@ -55,10 +55,10 @@ export const fetchUser = (
         dispatch(getAppLoading());
         const currentUser = await handleLocalAuth(user);
         dispatch(getUserSuccess(currentUser));
-        history.push("/user-profile")
+        history.push(PagePathName.USER_PROFILE)
     } catch (err) {
         dispatch(getAppFailure(err.toString()))
-        history.push("/error")
+        history.push(PagePathName.ERROR)
     }
 }
 
