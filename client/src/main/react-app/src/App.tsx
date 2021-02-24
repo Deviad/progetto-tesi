@@ -20,6 +20,7 @@ import {
     renderUserProfileButton
 } from "./appServices";
 import {Logout} from "./features/logout/Logout";
+import {Home} from "./features/common/home/Home";
 
 const NotFound = () => <div>Page not Found</div>;
 
@@ -64,7 +65,7 @@ const App: FC = () => {
 
                             {["/", PagePathName.HOME].map(path => (
                                 <Route exact path={path}>
-                                    <div>Home Page</div>
+                                    <Home />
                                 </Route>
                             ))}
 
