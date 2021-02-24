@@ -19,6 +19,7 @@ import {
     renderRegisterMenuButton,
     renderUserProfileButton
 } from "./appServices";
+import {Logout} from "./features/logout/Logout";
 
 const NotFound = () => <div>Page not Found</div>;
 
@@ -40,7 +41,8 @@ const App: FC = () => {
     return (
         <Layout>
             <Layout.Header className="header">
-                <Menu onClick={handleClick(setMenuState)} selectedKeys={[menuState.current]} mode="horizontal" theme="dark" style={{
+                <Menu onClick={handleClick(setMenuState)} selectedKeys={[menuState.current]} mode="horizontal"
+                      theme="dark" style={{
                     display: "flex",
                     justifyContent: "flex-end"
                 }}>
@@ -59,9 +61,12 @@ const App: FC = () => {
                 <Row gutter={[16, 16]} align="middle" justify="center">
                     <Col span={16} flex="auto">
                         <Switch>
-                            <Route exact path="/">
-                                <div>Home Page</div>
-                            </Route>
+
+                            {["/", PagePathName.HOME].map(path => (
+                                <Route exact path={path}>
+                                    <div>Home Page</div>
+                                </Route>
+                            ))}
 
                             <Route path="/oauth">
                                 <Oauth2/>
@@ -75,6 +80,10 @@ const App: FC = () => {
 
                             <Route path="/login">
                                 <Login/>
+                            </Route>
+
+                            <Route path="/logout">
+                                <Logout/>
                             </Route>
 
                             <Route path="/register">

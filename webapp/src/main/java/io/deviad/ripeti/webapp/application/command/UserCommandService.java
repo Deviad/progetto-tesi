@@ -1,7 +1,6 @@
 package io.deviad.ripeti.webapp.application.command;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectReader;
 import io.deviad.ripeti.webapp.Utils;
 import io.deviad.ripeti.webapp.adapter.MappingUtils;
@@ -32,8 +31,6 @@ import reactor.util.function.Tuple2;
 
 import javax.validation.Validator;
 import java.util.Optional;
-
-import static io.deviad.ripeti.webapp.adapter.UserAdapters.mapToUserInfo;
 
 @Service
 @Slf4j
@@ -92,9 +89,16 @@ public class UserCommandService {
         .flatMap(u -> Mono.just(UserAdapters.mapToUserInfo(u)));
   }
 
+
+  public Mono<Void> logoutUser(JwtAuthenticationToken token) {
+    final String email = common.getEmailFromToken(token);
+    return client.logout(email);
+
+  }
+
   @Transactional
   @SneakyThrows
-  public Mono<UserInfoDto> updateUser(
+  public Mono<Void> updateUser(
       @RequestBody(required = true) UpdateUserRequest r, JwtAuthenticationToken token) {
 
     final String email = common.getEmailFromToken(token);
@@ -108,28 +112,23 @@ public class UserCommandService {
             .onErrorResume(Mono::error);
 
     return userEntity
-        .flatMap(x -> r.address() != null ?  Mono.just(x) : Mono.empty())
-        .switchIfEmpty(saveWithoutAddress(r, userEntity).onErrorResume(Mono::error))
         .flatMap(
             x ->
                 Mono.zip(
-                    saveWithAddress(r, x).onErrorResume(Mono::error),
+                    handleUpdate(r, x).onErrorResume(Mono::error),
                     client.update(email, r).onErrorResume(Mono::error)))
         .map(Tuple2::getT1);
   }
 
-  Mono<UserAggregate> saveWithoutAddress(UpdateUserRequest r, Mono<UserAggregate> userEntity) {
-    return userEntity
-        .map(x -> x.withFirstName(r.firstName()).withLastName(r.lastName()))
-        .flatMap(x -> userRepository.save(x).onErrorResume(Mono::error));
-  }
 
-  Mono<UserInfoDto> saveWithAddress(UpdateUserRequest r, UserAggregate userEntity) {
+  Mono<Void> handleUpdate(UpdateUserRequest r, UserAggregate userEntity) {
     return Mono.just(userEntity)
         .flatMap(
             x -> {
               final ObjectReader objectReader = MappingUtils.MAPPER.readerForUpdating(x);
-              return Mono.just(API.unchecked(()-> objectReader.readValue(writeCurrentEntityValues(r), UserAggregate.class))
+              return Mono.just(
+                      API
+                      .unchecked(()-> objectReader.readValue(writeCurrentEntityValues(r), UserAggregate.class))
                       .get());
             })
         .map(x -> userRepository.save(x).subscribe())

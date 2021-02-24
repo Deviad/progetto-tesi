@@ -22,7 +22,6 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.function.Function;
@@ -103,9 +102,11 @@ public class KeycloakAdminClient {
     RealmResource realmResource = keycloak.realm(realm);
     UsersResource usersResource = realmResource.users();
 
-    final List<UserRepresentation> search = usersResource.search(null, null, null, email, 0, 1);
+    final List<UserRepresentation> search =
+            usersResource.search(null, null, null, email, 0, 1);
     if (search.isEmpty()) {
-      return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keycloak: Cannot find user"));
+      return Mono.error(
+          new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keycloak: Cannot find user"));
     }
 
     final UserRepresentation utilizator = search.get(0);
@@ -117,16 +118,19 @@ public class KeycloakAdminClient {
     return Mono.empty();
   }
 
-  public Mono<Object> updatePassword(String email, UpdatePasswordRequest updateUserRequest) {
+  public Mono<Void> updatePassword(String email, UpdatePasswordRequest updateUserRequest) {
     RealmResource realmResource = keycloak.realm(realm);
     UsersResource usersResource = realmResource.users();
 
-    final List<UserRepresentation> search = usersResource.search(email);
+    final List<UserRepresentation> search =
+            usersResource.search(null, null, null, email, 0, 1);
     if (search.isEmpty()) {
-      return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot find user"));
+      return Mono.error(
+              new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keycloak: Cannot find user"));
     }
 
     final UserRepresentation utilizator = search.get(0);
+
     UserResource userResource =
         Try.ofSupplier(() -> usersResource.get(utilizator.getId()))
             .getOrElseThrow((Function<Throwable, RuntimeException>) RuntimeException::new);
@@ -141,6 +145,26 @@ public class KeycloakAdminClient {
     userResource.resetPassword(passwordCred);
 
     userResource.update(utilizator);
+    return Mono.empty();
+  }
+
+  public Mono<Void> logout(String email) {
+    RealmResource realmResource = keycloak.realm(realm);
+    UsersResource usersResource = realmResource.users();
+
+    final List<UserRepresentation> search =
+            usersResource.search(null, null, null, email, 0, 1);
+    if (search.isEmpty()) {
+      return Mono.error(
+              new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keycloak: Cannot find user"));
+    }
+
+    final UserRepresentation utilizator = search.get(0);
+    UserResource userResource =
+        Try.ofSupplier(() -> usersResource.get(utilizator.getId()))
+            .getOrElseThrow((Function<Throwable, RuntimeException>) RuntimeException::new);
+
+    userResource.logout();
     return Mono.empty();
   }
 }

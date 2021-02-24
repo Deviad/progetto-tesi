@@ -43,6 +43,10 @@ public class UserCommandRoutesManager {
             "/api/user/changePassword",
             RequestPredicates.contentType(MediaType.APPLICATION_JSON),
             this::handleUpdatePassword)
+        .GET(
+            "/api/user/logout",
+            RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+            this::handleLogout)
         .DELETE(
             "/api/user/delete",
             RequestPredicates.contentType(MediaType.APPLICATION_JSON),
@@ -57,6 +61,13 @@ public class UserCommandRoutesManager {
         .map(r -> userManagement.registerUser(r))
         .flatMap(Function.identity())
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
+  }
+
+  Mono<ServerResponse> handleLogout(ServerRequest request) {
+    return Utils.fetchPrincipal(request)
+            .map(p -> userManagement.logoutUser((JwtAuthenticationToken) p))
+            .flatMap(Function.identity())
+            .flatMap(r -> ServerResponse.ok().build());
   }
 
   Mono<ServerResponse> handleUpdatePassword(ServerRequest request) {
@@ -85,7 +96,7 @@ public class UserCommandRoutesManager {
                 Utils.fetchPrincipal(request)))
         .map(r -> userManagement.updateUser(r.getT1(), (JwtAuthenticationToken) r.getT2()).onErrorResume(Mono::error))
         .flatMap(Function.identity())
-        .flatMap(r -> ServerResponse.ok().bodyValue(r));
+        .flatMap(r -> ServerResponse.ok().build());
   }
 
 }
