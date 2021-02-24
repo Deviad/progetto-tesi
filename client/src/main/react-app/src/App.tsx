@@ -15,12 +15,13 @@ import {Login} from "./features/login/Login";
 import {
     handleClick,
     renderLogInMenuButton,
-    renderLogOutMenuButton,
+    renderDashboardMenuButton,
     renderRegisterMenuButton,
-    renderUserProfileButton
+    renderUserProfileButton, renderLogOutMenuButton
 } from "./appServices";
 import {Logout} from "./features/logout/Logout";
-import {Home} from "./features/common/home/Home";
+import {Dashboard} from "./features/dashboard/Dashboard";
+import {Home} from "./features/home/Home";
 
 const NotFound = () => <div>Page not Found</div>;
 
@@ -53,6 +54,7 @@ const App: FC = () => {
                     {renderRegisterMenuButton(history)}
                     {renderLogInMenuButton(history)}
                     {renderLogOutMenuButton(history)}
+                    {renderDashboardMenuButton(history)}
                     {renderUserProfileButton(history)}
                 </Menu>
             </Layout.Header>
@@ -78,6 +80,10 @@ const App: FC = () => {
                                     <AuthGuard/>
                                 </Route>
                             ))}
+
+                            <Route path="/dashboard">
+                                <Dashboard />
+                            </Route>
 
                             <Route path="/login">
                                 <Login/>

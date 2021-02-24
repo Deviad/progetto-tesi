@@ -1,5 +1,6 @@
 import {HttpGetRequestParams, HttpPostReqParams, MediaType, Nullable, Request} from "./types";
 import {Log, utils} from "./utils";
+import {notification} from "antd";
 
 export enum ContentType {
     JSON_UTF8 = "application/json;charset=UTF-8",
@@ -64,10 +65,23 @@ export const httpGet = async <RESPONSE>(params: HttpGetRequestParams): Promise<{
         };
     } catch (error) {
         Log.error(error);
+        notification["error"]({
+            message: 'Http client error',
+            description: error.message,
+        });
         throw error;
     }
 };
 
+
+export function showHttpServerError<RESPONSE>(responseOk: boolean, body: RESPONSE | undefined | null) {
+    if (!responseOk) {
+        notification["error"]({
+            message: 'Http server error',
+            description: (body as any).message,
+        });
+    }
+}
 
 export const httpPost = async <RESPONSE>(params: HttpPostReqParams): Promise<{ body: RESPONSE | undefined | null; status: boolean }> => {
 
@@ -86,12 +100,17 @@ export const httpPost = async <RESPONSE>(params: HttpPostReqParams): Promise<{ b
                 body
             }
         }
+        showHttpServerError(responseOk, body);
         return {
             status: responseOk,
             body
         };
     } catch (error) {
         Log.error(error);
+        notification["error"]({
+            message: 'Http client error',
+            description: error.message,
+        });
         throw error;
 
     }
@@ -120,6 +139,10 @@ export const httpPut = async <RESPONSE>(params: HttpPostReqParams): Promise<{ bo
         };
     } catch (error) {
         Log.error(error);
+        notification["error"]({
+            message: 'Http client error',
+            description: error.message,
+        });
         throw error;
     }
 };
@@ -137,6 +160,10 @@ export const httpDelete = async (url: string): Promise<{ status: boolean }> => {
         };
     } catch (error) {
         Log.error(error);
+        notification["error"]({
+            message: 'Http client error',
+            description: error.message,
+        });
         throw error;
     }
 };

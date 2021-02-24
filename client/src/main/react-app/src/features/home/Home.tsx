@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import {useDispatch} from "react-redux";
-import {getSetCurrentPage} from "../../../app/appSharedSlice";
-import {PageSlug} from "../../../types";
+import { getSetCurrentPage } from "../../app/appSharedSlice";
+import {PageSlug} from "../../types";
 
 
 export const Home = () => {

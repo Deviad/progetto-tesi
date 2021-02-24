@@ -178,7 +178,8 @@ export enum PageSlug {
     HOME = "home",
     USER_PROFILE = "user-profile",
     ERROR = "error",
-    LOGOUT = "logout"
+    LOGOUT = "logout",
+    DASHBOARD = "dashboard"
 }
 
 export enum PagePathName {

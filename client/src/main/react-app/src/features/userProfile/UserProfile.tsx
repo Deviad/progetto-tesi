@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {RefObject, useCallback, useEffect, useRef, useState} from "react";
 import {useDispatch, useSelector} from 'react-redux';
 import {
     EroareDeLimita,
@@ -135,16 +135,27 @@ const onSubmit = (dispatch: Dispatch<any>, setFData: Function, setDisabled: Func
     ;
 }
 
+
+
+const toggleSubmitButton = (formRef: RefObject<HTMLFormElement>, isDisabled: boolean) => {
+    const button = Object.values(formRef?.current?.formElement)
+        .find((x: any) => x.type === 'submit') as NonNullable<HTMLButtonElement>;
+    button.disabled = isDisabled;
+}
+
+
 const UserProfile = () => {
     const user = useSelector((state: RootState) => state.user);
     const [isDisabled, setDisabled] = useState(true);
 
     const [fData, setFData] = useState(userProfileInitialState);
 
+    const formRef: RefObject<HTMLFormElement> = useRef(null);
 
     const dispatch = useDispatch();
 
     const cSetEnabled = useCallback((bool: boolean) => (evt: React.MouseEvent<HTMLElement, MouseEvent>) => setDisabled(!bool), []);
+
 
     useEffect(() => {
         dispatch(getAppLoading());
@@ -156,7 +167,15 @@ const UserProfile = () => {
 
     }, [fData.email, user.accessToken]);
 
+
+    useEffect(()=> {
+        toggleSubmitButton(formRef, isDisabled);
+    }, [isDisabled])
+
+
+
     console.log("User", user);
+    // @ts-ignore
     return (
         <>
             <Row>
@@ -207,6 +226,8 @@ const UserProfile = () => {
                           onSubmit={onSubmit(dispatch, setFData, user)}
                           noHtml5Validate={true}
                           liveValidate={true}
+                          /* @ts-ignore */
+                          ref={formRef}
                           showErrorList={false}
                           transformErrors={transformaEroarile}
                           disabled={isDisabled}
@@ -217,6 +238,8 @@ const UserProfile = () => {
                               onSubmit={onSubmit(dispatch, setFData, setDisabled, user)}
                                  noHtml5Validate={true}
                                  liveValidate={true}
+                                 /* @ts-ignore */
+                                 ref={formRef}
                                  showErrorList={false}
                                  transformErrors={transformaEroarile}
                                  formData={fData}

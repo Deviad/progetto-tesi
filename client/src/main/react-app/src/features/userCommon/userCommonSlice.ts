@@ -5,6 +5,7 @@ import {AuthorizationResponse, PagePathName, UserState} from "../../types";
 import {utils} from "../../utils";
 import * as H from 'history';
 import {getAppFailure, getAppLoading} from '../../app/appSharedSlice';
+import {notification} from "antd";
 
 export const userInitialState: UserState = {
     username: null,
@@ -96,15 +97,20 @@ const handleLocalAuth = (user: UserState): Promise<UserState> => {
             }
             throw new Error(JSON.stringify(res));
         })
-        .catch(error => {
-            console.log('Request failed', error);
-            throw new Error(error.message);
-        })
         .then(res => (res as Response).json())
         .then((auth: AuthorizationResponse) => {
             const result = utils.getUserStateFromAuthResponse(auth);
             console.log('Request succeeded with JSON response', auth);
             utils.storage.setItem("auth_res", JSON.stringify(auth));
             return result as UserState;
+        })
+        .catch(error => {
+            console.log('Request failed', error);
+            notification["error"]({
+                message: 'Authorization token error',
+                description: error.message,
+            });
+            throw new Error(error.message);
+
         })
 };
