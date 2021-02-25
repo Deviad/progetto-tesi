@@ -14,14 +14,15 @@ import {PagePathName, PageSlug} from "./types";
 import {Login} from "./features/login/Login";
 import {
     handleClick,
-    renderLogInMenuButton,
     renderDashboardMenuButton,
+    renderLogInMenuButton,
+    renderLogOutMenuButton,
     renderRegisterMenuButton,
-    renderUserProfileButton, renderLogOutMenuButton
-} from "./appServices";
+    renderUserProfileButton
+} from './appServices';
 import {Logout} from "./features/logout/Logout";
-import {Dashboard} from "./features/dashboard/Dashboard";
-import {Home} from "./features/home/Home";
+import {Home} from "./features/home";
+import {Dashboard} from "./features/dashboard";
 
 const NotFound = () => <div>Page not Found</div>;
 

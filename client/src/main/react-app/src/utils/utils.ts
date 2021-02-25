@@ -137,6 +137,7 @@ const utils = (function () {
             username: access.preferred_username,
             firstName: access.given_name,
             lastName: access.family_name,
+            roles: access?.resource_access["ripeti-web"]?.roles
         }
         return result;
     }

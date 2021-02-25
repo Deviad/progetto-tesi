@@ -18,6 +18,7 @@ export const userInitialState: UserState = {
     expiresAt: null,
     firstName: null,
     lastName: null,
+    roles: null,
 }
 
 
@@ -26,7 +27,18 @@ const user = createSlice({
     initialState: userInitialState,
     reducers: {
         getUserSuccess(state, {payload}: PayloadAction<UserState>) {
-            const {username, email, issuedAt, expiresAt, expirationTime, accessToken, refreshToken, refreshExpirationTime, firstName, lastName} = payload
+            const {username,
+                email,
+                issuedAt,
+                expiresAt,
+                expirationTime,
+                accessToken,
+                refreshToken,
+                refreshExpirationTime,
+                firstName,
+                lastName,
+                roles} = payload;
+
             state.username = username;
             state.email = email;
             state.expirationTime = expirationTime;
@@ -35,8 +47,9 @@ const user = createSlice({
             state.accessToken = accessToken;
             state.refreshToken = refreshToken;
             state.refreshExpirationTime = refreshExpirationTime;
-            state.firstName = payload.firstName;
-            state.lastName = payload.lastName;
+            state.firstName = firstName;
+            state.lastName = lastName;
+            state.roles = roles;
         },
     }
 })

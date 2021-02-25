@@ -76,7 +76,7 @@ public class CourseCommandService {
 
     return common
         .getUserByEmail(email)
-        .filter(t -> t.role().equals(Role.PROFESOR))
+        .filter(t -> t.role().equals(Role.PROFESSOR))
         .switchIfEmpty(
             Mono.error(
                 new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not a teacher")))
@@ -363,7 +363,7 @@ public class CourseCommandService {
       UUID courseId, String email) {
     return getCourseByCourseId(courseId)
         .flatMap(c -> Mono.zip(Mono.just(c), common.getUserByEmail(email)))
-        .filter(tuple -> tuple.getT2().role().equals(Role.PROFESOR))
+        .filter(tuple -> tuple.getT2().role().equals(Role.PROFESSOR))
         .switchIfEmpty(
             Mono.error(
                 new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not a teacher")))
@@ -374,6 +374,6 @@ public class CourseCommandService {
     return ((List)
             ((Map) ((Map) principal.getClaims().get("resource_access")).get("ripeti-web"))
                 .get("roles"))
-        .contains(Role.PROFESOR.name());
+        .contains(Role.PROFESSOR.name());
   }
 }

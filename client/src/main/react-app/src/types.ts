@@ -67,6 +67,7 @@ export interface UserState extends User {
     refreshToken: Nullable<string>;
     firstName: Nullable<string>;
     lastName: Nullable<string>;
+    roles: Nullable<string[]>;
 }
 
 type Address = {
@@ -187,7 +188,8 @@ export enum PagePathName {
     HOME = "/home",
     USER_PROFILE = "/user-profile",
     ERROR = "/error",
-    LOGOUT = "/logout"
+    LOGOUT = "/logout",
+    DASHBOARD = "/dashboard"
 }
 
 
