@@ -13,7 +13,9 @@ import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,7 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -56,6 +59,7 @@ public class KeycloakAdminClient {
   }
 
   public Mono<Object> save(RegistrationRequest registrationRequest) {
+
     // Define user
     final UserRepresentation userRepresentation =
         mapper.mapToUserRepresentation(registrationRequest);
@@ -75,6 +79,23 @@ public class KeycloakAdminClient {
     passwordCred.setValue(registrationRequest.password());
 
     UserResource userResource = usersRessource.get(userId);
+
+
+    // Trebuie sa obtinem raprezentarea clientului, adica: id, nume, etc., nu doar nume.
+
+    ClientRepresentation ripetiWebClient = realmResource.clients() //
+            .findByClientId("ripeti-web").get(0);
+
+
+    // la fel ca si pentru client
+
+    RoleRepresentation userClientRole = realmResource.clients().get(ripetiWebClient.getId()) //
+            .roles().get(registrationRequest.role().name()).toRepresentation();
+
+
+    // adaugam rolurile unui user.
+    userResource.roles() //
+            .clientLevel(ripetiWebClient.getId()).add(Arrays.asList(userClientRole));
 
     // Set password credential
     userResource.resetPassword(passwordCred);

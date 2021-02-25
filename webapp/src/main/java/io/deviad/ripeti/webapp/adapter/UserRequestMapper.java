@@ -8,6 +8,7 @@ import org.keycloak.common.util.Time;
 import org.keycloak.representations.idm.UserRepresentation;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,12 +29,6 @@ public class UserRequestMapper {
     userRepresentation.setAttributes(getAttributes());
     userRepresentation.setEnabled(true);
     userRepresentation.setCreatedTimestamp(getCreatedTimestamp());
-    if (userRepresentation.getApplicationRoles() != null) {
-      Map<String, List<String>> map = getApplicationRoles(registrationRequest.role());
-      if (map != null) {
-        userRepresentation.getApplicationRoles().putAll(map);
-      }
-    }
 
     return userRepresentation;
   }
@@ -63,7 +58,4 @@ public class UserRequestMapper {
     return Time.currentTimeMillis();
   }
 
-  Map<String, List<String>> getApplicationRoles(Role role) {
-    return Collections.singletonMap("ripeti-web", List.of(role.name()));
-  }
 }
