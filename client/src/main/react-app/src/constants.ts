@@ -34,7 +34,7 @@ export const registrationSchema = {
             "type": "string",
             "title": "Numele utilizatorlui",
             "minLength": 3,
-            "pattern": "^[a-zA-Z]+$"
+            "pattern": "^[a-z]+$"
         },
         "email": {
             "type": "string",

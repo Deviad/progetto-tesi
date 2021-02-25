@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -21,7 +22,9 @@ import javax.validation.constraints.Pattern;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class UpdateUserRequest {
-  @Pattern(regexp = "^[A-Za-z]{3,20}$")
+  @NotBlank
+  @Length(min = 3, max = 20)
+  @Pattern(regexp = "^[a-z]+$")
   String username;
 
   /*
@@ -33,10 +36,14 @@ public class UpdateUserRequest {
   @NotBlank
   String email;
 
-  @Pattern(regexp = "^[A-Za-z]{3,20}$")
+  @Length(min = 3, max = 20)
+  @Pattern(regexp = "^[A-Za-z ]+$")
+  @NotBlank
   String firstName;
 
-  @Pattern(regexp = "^[A-Za-z]{3,20}$")
+  @Length(min = 3, max = 20)
+  @Pattern(regexp = "^[A-Za-z ]+$")
+  @NotBlank
   String lastName;
 
   @Valid Address address;

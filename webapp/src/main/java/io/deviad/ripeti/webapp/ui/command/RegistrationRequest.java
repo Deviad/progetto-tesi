@@ -27,7 +27,7 @@ import javax.validation.constraints.Pattern;
 public class RegistrationRequest {
   @NotBlank
   @Length(min = 3, max = 20)
-  @Pattern(regexp = "^[A-Za-z ]+$")
+  @Pattern(regexp = "^[a-z]+$")
   String username;
 
   @NotBlank
