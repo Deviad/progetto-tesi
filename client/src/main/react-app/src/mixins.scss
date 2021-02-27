@@ -1,0 +1,22 @@
+// Map with much breakpoints
+$breakpoints: (
+        xsmall: 480px,
+        small: 576px,
+        medium: 768px,
+        large: 992px,
+        xlarge: 1200px,
+        xxlarge: 1600px
+);
+
+// Respond-To Mixin
+@mixin respond-to($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    $value: map-get($breakpoints, $breakpoint);
+
+    @media screen and (min-width: $value) {
+      @content;
+    }
+  }
+
+  @warn "Unknown `#{$breakpoint}` in $breakpoints";
+}

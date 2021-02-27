@@ -1,6 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
 
-import './App.css'
 import {Col, Layout, Menu, PageHeader, Row} from "antd";
 import Oauth2 from "./features/oauth2";
 import {Registration} from "./features/registration/Registration";
@@ -22,7 +21,7 @@ import {
 } from './appServices';
 import {Logout} from "./features/logout/Logout";
 import {Home} from "./features/home";
-import {Dashboard} from "./features/dashboard";
+import "./App.scss";
 
 const NotFound = () => <div>Page not Found</div>;
 
@@ -34,7 +33,7 @@ const App: FC = () => {
 
     const currentPage = useSelector((state: RootState) => state.shared.currentPage);
 
-    const guardedPaths = [PagePathName.USER_PROFILE]
+    const guardedPaths = [PagePathName.USER_PROFILE, PagePathName.DASHBOARD]
 
     useEffect(() => {
         setMenuState({current: currentPage === null ? "" : currentPage as unknown as string});
@@ -61,8 +60,7 @@ const App: FC = () => {
             </Layout.Header>
             <PageHeader>
             </PageHeader>
-            <Layout.Content>
-                <Row gutter={[16, 16]} align="middle" justify="center">
+            <Layout.Content className="ant-layout-content--ripeti">
                     <Col span={16} flex="auto">
                         <Switch>
 
@@ -82,10 +80,6 @@ const App: FC = () => {
                                 </Route>
                             ))}
 
-                            <Route path="/dashboard">
-                                <Dashboard />
-                            </Route>
-
                             <Route path="/login">
                                 <Login/>
                             </Route>
@@ -104,7 +98,6 @@ const App: FC = () => {
                             <Route path={`*`} component={NotFound}/>
                         </Switch>
                     </Col>
-                </Row>
             </Layout.Content>
 
         </Layout>

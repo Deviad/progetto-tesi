@@ -37,7 +37,8 @@ const schimbaMesajDeEroare = <T extends unknown> (key: string, error: EroareGene
     const map = {
         "required": `${proprietati[error.property]} este un camp obligator`,
         "minLength": `${proprietati[error.property]} trebuie sa contina cel putin ${(error as EroareDeLimita).params.limit} caractere`,
-        "pattern[a-zA-Z]+": `${proprietati[(error as EroareDePattern).property]} poate contine doar litere`,
+        "pattern[a-zA-Z ]+": `${proprietati[(error as EroareDePattern).property]} poate contine doar litere`,
+        "pattern[a-z]+": `${proprietati[(error as EroareDePattern).property]} poate contine doar litere`,
         [`pattern${emailPattern}`]: "Adresa de mail nu este valida",
         [`pattern${passwordPattern}`]:
             `parola trebuie sa aiba o lungime de cel 
@@ -90,7 +91,7 @@ export const Registration: FC = () => {
             <Col span={12} flex="auto">
                 <Typography>
                     <Title>
-                        Inregistreazate
+                       Inregistreaza-te
                     </Title>
                 </Typography>
             </Col>

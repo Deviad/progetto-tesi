@@ -191,5 +191,12 @@ export enum PagePathName {
     LOGOUT = "/logout",
     DASHBOARD = "/dashboard"
 }
-
+export interface Lesson {
+    id: string,
+    title: string,
+    content: string,
+    type: "new"| "existing"
+    changed?: boolean,
+    deleted?: boolean,
+}
 

@@ -1,0 +1,20 @@
+@import './src/mixins';
+
+.ant-card {
+  &--ripeti {
+    display: flex;
+    max-width: 300px;
+    margin-bottom: 1rem !important;
+    margin-right: 1rem !important;
+
+    & > .ant-card-body {
+      min-width: 15.65rem;
+      max-width: 18.75rem;
+    }
+  }
+
+  .ant-card-actions {
+    border-top: 0 !important;
+  }
+
+}

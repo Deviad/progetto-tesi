@@ -200,10 +200,9 @@ const UserProfile = () => {
                     </Avatar>
                 </Col>
             </Row>
-            <Row>
-                <pre>{JSON.stringify(user, null, 2)}</pre>
-            </Row>
-
+            {/*<Row>*/}
+            {/*    <pre>{JSON.stringify(user, null, 2)}</pre>*/}
+            {/*</Row>*/}
             <Row align="middle" justify="center">
                 <Col span={12} flex="auto">
                     <Typography>
