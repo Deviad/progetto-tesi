@@ -72,20 +72,28 @@ const renderFirstStep = (state: any, setState: Function) => {
 }
 
 
-// inter
 
 const renderLessons = (state: any, setState: Function) => {
    if (state.steps[1].lessons.length == 0) {
        return <div>Nu ai lectile existente</div>
    } else {
-      return state.steps[1].lessons.map((l: Lesson) => (
+      return Object.entries(state.steps[1].lessons).map(([k, l]:[string, any]) => (
            <Panel header={l.lessonName} key={l.id}>
                <Typography style={{marginBottom: "0.5rem"}}>
                    <Text style={{fontWeight: "bold"}}>
                        Denumire
                    </Text>
                </Typography>
-               <Input name="name" value={l.lessonName} style={{marginBottom: "0.5rem"}}/>
+               <Input
+                   name="lessonName"
+                   value={ state.steps[1].lessons[l.id].lessonName}
+                   style={{marginBottom: "0.5rem"}}
+                   onChange={(event )=> {
+                       state.steps[1].lessons[l.id].lessonName = event.target.value;
+                       state.steps[1].lessons[l.id].modified = true;
+                       state.steps[1].lessons = {...state.steps[1].lessons, [l.id]: state.steps[1].lessons[l.id]}
+                       setState({...state, steps: [...state.steps]})
+                   }}/>
                <Typography style={{marginBottom: "0.5rem"}}>
                    <Text style={{fontWeight: "bold"}}>
                        Continut
@@ -245,13 +253,17 @@ export const WizardSteps = ({
            // enrichment phase: faza unde adaug niste proprietati suplimentare pe lectile ca
            // sa pot efectua operatiunile relative mai usor.
 
-            steps[1].lessons = steps[1].lessons.map((l: Record<string, any>) => ({
-                id: l.id,
-                lessonName: l.lessonName,
-                lessonContent: l.lessonContent,
-                type: "existing",
-                deleted: false,
-            }))
+            steps[1].lessons = steps[1].lessons.reduce((acc: Record<string, Record<string, any>>, curr: Record<string, any>) => {
+                acc[curr.id] = {
+                    id: curr.id,
+                    lessonName: curr.lessonName,
+                    lessonContent: curr.lessonContent,
+                    type: "existing",
+                    deleted: false,
+                    modified: false,
+                }
+                return acc;
+            }, {} as Record<string, Record<string, any>>)
 
             setState({...state, steps});
         }, 2000);
