@@ -193,8 +193,8 @@ export enum PagePathName {
 }
 export interface Lesson {
     id: string,
-    title: string,
-    content: string,
+    lessonName: string,
+    lessonContent: string,
     type: "new"| "existing"
     changed?: boolean,
     deleted?: boolean,

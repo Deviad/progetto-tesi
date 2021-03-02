@@ -5,6 +5,7 @@ import ReactQuill from "react-quill";
 import Title from "antd/es/typography/Title";
 import Text from "antd/es/typography/Text";
 import {noop} from 'lodash';
+import {Lesson} from '../../types';
 
 const {Step} = Steps;
 const {Panel} = Collapse;
@@ -20,7 +21,7 @@ const steps: Record<string, any>[] = [
     {
         title: 'Adauga lectile',
         content: "Second-content",
-        lessons: []
+        lessons: {} as Record<string, Lesson>
     },
 ];
 
@@ -70,6 +71,35 @@ const renderFirstStep = (state: any, setState: Function) => {
     }
 }
 
+
+// inter
+
+const renderLessons = (state: any, setState: Function) => {
+   if (state.steps[1].lessons.length == 0) {
+       return <div>Nu ai lectile existente</div>
+   } else {
+      return state.steps[1].lessons.map((l: Lesson) => (
+           <Panel header={l.lessonName} key={l.id}>
+               <Typography style={{marginBottom: "0.5rem"}}>
+                   <Text style={{fontWeight: "bold"}}>
+                       Denumire
+                   </Text>
+               </Typography>
+               <Input name="name" value={l.lessonName} style={{marginBottom: "0.5rem"}}/>
+               <Typography style={{marginBottom: "0.5rem"}}>
+                   <Text style={{fontWeight: "bold"}}>
+                       Continut
+                   </Text>
+               </Typography>
+               <ReactQuill style={{background: "#fff"}} value={l.lessonContent}
+                           onChange={noop}/>
+               <br/>
+           </Panel>
+       ) )
+   }
+
+}
+
 const renderSecondStep = (state: any, setState: Function) => {
     if (state.currentStep === 1) {
         return (
@@ -102,51 +132,8 @@ const renderSecondStep = (state: any, setState: Function) => {
                         </Title>
                     </Typography>
                     <Collapse accordion>
-                        <Panel header="This is panel header 1" key="1">
-                            <Typography style={{marginBottom: "0.5rem"}}>
-                                <Text style={{fontWeight: "bold"}}>
-                                    Denumire
-                                </Text>
-                            </Typography>
-                            <Input name="name" value="" style={{marginBottom: "0.5rem"}}/>
-                            <Typography style={{marginBottom: "0.5rem"}}>
-                                <Text style={{fontWeight: "bold"}}>
-                                   Continut
-                                </Text>
-                            </Typography>
-                            <ReactQuill style={{background: "#fff"}} value=""
-                                        onChange={noop}/>
-                            <br/>
-                        </Panel>
-                        <Panel header="This is panel header 2" key="2">
-                            <p>Lorem ipsum</p>
-                        </Panel>
-                        <Panel header="This is panel header 3" key="3">
-                            <p>Lorem ipsum</p>
-                        </Panel>
-                        <Panel header="This is panel header 3" key="3">
-                            <p>Lorem ipsum</p>
-                        </Panel>
-                        <Panel header="This is panel header 3" key="3">
-                            <p>Lorem ipsum</p>
-                        </Panel>
-                        <Panel header="This is panel header 3" key="3">
-                            <p>Lorem ipsum</p>
-                        </Panel>
-                        <Panel header="This is panel header 3" key="3">
-                            <p>Lorem ipsum</p>
-                        </Panel>
-                        <Panel header="This is panel header 3" key="3">
-                            <p>Lorem ipsum</p>
-                        </Panel>
-                        <Panel header="This is panel header 3" key="3">
-                            <p>Lorem ipsum</p>
-                        </Panel>
+                        {renderLessons(state, setState)}
                     </Collapse>
-
-
-
-
                 </div>
                 <br/>
             </>)
@@ -227,7 +214,46 @@ export const WizardSteps = ({
                 description,
             }
 
-            setState({...state, steps: steps});
+            steps[1].lessons = [
+                {
+                    id: "123123-asdsads-sadasd-daadsa",
+                    lessonName: "Test1",
+                    lessonContent: "Content1"
+                },
+                {
+                    id: "123123-asdsads-sadasd-daadsb",
+                    lessonName: "Test2",
+                    lessonContent: "Content2"
+                },
+                {
+                    id: "123123-asdsads-sadasd-daadsc",
+                    lessonName: "Test3",
+                    lessonContent: "Content3"
+                },
+                {
+                    id: "123123-asdsads-sadasd-daadsd",
+                    lessonName: "Test4",
+                    lessonContent: "Content4"
+                },
+                {
+                    id: "123123-asdsads-sadasd-daadse",
+                    lessonName: "Test5",
+                    lessonContent: "Content5"
+                }
+            ];
+
+           // enrichment phase: faza unde adaug niste proprietati suplimentare pe lectile ca
+           // sa pot efectua operatiunile relative mai usor.
+
+            steps[1].lessons = steps[1].lessons.map((l: Record<string, any>) => ({
+                id: l.id,
+                lessonName: l.lessonName,
+                lessonContent: l.lessonContent,
+                type: "existing",
+                deleted: false,
+            }))
+
+            setState({...state, steps});
         }, 2000);
 
     }, [modalVisible]);
