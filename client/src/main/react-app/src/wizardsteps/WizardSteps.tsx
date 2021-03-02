@@ -18,6 +18,14 @@ const steps: Record<string, any>[] = [
     {
         title: 'Adauga lectile',
         content: "Second-content",
+        newLesson: {
+            id: "",
+            lessonName: "",
+            lessonContent: "",
+            type: "new",
+            deleted: false,
+            modified: false,
+        },
         lessons: {} as Record<string, Lesson>
     },
 ];
@@ -47,7 +55,13 @@ export const renderModalContent = (state: any, setState: Function, next: Functio
                 </Button>
             )}
             {state.currentStep === steps.length - 1 && (
-                <Button type="primary" onClick={() => message.success('Processing complete!')}>
+                <Button type="primary" onClick={() => {
+
+                    console.log(state.steps[1].lessons)
+
+                    message.success('Processing complete!');
+
+                }}>
                     Finalizeaza
                 </Button>
             )}
