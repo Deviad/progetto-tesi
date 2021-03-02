@@ -1,14 +1,11 @@
-import {Button, Collapse, Input, message, Modal, Steps, Typography} from 'antd';
+import {Button, Collapse, message, Modal, Steps} from 'antd';
 import {useState} from "reinspect";
 import React, {useEffect} from "react";
-import ReactQuill from "react-quill";
-import Title from "antd/es/typography/Title";
-import Text from "antd/es/typography/Text";
-import {noop} from 'lodash';
-import {Lesson} from '../../types';
+import {Lesson} from '../types';
+import {renderFirstStep} from "./renderFirstStep";
+import {renderSecondStep} from "./renderSecondStep";
 
 const {Step} = Steps;
-const {Panel} = Collapse;
 const steps: Record<string, any>[] = [
     {
         title: 'Mod. info. generale',
@@ -24,129 +21,6 @@ const steps: Record<string, any>[] = [
         lessons: {} as Record<string, Lesson>
     },
 ];
-
-
-const renderFirstStep = (state: any, setState: Function) => {
-
-    const onNameChange = (e: any) => {
-        state.steps[0].content.title = e.target.value;
-
-        setState({
-            ...state,
-            steps: [...state.steps]
-        })
-
-
-    }
-
-    const handleEditorChange = (value: string) => {
-
-        state.steps[0].content.description = value;
-
-        setState({
-            ...state,
-            steps: [...state.steps]
-        })
-    }
-
-    if (state.currentStep === 0) {
-        return (
-            <>
-                <Typography>
-                    <Title level={4}>
-                        Denumire
-                    </Title>
-                </Typography>
-                <Input name="name" onChange={onNameChange} value={state.steps[0].content.title}/>
-                <Typography>
-                    <Title level={4}>
-                        Descriere
-                    </Title>
-                </Typography>
-                <ReactQuill style={{background: "#fff"}} value={state.steps[0].content.description}
-                            onChange={handleEditorChange}/>
-                <br/>
-
-            </>)
-    }
-}
-
-
-
-const renderLessons = (state: any, setState: Function) => {
-   if (state.steps[1].lessons.length == 0) {
-       return <div>Nu ai lectile existente</div>
-   } else {
-      return Object.entries(state.steps[1].lessons).map(([k, l]:[string, any]) => (
-           <Panel header={l.lessonName} key={l.id}>
-               <Typography style={{marginBottom: "0.5rem"}}>
-                   <Text style={{fontWeight: "bold"}}>
-                       Denumire
-                   </Text>
-               </Typography>
-               <Input
-                   name="lessonName"
-                   value={ state.steps[1].lessons[l.id].lessonName}
-                   style={{marginBottom: "0.5rem"}}
-                   onChange={(event )=> {
-                       state.steps[1].lessons[l.id].lessonName = event.target.value;
-                       state.steps[1].lessons[l.id].modified = true;
-                       state.steps[1].lessons = {...state.steps[1].lessons, [l.id]: state.steps[1].lessons[l.id]}
-                       setState({...state, steps: [...state.steps]})
-                   }}/>
-               <Typography style={{marginBottom: "0.5rem"}}>
-                   <Text style={{fontWeight: "bold"}}>
-                       Continut
-                   </Text>
-               </Typography>
-               <ReactQuill style={{background: "#fff"}} value={l.lessonContent}
-                           onChange={noop}/>
-               <br/>
-           </Panel>
-       ) )
-   }
-
-}
-
-const renderSecondStep = (state: any, setState: Function) => {
-    if (state.currentStep === 1) {
-        return (
-            <>
-                <br/>
-                <div style={{overflowY: "scroll", height: "40vh"}}>
-                    <Typography>
-                        <Title level={5}>
-                            Adauga o lectie
-                        </Title>
-                    </Typography>
-
-                    <Typography style={{marginBottom: "0.5rem"}}>
-                        <Text style={{fontWeight: "bold"}}>
-                            Denumire
-                        </Text>
-                    </Typography>
-                    <Input name="name" value="" style={{marginBottom: "0.5rem"}}/>
-                    <Typography style={{marginBottom: "0.5rem"}}>
-                        <Text style={{fontWeight: "bold"}}>
-                           Continut
-                        </Text>
-                    </Typography>
-                    <ReactQuill style={{background: "#fff"}} value=""
-                                onChange={noop}/>
-                    <br/>
-                    <Typography>
-                        <Title level={5}>
-                            Lectile existente
-                        </Title>
-                    </Typography>
-                    <Collapse accordion>
-                        {renderLessons(state, setState)}
-                    </Collapse>
-                </div>
-                <br/>
-            </>)
-    }
-};
 
 export const renderModalContent = (state: any, setState: Function, next: Function, prev: Function) => {
 

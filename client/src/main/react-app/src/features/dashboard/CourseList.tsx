@@ -4,8 +4,8 @@ import React from "react";
 import {EditOutlined} from "@ant-design/icons";
 import "./Card.scss";
 import "./CourseList.scss"
-import {WizardSteps} from "./WizardSteps";
 import {useState} from "reinspect";
+import {WizardSteps} from "../../wizardsteps/WizardSteps";
 
 const renderCardList =
     ({courses, click}:
