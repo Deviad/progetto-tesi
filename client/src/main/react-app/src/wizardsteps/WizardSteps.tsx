@@ -1,9 +1,10 @@
-import {Button, Collapse, message, Modal, Steps} from 'antd';
+import {Button, message, Modal, Steps} from 'antd';
 import {useState} from "reinspect";
 import React, {useEffect} from "react";
-import {Lesson} from '../types';
+import {Lesson, Quiz} from '../types';
 import {renderFirstStep} from "./renderFirstStep";
 import {renderSecondStep} from "./renderSecondStep";
+import {renderThirdStep} from './renderThirdStep';
 
 const {Step} = Steps;
 const steps: Record<string, any>[] = [
@@ -17,7 +18,6 @@ const steps: Record<string, any>[] = [
     },
     {
         title: 'Adauga lectile',
-        content: "Second-content",
         newLesson: {
             id: "",
             lessonName: "",
@@ -27,6 +27,18 @@ const steps: Record<string, any>[] = [
             modified: false,
         },
         lessons: {} as Record<string, Lesson>
+    },
+    {
+        title: 'Adauga chestionare',
+        newQuiz: {
+            id: "",
+            quizName: "",
+            quizContent: "",
+            type: "new",
+            deleted: false,
+            modified: false,
+        },
+        quizzes: {} as Record<string, Quiz>
     },
 ];
 
@@ -47,6 +59,7 @@ export const renderModalContent = (state: any, setState: Function, next: Functio
         <div className="steps-content">
             {renderFirstStep(state, setState)}
             {renderSecondStep(state, setState)}
+            {renderThirdStep(state, setState)}
         </div>
         <div className="steps-action">
             {state.currentStep < steps.length - 1 && (
@@ -57,7 +70,7 @@ export const renderModalContent = (state: any, setState: Function, next: Functio
             {state.currentStep === steps.length - 1 && (
                 <Button type="primary" onClick={() => {
 
-                    console.log(state.steps[1].lessons)
+                    console.log(state)
 
                     message.success('Processing complete!');
 
@@ -138,8 +151,8 @@ export const WizardSteps = ({
                 }
             ];
 
-           // enrichment phase: faza unde adaug niste proprietati suplimentare pe lectile ca
-           // sa pot efectua operatiunile relative mai usor.
+            // enrichment phase: faza unde adaug niste proprietati suplimentare pe lectile ca
+            // sa pot efectua operatiunile relative mai usor.
 
             steps[1].lessons = steps[1].lessons.reduce((acc: Record<string, Record<string, any>>, curr: Record<string, any>) => {
                 acc[curr.id] = {

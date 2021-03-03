@@ -200,3 +200,5 @@ export interface Lesson {
     deleted?: boolean,
 }
 
+export type Quiz  = Lesson;
+

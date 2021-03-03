@@ -12,7 +12,7 @@ export const renderLessons = (state: any, setState: Function) => {
         return <div>Nu ai lectile existente</div>
     } else {
         return Object.entries(state.steps[1].lessons).map(([k, l]: [string, any]) => (
-            <Panel header={l.lessonName} key={l.id}>
+            <Panel header={l.lessonName} key={k}>
                 <Typography style={{marginBottom: "0.5rem"}}>
                     <Text style={{fontWeight: "bold"}}>
                         Denumire
@@ -20,20 +20,20 @@ export const renderLessons = (state: any, setState: Function) => {
                 </Typography>
                 <Input
                     name="lessonName"
-                    value={state.steps[1].lessons[l.id].lessonName}
+                    value={state.steps[1].lessons[k].lessonName}
                     style={{marginBottom: "0.5rem"}}
                     onChange={(event) => {
                         setState({...state, steps: [...state.steps.slice(0, 1), {
                                 ...state.steps[1],
                                 lessons: {
                                     ...state.steps[1].lessons,
-                                    [l.id]: {
-                                        ...state.steps[1].lessons[l.id],
+                                    [k]: {
+                                        ...state.steps[1].lessons[k],
                                         lessonName: event.target.value,
                                         modified: true
                                     }
                                 }
-                            }]})
+                            }, ...state.steps.slice(2)]})
                     }}
                 />
                 <Typography style={{marginBottom: "0.5rem"}}>
@@ -47,13 +47,13 @@ export const renderLessons = (state: any, setState: Function) => {
                                         ...state.steps[1],
                                         lessons: {
                                             ...state.steps[1].lessons,
-                                            [l.id]: {
-                                                ...state.steps[1].lessons[l.id],
+                                            [k]: {
+                                                ...state.steps[1].lessons[k],
                                                 lessonContent: data,
                                                 modified: true
                                             }
                                         }
-                                    }]})}}
+                                    }, ...state.steps.slice(2)]})}}
 
                 />
                 <br/>
@@ -62,9 +62,9 @@ export const renderLessons = (state: any, setState: Function) => {
                             setState({...state, steps: [...state.steps.slice(0, 1), {
                                     ...state.steps[1],
                                     lessons: {
-                                      ...omit(state.steps[1].lessons, l.id)
+                                      ...omit(state.steps[1].lessons, k)
                                     }
-                                }]})}}
+                                }, ...state.steps.slice(2)]})}}
                 >Sterge</Button>
             </Panel>
         ))
@@ -97,7 +97,7 @@ export const renderSecondStep = (state: any, setState: Function) => {
                                            ...state.steps[1].newLesson,
                                            lessonName: event.target.value,
                                        }
-                                   }]});
+                                   }, ...state.steps.slice(2)]});
                            }}
                     />
                     <Typography style={{marginBottom: "0.5rem"}}>
@@ -113,7 +113,7 @@ export const renderSecondStep = (state: any, setState: Function) => {
                                                  ...state.steps[1].newLesson,
                                                  lessonContent: data
                                              },
-                                        }]});
+                                        }, ...state.steps.slice(2)]});
                                 }}/>
                     <br />
                     <Button type="primary" onClick={()=> {
@@ -131,7 +131,7 @@ export const renderSecondStep = (state: any, setState: Function) => {
                                         deleted: state.steps[1].newLesson.deleted,
                                     }
                                 }
-                            }]})
+                            }, ...state.steps.slice(2)]})
                     }}>Adauga</Button>
                     <br/>
                     <br/>
