@@ -4,7 +4,7 @@ import ReactQuill from "react-quill";
 import React from "react";
 import Title from "antd/es/typography/Title";
 import {v4 as uuidv4} from 'uuid';
-
+import {omit} from "lodash";
 const {Panel} = Collapse;
 
 export const renderLessons = (state: any, setState: Function) => {
@@ -57,6 +57,15 @@ export const renderLessons = (state: any, setState: Function) => {
 
                 />
                 <br/>
+                <Button type="primary" danger
+                        onClick={(data) => {
+                            setState({...state, steps: [...state.steps.slice(0, 1), {
+                                    ...state.steps[1],
+                                    lessons: {
+                                      ...omit(state.steps[1].lessons, l.id)
+                                    }
+                                }]})}}
+                >Sterge</Button>
             </Panel>
         ))
     }
