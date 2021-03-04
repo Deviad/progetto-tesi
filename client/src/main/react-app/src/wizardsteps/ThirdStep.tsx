@@ -7,16 +7,19 @@ import {v4 as uuidv4} from 'uuid';
 import {WizardStepsState} from "./WizardSteps";
 import {useState as reuUseState} from "reinspect";
 import {renderQuizzes} from "./renderQuizzes";
-
+import {produce} from 'immer';
+import {Quiz} from "../types";
 
 export const ThirdStep: FC<{ state: WizardStepsState, setState: Function }> = ({state, setState}) => {
 
-    const [newQuizState, setNewQuizState] = reuUseState({
+    const [newQuizState, setNewQuizState] = reuUseState<Quiz>({
+        id: "",
         quizName: "",
         quizContent: "",
         type: "new",
         modified: false,
-        deleted: false
+        deleted: false,
+        questions: {}
     }, 'quiz-state')
     const {quizName, quizContent, type, modified, deleted} = newQuizState;
 
@@ -66,22 +69,20 @@ export const ThirdStep: FC<{ state: WizardStepsState, setState: Function }> = ({
                     <br/>
                     <Button type="primary" onClick={() => {
                         const id = uuidv4();
-                        setState({
-                            ...state, steps: [...state.steps.slice(0, 2), {
-                                ...state.steps[2],
-                                quizzes: {
-                                    ...state.steps[2].quizzes,
-                                    [id]: {
-                                        id,
-                                        quizName: quizName,
-                                        quizContent: quizContent,
-                                        type: type,
-                                        modified: modified,
-                                        deleted: deleted,
-                                    }
-                                }
-                            }]
-                        })
+                        setState(produce((draft: WizardStepsState) => {
+                            draft
+                                .steps[2]
+                                .quizzes[id] = {
+                                    questions: {},
+                                    id,
+                                    quizName: quizName,
+                                    quizContent: quizContent,
+                                    type: type,
+                                    modified: modified,
+                                    deleted: deleted
+                            }
+                        }));
+
                     }}>Adauga chestionar</Button>
                     <br/>
                     <br/>
