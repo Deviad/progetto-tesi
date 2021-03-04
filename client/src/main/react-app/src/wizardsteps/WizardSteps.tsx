@@ -1,13 +1,46 @@
 import {Button, message, Modal, Steps} from 'antd';
 import {useState} from "reinspect";
 import React, {useEffect} from "react";
-import {Lesson, Quiz} from '../types';
+import {Lesson, Question, Quiz} from '../types';
 import {renderFirstStep} from "./renderFirstStep";
 import {renderSecondStep} from "./renderSecondStep";
-import {renderThirdStep} from './renderThirdStep';
+import {ThirdStep} from './ThirdStep';
+
+export interface StepContent {
+
+}
+
+export interface StepContent1 extends StepContent {
+    title: string,
+    content: {
+        id: string,
+        title: string,
+        description: string
+    },
+}
+
+export interface StepContent2 extends StepContent {
+    title: string,
+    newLesson: {
+        id: string,
+        lessonName: string,
+        lessonContent: string,
+        type: "new",
+        deleted: boolean,
+        modified: boolean,
+    }
+    lessons: Record<string, Lesson>
+}
+
+export interface StepContent3 extends StepContent {
+    title: string,
+    quizzes: Record<string, Quiz>
+}
 
 const {Step} = Steps;
-const steps: Record<string, any>[] = [
+
+
+const steps: [StepContent1, StepContent2, StepContent3] = [
     {
         title: 'Mod. info. generale',
         content: {
@@ -28,19 +61,57 @@ const steps: Record<string, any>[] = [
         },
         lessons: {} as Record<string, Lesson>
     },
+
     {
         title: 'Adauga chestionare',
-        newQuiz: {
-            id: "",
-            quizName: "",
-            quizContent: "",
-            type: "new",
-            deleted: false,
-            modified: false,
-        },
-        quizzes: {} as Record<string, Quiz>
+        quizzes: {
+            "2131232": {
+                deleted: false,
+                modified: false,
+                id: "2131232",
+                questions: {
+                    "aaaaaaaa": {
+                        answers: {
+                            "asdasda": {
+                                correct: true,
+                                id: "asdasda",
+                                title: "Wow!",
+                            }
+                        }
+                    }
+                } as unknown as Record<string, Question>,
+                quizContent: "",
+                quizName: "sadsadsa",
+                type: "existing",
+            },
+            "2131233": {
+                deleted: false,
+                modified: false,
+                id: "2131233",
+                questions: {
+                    "bbbbbb": {
+                        answers: {
+                            "asdasda": {
+                                correct: true,
+                                id: "asdasda",
+                                title: "Wow!",
+                            }
+                        }
+                    }
+                } as unknown as Record<string, Question>,
+                quizContent: "",
+                quizName: "sadsadsa",
+                type: "existing",
+            }
+        } as Record<string, Quiz>
     },
 ];
+
+
+export interface WizardStepsState  {
+    steps: [StepContent1, StepContent2, StepContent3];
+    currentStep: number;
+}
 
 export const renderModalContent = (state: any, setState: Function, next: Function, prev: Function) => {
 
@@ -59,7 +130,7 @@ export const renderModalContent = (state: any, setState: Function, next: Functio
         <div className="steps-content">
             {renderFirstStep(state, setState)}
             {renderSecondStep(state, setState)}
-            {renderThirdStep(state, setState)}
+            <ThirdStep state={state} setState={setState} />
         </div>
         <div className="steps-action">
             {state.currentStep < steps.length - 1 && (
@@ -116,14 +187,17 @@ export const WizardSteps = ({
 
 
     useEffect(() => {
+
+        const [step1, step2] = steps;
+
         setTimeout(() => {
-            steps[0].content = {
+            step1.content = {
                 id,
                 title,
                 description,
             }
 
-            steps[1].lessons = [
+           const backendData = [
                 {
                     id: "123123-asdsads-sadasd-daadsa",
                     lessonName: "Test1",
@@ -154,7 +228,7 @@ export const WizardSteps = ({
             // enrichment phase: faza unde adaug niste proprietati suplimentare pe lectile ca
             // sa pot efectua operatiunile relative mai usor.
 
-            steps[1].lessons = steps[1].lessons.reduce((acc: Record<string, Record<string, any>>, curr: Record<string, any>) => {
+            step2.lessons = backendData.reduce((acc: Record<string, Lesson>, curr: Record<string, any>) => {
                 acc[curr.id] = {
                     id: curr.id,
                     lessonName: curr.lessonName,
@@ -164,7 +238,7 @@ export const WizardSteps = ({
                     modified: false,
                 }
                 return acc;
-            }, {} as Record<string, Record<string, any>>)
+            }, {} as Record<string, Lesson>)
 
             setState({...state, steps});
         }, 2000);

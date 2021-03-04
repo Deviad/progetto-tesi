@@ -196,9 +196,41 @@ export interface Lesson {
     lessonName: string,
     lessonContent: string,
     type: "new"| "existing"
-    changed?: boolean,
+    modified?: boolean,
     deleted?: boolean,
 }
 
-export type Quiz  = Lesson;
+export interface Question {
+    id: string,
+    title: string,
+    answers: Record<string, Answer>
+}
 
+export interface Quiz {
+    id: string,
+    quizName: string,
+    quizContent: string,
+    type: "new"| "existing"
+    modified?: boolean,
+    deleted?: boolean,
+    questions: Record<string, Question>
+}
+
+
+export interface Test {
+    id: string,
+    quizName: string,
+    quizContent: string,
+    type: "new" | "existing",
+    deleted?: boolean,
+    modified?: boolean,
+    newQuestion: Question,
+    questions: Record<string, Question>,
+}
+
+
+export interface Answer {
+    id: string;
+    title: string;
+    correct: false;
+}
