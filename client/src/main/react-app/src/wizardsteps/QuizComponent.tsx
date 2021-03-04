@@ -4,6 +4,7 @@ import Text from "antd/es/typography/Text";
 import ReactQuill from "react-quill";
 import {omit} from "lodash";
 import {WizardStepsState} from "./WizardSteps";
+import {renderQuestions} from "./renderQuestions";
 
 
 export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, id: string, quizName: string, quizContent: string }> =
@@ -62,7 +63,7 @@ export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, id
                 />
                 <br/>
 
-                {/*{renderQuestions(state, setState, k)}*/}
+                {renderQuestions(state, setState, id)}
 
                 <Button type="primary" danger
                         onClick={(data) => {

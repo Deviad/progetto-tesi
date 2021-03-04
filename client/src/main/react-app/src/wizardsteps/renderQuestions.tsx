@@ -1,0 +1,31 @@
+import {WizardStepsState} from "./WizardSteps";
+import {QuestionComponent} from "./QuestionComponent";
+import React from "react";
+
+
+export const renderQuestions = (state: WizardStepsState, setState: Function, currentQuiz: string) => {
+
+    const [, , step3] = state.steps;
+
+    return (
+        <>
+            <>
+                {
+                    Object.keys(step3?.quizzes[currentQuiz]?.questions).length > 0 &&
+                    Object.values(step3.quizzes[currentQuiz].questions).map(q =>
+                        <QuestionComponent answers={q.answers} title={q.title} key={q.id}/>)
+                }
+            </>
+            {/*<br/>*/}
+            {/*<br/>*/}
+            {/*<Row style={{display: "flex", flexDirection: "row"}}>*/}
+
+            {/*    <Col span={10} push={1}>*/}
+            {/*        <Button type="primary" onClick={() => {*/}
+            {/*            console.log("Adauga intrebare")*/}
+            {/*        }}> + Adauga intrebare</Button>*/}
+            {/*    </Col>*/}
+            {/*</Row>*/}
+        </>)
+
+}

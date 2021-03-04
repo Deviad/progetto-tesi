@@ -1,85 +1,12 @@
-import {Button, Col, Input, Radio, Row, Typography} from "antd";
+import {Button, Input, Typography} from "antd";
 import Text from "antd/es/typography/Text";
 import ReactQuill from "react-quill";
-import React, {FC, useEffect, useState} from "react";
+import React, {FC} from "react";
 import Title from "antd/es/typography/Title";
 import {v4 as uuidv4} from 'uuid';
 import {WizardStepsState} from "./WizardSteps";
-import {Answer} from "../types";
 import {useState as reuUseState} from "reinspect";
 import {renderQuizzes} from "./renderQuizzes";
-
-
-const AnswerComponent: FC<{ title: string, value: boolean, id: string }> = (props) => {
-    const [state, setState] = useState({title: "", value: false});
-
-    useEffect(() => {
-        if (props.title !== null) {
-            setState({...state, title: props.title})
-
-        }
-
-        if (props.value !== null) {
-            setState({...state, value: props.value})
-        }
-
-    }, [props.title, props.value])
-
-    return (
-        <Row style={{display: "flex", flexDirection: "row", marginBottom: "0.5rem"}} key={props.id}>
-            <Col span={5} push={2}>
-                <Input name="name" value={props.title}/>
-            </Col>
-            <Col span={4} push={3}>
-                <Radio.Group value={props.value}>
-                    <Radio value={true}>true</Radio>
-                    <Radio value={false}>false</Radio>
-                </Radio.Group>
-            </Col>
-        </Row>
-    )
-};
-
-
-const QuestionComponent: FC<{ answers: Record<string, Answer>, title: string }> = (props) => {
-    return (
-        <>
-            <Row style={{display: "flex", flexDirection: "row"}}>
-                <Col span={10} push={1}> <Input name="name" value={props.title}/></Col>
-            </Row>
-            {Object.keys(props.answers).length > 0 && Object.values(props.answers).map(a => (
-                <AnswerComponent title={a.title} value={a.correct} id={a.id} key={a.id}/>
-            ))}
-        </>
-    )
-};
-
-const renderQuestions = (state: WizardStepsState, setState: Function, currentQuiz: string) => {
-
-    const [, , step3] = state.steps;
-
-    return (
-        <>
-            <>
-                {
-                    Object.keys(step3?.quizzes[currentQuiz]?.questions).length > 0 &&
-                    Object.values(step3.quizzes[currentQuiz].questions).map(q =>
-                        <QuestionComponent answers={q.answers} title={q.title} key={q.id}/>)
-                }
-            </>
-            <br/>
-            <br/>
-            <Row style={{display: "flex", flexDirection: "row"}}>
-
-                <Col span={10} push={1}>
-                    <Button type="primary" onClick={() => {
-                        console.log("Adauga intrebare")
-                    }}> + Adauga intrebare</Button>
-                </Col>
-            </Row>
-        </>)
-
-}
 
 
 export const ThirdStep: FC<{ state: WizardStepsState, setState: Function }> = ({state, setState}) => {
