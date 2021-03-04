@@ -23,6 +23,8 @@ export const ThirdStep: FC<{ state: WizardStepsState, setState: Function }> = ({
     }, 'quiz-state')
     const {quizName, quizContent, type, modified, deleted} = newQuizState;
 
+    const [activeKey, setActiveKey] = reuUseState<string>("", "panel-active-key");
+
     if (state.currentStep === 2) {
         return (
             <>
@@ -55,17 +57,6 @@ export const ThirdStep: FC<{ state: WizardStepsState, setState: Function }> = ({
                                 }}/>
                     <br/>
                     <br/>
-                    {/*<Row style={{display: "flex", flexDirection: "row"}}>*/}
-                    {/*    <Col span={10} push={1}>*/}
-                    {/*        <Input  />*/}
-                    {/*    </Col>*/}
-                    {/*    <Col span={4} push={2}>*/}
-                    {/*        <Radio.Group>*/}
-                    {/*            <Radio value={true}>true</Radio>*/}
-                    {/*            <Radio value={false}>false</Radio>*/}
-                    {/*        </Radio.Group>*/}
-                    {/*    </Col>*/}
-                    {/*</Row>*/}
                     <br/>
                     <Button type="primary" onClick={() => {
                         const id = uuidv4();
@@ -86,13 +77,8 @@ export const ThirdStep: FC<{ state: WizardStepsState, setState: Function }> = ({
                     }}>Adauga chestionar</Button>
                     <br/>
                     <br/>
-                    <Typography>
-                        <Title level={5}>
-                            Chestionare existente
-                        </Title>
-                    </Typography>
 
-                    {renderQuizzes(state, setState)}
+                    {renderQuizzes(state, setState, activeKey, setActiveKey)}
                 </div>
                 <br/>
             </>)
