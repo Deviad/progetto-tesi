@@ -19,5 +19,5 @@ public class AnswerDto {
 
   UUID id;
   String title;
-  Boolean correct;
+  Boolean value;
 }

@@ -1,7 +1,7 @@
 import {Button, message, Modal, Steps} from 'antd';
 import {useState} from "reinspect";
 import React, {useEffect} from "react";
-import {Lesson, Question, Quiz} from '../types';
+import {Lesson, Quiz} from '../types';
 import {renderFirstStep} from "./renderFirstStep";
 import {renderSecondStep} from "./renderSecondStep";
 import {ThirdStep} from './ThirdStep';
@@ -70,16 +70,18 @@ const steps: [StepContent1, StepContent2, StepContent3] = [
                 modified: false,
                 id: "2131232",
                 questions: {
-                    "aaaaaaaa": {
+                    "abc-cde-fgh": {
+                        id: "abc-cde-fgh",
+                        title: "What question?",
                         answers: {
                             "asdasda": {
-                                correct: true,
+                                value: true,
                                 id: "asdasda",
                                 title: "Wow!",
                             }
                         }
                     }
-                } as unknown as Record<string, Question>,
+                },
                 quizContent: "",
                 quizName: "sadsadsa",
                 type: "existing",
@@ -89,16 +91,18 @@ const steps: [StepContent1, StepContent2, StepContent3] = [
                 modified: false,
                 id: "2131233",
                 questions: {
-                    "bbbbbb": {
+                    "abc-cde-fgg": {
+                        id: "abc-cde-fgg",
+                        title: "What question?",
                         answers: {
-                            "asdasda": {
-                                correct: true,
-                                id: "asdasda",
+                            "asdasdf": {
+                                value: true,
+                                id: "asdasdf",
                                 title: "Wow!",
                             }
                         }
                     }
-                } as unknown as Record<string, Question>,
+                },
                 quizContent: "",
                 quizName: "sadsadsa",
                 type: "existing",

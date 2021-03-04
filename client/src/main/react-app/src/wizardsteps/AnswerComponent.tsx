@@ -1,29 +1,23 @@
-import React, {FC, useEffect, useState} from "react";
+import React, {ChangeEvent, FC} from "react";
 import {Col, Input, Radio, Row} from "antd";
+import {RadioChangeEvent} from "antd/lib/radio/interface";
 
 
-export const AnswerComponent: FC<{ title: string, value: boolean, id: string }> = (props) => {
-    const [state, setState] = useState({title: "", value: false});
-
-    useEffect(() => {
-        if (props.title !== null) {
-            setState({...state, title: props.title})
-
-        }
-
-        if (props.value !== null) {
-            setState({...state, value: props.value})
-        }
-
-    }, [props.title, props.value])
+export const AnswerComponent: FC<{
+    answerTitle: string,
+    value: boolean,
+    id: string,
+    changeValue: (e: RadioChangeEvent) => void,
+    changeTitle: (e: ChangeEvent<HTMLInputElement>) => void,
+}> = (props) => {
 
     return (
         <Row style={{display: "flex", flexDirection: "row", marginBottom: "0.5rem"}} key={props.id}>
             <Col span={5} push={2}>
-                <Input name="name" value={props.title}/>
+                <Input name="name" value={props.answerTitle} onChange={props.changeTitle} />
             </Col>
             <Col span={4} push={3}>
-                <Radio.Group value={props.value}>
+                <Radio.Group value={props.value} onChange={props.changeValue}>
                     <Radio value={true}>true</Radio>
                     <Radio value={false}>false</Radio>
                 </Radio.Group>

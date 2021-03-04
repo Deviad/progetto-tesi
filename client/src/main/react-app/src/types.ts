@@ -232,5 +232,5 @@ export interface Test {
 export interface Answer {
     id: string;
     title: string;
-    correct: false;
+    value: boolean;
 }
