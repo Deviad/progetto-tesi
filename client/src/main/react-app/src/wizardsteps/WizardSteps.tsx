@@ -144,11 +144,8 @@ export const renderModalContent = (state: any, setState: Function, next: Functio
             )}
             {state.currentStep === steps.length - 1 && (
                 <Button type="primary" onClick={() => {
-
                     console.log(state)
-
                     message.success('Processing complete!');
-
                 }}>
                     Finalizeaza
                 </Button>

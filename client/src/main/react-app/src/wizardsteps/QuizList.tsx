@@ -1,18 +1,32 @@
 import {WizardStepsState} from "./WizardSteps";
 import {Collapse} from "antd";
-import {QuizComponent} from "./QuizComponent";
-import React from "react";
 import {PanelWrapper} from "./PanelWrapper";
+import {QuizComponent} from "./QuizComponent";
+import React, {FC, useEffect} from "react";
+import {useState} from "reinspect";
 
 
-export const renderQuizzes = (state: WizardStepsState, setState: Function, activeKey: string, setActiveKey: Function) => {
+export const QuizList: FC<{
+
+    state: WizardStepsState,
+    setState: Function,
+    keys: string[],
+
+}> = ({state, setState, keys}) => {
 
     const [, , step3] = state.steps;
 
-    if (Object.keys(step3.quizzes).length == 0) {
+    const [activeKey, setActiveKey] = useState("", 'activeKey');
+
+    useEffect(()=>{
+       setActiveKey(keys[keys.length - 1])
+    }, [keys]);
+
+
+    if (keys.length == 0) {
         return <div>Nu ai chestionare existente</div>
     } else {
-        return <Collapse defaultActiveKey={Object.keys(step3.quizzes)[0]}>{
+        return <Collapse activeKey={activeKey} accordion>{
             Object.entries(step3.quizzes)
                 .filter(([k, q]) => {
                     if (!q.deleted) {
@@ -21,7 +35,7 @@ export const renderQuizzes = (state: WizardStepsState, setState: Function, activ
                 })
                 .map(([k, l], index) => {
                     return (
-                        <PanelWrapper header={l.quizName} key={k}>
+                        <PanelWrapper header={l.quizName} id={k} key={k} activeKey={activeKey} setActiveKey={setActiveKey}>
                             <QuizComponent
                                 id={l.id}
                                 quizContent={l.quizContent}
