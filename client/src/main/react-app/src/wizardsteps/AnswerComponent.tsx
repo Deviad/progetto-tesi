@@ -21,8 +21,8 @@ export const AnswerComponent: FC<{
             </Col>
             <Col span={4} push={3} style={{display: "flex", alignItems: "center"}}>
                 <Radio.Group value={props.value} onChange={props.changeValue}>
-                    <Radio value={true}>true</Radio>
-                    <Radio value={false}>false</Radio>
+                    <Radio value={true}>corect</Radio>
+                    <Radio value={false}>incorect</Radio>
                 </Radio.Group>
             </Col>
             <Col span={4} push={3} style={{display: "flex", alignItems: "center"}}>

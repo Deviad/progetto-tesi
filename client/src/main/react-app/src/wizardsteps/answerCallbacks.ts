@@ -4,6 +4,7 @@ import produce from "immer";
 import React, {ChangeEvent} from "react";
 import {v4 as uuidv4} from 'uuid';
 import {omit} from "lodash";
+import {message} from "antd";
 
 export const changeAnswerValue = (quizId: string, questionId: string, answerId: string, state: WizardStepsState, setState: Function) =>
     (evt: RadioChangeEvent) => {
@@ -57,6 +58,12 @@ export const addAnswer = (quizId: string, questionId: string, state: WizardSteps
     }
 export const removeAnswer = (quizId: string, questionId: string, answerId: string, state: WizardStepsState, setState: Function) =>
     (evt: React.MouseEvent<HTMLElement>) => {
+
+        if ((Object.keys(state.steps[2].quizzes[quizId].questions[questionId].answers)).length === 1) {
+            message.error('Trebuie sa fie cel putin un raspuns');
+            return;
+        }
+
         setState(produce((draft: WizardStepsState) => {
 
             const answers = draft

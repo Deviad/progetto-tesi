@@ -5,6 +5,8 @@ import {AnswerComponent} from "./AnswerComponent";
 import Text from "antd/es/typography/Text";
 import {WizardStepsState} from "./WizardSteps";
 import {addAnswer, changeAnswerTitle, changeAnswerValue, removeAnswer} from "./answerCallbacks";
+import {MinusCircleOutlined, PlusCircleOutlined} from "@ant-design/icons";
+import {addQuestion, removedQuestion} from "./questionCallbacks";
 
 
 export const QuestionComponent: FC<{
@@ -31,10 +33,21 @@ export const QuestionComponent: FC<{
             </Row>
             <Row style={{display: "flex", flexDirection: "row"}}>
                 <Col span={10} push={1}> <Input name="name" value={title} onChange={changeTitle}/></Col>
+                <Col span={4} push={2} style={{display: "flex", alignItems: "center"}}>
+                    <Col
+                        style={{width: "1rem", height: "1rem", display: "flex", justifyContent: "center", alignContent: "center"}}
+                        onClick={addQuestion(quizId, questionId, state, setState)}>
+                        <PlusCircleOutlined />
+                    </Col>
+                    <Col push={2} style={{width: "1rem", height: "1rem", display: "flex", justifyContent: "center", alignContent: "center"}}
+                         onClick={removedQuestion(quizId, questionId, state, setState)}>
+                        <MinusCircleOutlined />
+                    </Col>
+                </Col>
             </Row>
             <br/>
             <Row style={{display: "flex", flexDirection: "row"}}>
-                <Col span={10} push={1}>
+                <Col span={10} push={2}>
                     <Typography style={{marginBottom: "0.5rem"}}>
                         <Text style={{fontWeight: "bold"}}>
                             Raspunsuri
