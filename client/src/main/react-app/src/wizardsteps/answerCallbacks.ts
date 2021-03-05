@@ -7,12 +7,13 @@ export const changeAnswerValue = (quizId: string, questionId: string, answerId: 
     (evt: RadioChangeEvent) => {
         setState(produce((draft: WizardStepsState) => {
 
-            draft
+            const answer = draft
                 .steps[2]
                 .quizzes[quizId]
                 .questions[questionId]
-                .answers[answerId]
-                .value = evt.target.value;
+                .answers[answerId];
+            answer.value = evt.target.value;
+            answer.modified = true;
         }));
     }
 
@@ -21,11 +22,12 @@ export const changeAnswerTitle = (quizId: string, questionId: string, answerId: 
     (evt: ChangeEvent<HTMLInputElement>) => {
         setState(produce((draft: WizardStepsState) => {
 
-            draft
+            const answer = draft
                 .steps[2]
                 .quizzes[quizId]
                 .questions[questionId]
-                .answers[answerId]
-                .title = evt.target.value;
+                .answers[answerId];
+            answer.title = evt.target.value;
+            answer.modified = true;
         }));
     }

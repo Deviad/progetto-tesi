@@ -78,8 +78,12 @@ const steps: [StepContent1, StepContent2, StepContent3] = [
                                 value: true,
                                 id: "asdasda",
                                 title: "Wow!",
+                                modified: false,
+                                deleted: false,
                             }
-                        }
+                        },
+                        modified: false,
+                        deleted: false,
                     }
                 },
                 quizContent: "",
@@ -99,8 +103,12 @@ const steps: [StepContent1, StepContent2, StepContent3] = [
                                 value: true,
                                 id: "asdasdf",
                                 title: "Wow!",
+                                modified: false,
+                                deleted: false,
                             }
-                        }
+                        },
+                        modified: false,
+                        deleted: false,
                     }
                 },
                 quizContent: "",

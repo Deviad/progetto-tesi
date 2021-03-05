@@ -203,6 +203,8 @@ export interface Lesson {
 export interface Question {
     id: string,
     title: string,
+    modified?: boolean,
+    deleted?: false,
     answers: Record<string, Answer>
 }
 
@@ -233,4 +235,6 @@ export interface Answer {
     id: string;
     title: string;
     value: boolean;
+    modified?: boolean,
+    deleted?: boolean,
 }

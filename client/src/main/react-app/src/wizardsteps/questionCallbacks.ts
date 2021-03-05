@@ -5,10 +5,13 @@ import produce from "immer";
 export const changeQuestionTitle = (quizId: string, questionId: string, state: WizardStepsState, setState: Function) =>
     (evt: ChangeEvent<HTMLInputElement>) => {
         setState(produce((draft: WizardStepsState) => {
-            draft
+            const question = draft
                 .steps[2]
                 .quizzes[quizId]
                 .questions[questionId]
-                .title = evt.target.value;
+
+            question.title = evt.target.value;
+            question.modified = true;
+
         }));
     }
