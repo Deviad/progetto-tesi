@@ -20,7 +20,7 @@ export const QuizList: FC<{
 
     useEffect(()=>{
        setActiveKey(keys[keys.length - 1])
-    }, [keys]);
+    }, [keys.length]);
 
 
     if (keys.length == 0) {
