@@ -49,6 +49,7 @@ export const QuestionComponent: FC<{
                     changeValue={changeAnswerValue(quizId, questionId, a.id, state, setState)}
                     addAnswer={addAnswer(quizId, questionId, state, setState)}
                     removeAnswer={removeAnswer(quizId, questionId, a.id, state, setState)}
+                    key={a.id}
                     id={a.id}/>
             ))}
         </React.Fragment>

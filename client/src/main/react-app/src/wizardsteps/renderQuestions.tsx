@@ -21,6 +21,7 @@ export const renderQuestions = (state: WizardStepsState, setState: Function, cur
                             quizId={currentQuiz}
                             answers={q.answers}
                             title={q.title}
+                            key={q.id}
                             changeTitle={changeQuestionTitle(currentQuiz, q.id, state, setState)}
                         />)
                 }
