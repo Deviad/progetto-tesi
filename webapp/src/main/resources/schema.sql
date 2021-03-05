@@ -93,7 +93,7 @@ create table if not exists answers
 (
     id      uuid DEFAULT public.uuid_generate_v4(),
     title   varchar(255),
-    correct bool,
+    value   bool,
     primary key (id)
 );
 create table if not exists quiz_run
