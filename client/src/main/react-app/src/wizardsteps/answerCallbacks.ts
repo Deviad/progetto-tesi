@@ -3,6 +3,7 @@ import {RadioChangeEvent} from "antd/lib/radio/interface";
 import produce from "immer";
 import React, {ChangeEvent} from "react";
 import {v4 as uuidv4} from 'uuid';
+import {omit} from "lodash";
 
 export const changeAnswerValue = (quizId: string, questionId: string, answerId: string, state: WizardStepsState, setState: Function) =>
     (evt: RadioChangeEvent) => {
@@ -54,6 +55,23 @@ export const addAnswer = (quizId: string, questionId: string, state: WizardSteps
 
         }));
     }
+export const removeAnswer = (quizId: string, questionId: string, answerId: string, state: WizardStepsState, setState: Function) =>
+    (evt: React.MouseEvent<HTMLElement>) => {
+        setState(produce((draft: WizardStepsState) => {
 
+            const answers = draft
+                .steps[2]
+                .quizzes[quizId]
+                .questions[questionId]
+                .answers;
+
+            draft
+                .steps[2]
+                .quizzes[quizId]
+                .questions[questionId]
+                .answers = omit(answers, answerId)
+
+        }));
+    }
 
 

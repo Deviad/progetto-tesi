@@ -4,7 +4,7 @@ import {Col, Input, Row, Typography} from "antd";
 import {AnswerComponent} from "./AnswerComponent";
 import Text from "antd/es/typography/Text";
 import {WizardStepsState} from "./WizardSteps";
-import {addAnswer, changeAnswerTitle, changeAnswerValue} from "./answerCallbacks";
+import {addAnswer, changeAnswerTitle, changeAnswerValue, removeAnswer} from "./answerCallbacks";
 
 
 export const QuestionComponent: FC<{
@@ -48,7 +48,7 @@ export const QuestionComponent: FC<{
                     changeTitle={changeAnswerTitle(quizId, questionId, a.id, state, setState)}
                     changeValue={changeAnswerValue(quizId, questionId, a.id, state, setState)}
                     addAnswer={addAnswer(quizId, questionId, state, setState)}
-                    removeAnswer={addAnswer(quizId, questionId, state, setState)}
+                    removeAnswer={removeAnswer(quizId, questionId, a.id, state, setState)}
                     id={a.id}/>
             ))}
         </React.Fragment>
