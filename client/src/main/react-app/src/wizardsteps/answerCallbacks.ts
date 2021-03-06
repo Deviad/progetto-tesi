@@ -59,26 +59,27 @@ export const addAnswer = (quizId: string, questionId: string, state: WizardSteps
 export const removeAnswer = (quizId: string, questionId: string, answerId: string, state: WizardStepsState, setState: Function) =>
     (evt: React.MouseEvent<HTMLElement>) => {
 
-        if ((Object.keys(state.steps[2].quizzes[quizId].questions[questionId].answers)).length === 1) {
+        if ((Object.keys(state.steps[2]?.quizzes[quizId]?.questions[questionId]?.answers) || {}).length === 1) {
             message.error('Trebuie sa fie cel putin un raspuns');
-            return;
+        } else {
+            setState(produce((draft: WizardStepsState) => {
+
+                const answers = draft
+                    .steps[2]
+                    .quizzes[quizId]
+                    .questions[questionId]
+                    .answers;
+
+                draft
+                    .steps[2]
+                    .quizzes[quizId]
+                    .questions[questionId]
+                    .answers = omit(answers, answerId)
+
+            }));
         }
 
-        setState(produce((draft: WizardStepsState) => {
 
-            const answers = draft
-                .steps[2]
-                .quizzes[quizId]
-                .questions[questionId]
-                .answers;
-
-            draft
-                .steps[2]
-                .quizzes[quizId]
-                .questions[questionId]
-                .answers = omit(answers, answerId)
-
-        }));
     }
 
 

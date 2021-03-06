@@ -18,23 +18,23 @@ export const ThirdStep: FC<{ state: WizardStepsState, setState: Function }> = ({
                     <br/>
                     <br/>
                     <Button type="primary" onClick={() => {
-                        const id = uuidv4();
+                        const quizId = uuidv4();
+                        const questionId = uuidv4();
+                        const answerId = uuidv4();
+
                         setState(produce((draft: WizardStepsState) => {
-
-                            const questionId = uuidv4();
-                            const answerId = uuidv4();
-
                             draft
                                 .steps[2]
-                                .quizzes[id] = {
+                                .quizzes[quizId] = {
+                                    id: quizId,
                                     questions: {
-                                     [id]: {
+                                     [questionId]: {
                                          modified: false,
                                          deleted: false,
                                          id: questionId,
                                          title: "Completeaza",
                                          answers: {
-                                             [questionId]: {
+                                             [answerId]: {
                                                  value: true,
                                                  id: answerId,
                                                  title: "Completeaza",
@@ -44,7 +44,6 @@ export const ThirdStep: FC<{ state: WizardStepsState, setState: Function }> = ({
                                          }
                                      }
                                     },
-                                    id,
                                     quizName: "Introduci o denumire",
                                     quizContent: "Introduci o descriere",
                                     type: "new",

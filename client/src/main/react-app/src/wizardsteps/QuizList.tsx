@@ -33,13 +33,13 @@ export const QuizList: FC<{
                         return [k, q];
                     }
                 })
-                .map(([k, l], index) => {
+                .map(([k, quiz], index) => {
                     return (
-                        <PanelWrapper header={l.quizName} id={k} key={k} activeKey={activeKey} setActiveKey={setActiveKey}>
+                        <PanelWrapper header={quiz.quizName} id={k} key={k} activeKey={activeKey} setActiveKey={setActiveKey}>
                             <QuizComponent
-                                id={l.id}
-                                quizContent={l.quizContent}
-                                quizName={l.quizName}
+                                quizId={quiz.id}
+                                quizContent={quiz.quizContent}
+                                quizName={quiz.quizName}
                                 state={state}
                                 setState={setState}/>
                         </PanelWrapper>

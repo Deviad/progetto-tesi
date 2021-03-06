@@ -44,27 +44,22 @@ export const addQuestion = (quizId: string, questionId: string, state: WizardSte
             }
         }));
     }
-export const removedQuestion = (quizId: string, questionId: string,  state: WizardStepsState, setState: Function) =>
+export const removedQuestion = (quizId: string, questionId: string, state: WizardStepsState, setState: Function) =>
     (evt: React.MouseEvent<HTMLElement>) => {
 
-        if ((Object.keys(state.steps[2].quizzes[quizId].questions)).length === 1) {
+        if ((Object.keys(state.steps[2]?.quizzes[quizId]?.questions || {})).length === 1) {
             message.error('Trebuie sa fie cel putin o intrebare');
-            return;
+        } else {
+            setState(produce((draft: WizardStepsState) => {
+                const questions = draft
+                    .steps[2]
+                    .quizzes[quizId]
+                    .questions;
+
+                draft
+                    .steps[2]
+                    .quizzes[quizId]
+                    .questions = omit(questions, questionId)
+            }));
         }
-
-        setState(produce((draft: WizardStepsState) => {
-
-            const questions = draft
-                .steps[2]
-                .quizzes[quizId]
-                .questions;
-
-
-            draft
-                .steps[2]
-                .quizzes[quizId]
-                .questions = omit(questions, questionId)
-
-
-        }));
     }

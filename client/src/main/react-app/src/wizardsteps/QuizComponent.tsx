@@ -7,8 +7,8 @@ import {WizardStepsState} from "./WizardSteps";
 import {renderQuestions} from "./renderQuestions";
 
 
-export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, id: string, quizName: string, quizContent: string }> =
-    ({state, setState, id, quizName, quizContent}) => {
+export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, quizId: string, quizName: string, quizContent: string }> =
+    ({state, setState, quizId, quizName, quizContent}) => {
         const [, , step3] = state.steps;
 
         return (
@@ -20,7 +20,7 @@ export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, id
                 </Typography>
                 <Input
                     name="quizName"
-                    value={step3.quizzes[id].quizName}
+                    value={step3.quizzes[quizId].quizName}
                     style={{marginBottom: "0.5rem"}}
                     onChange={(event) => {
                         setState({
@@ -28,8 +28,8 @@ export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, id
                                 ...step3,
                                 quizzes: {
                                     ...step3.quizzes,
-                                    [id]: {
-                                        ...step3.quizzes[id],
+                                    [quizId]: {
+                                        ...step3.quizzes[quizId],
                                         quizName: event.target.value,
                                         modified: true
                                     }
@@ -50,8 +50,8 @@ export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, id
                                         ...step3,
                                         quizzes: {
                                             ...step3.quizzes,
-                                            [id]: {
-                                                ...step3.quizzes[id],
+                                            [quizId]: {
+                                                ...step3.quizzes[quizId],
                                                 quizContent: data,
                                                 modified: true
                                             }
@@ -63,17 +63,17 @@ export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, id
                 />
                 <br/>
 
-                {renderQuestions(state, setState, id)}
+                {renderQuestions(state, setState, quizId)}
 
                 <Button type="primary" danger
                         onClick={(data) => {
 
-                            if (step3.quizzes[id].type === "new") {
+                            if (step3.quizzes[quizId].type === "new") {
                                 setState({
                                     ...state, steps: [...state.steps.slice(0, 2), {
                                         ...step3,
                                         quizzes: {
-                                            ...omit(step3.quizzes, id)
+                                            ...omit(step3.quizzes, quizId)
                                         }
                                     }]
                                 })
@@ -83,8 +83,8 @@ export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, id
                                         ...step3,
                                         quizzes: {
                                             ...step3.quizzes,
-                                            [id]: {
-                                                ...step3.quizzes[id],
+                                            [quizId]: {
+                                                ...step3.quizzes[quizId],
                                                 deleted: true
                                             }
                                         }

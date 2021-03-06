@@ -12,7 +12,7 @@ export const renderQuestions = (state: WizardStepsState, setState: Function, cur
         <>
             <>
                 {
-                    Object.keys(step3?.quizzes[currentQuiz]?.questions).length > 0 &&
+                    Object.keys(step3?.quizzes[currentQuiz]?.questions || {}).length > 0 &&
                     Object.values(step3.quizzes[currentQuiz].questions).map(q =>
                         <QuestionComponent
                             state={state}
