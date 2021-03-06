@@ -74,7 +74,7 @@ export const renderLessons = (state: WizardStepsState, setState: Function) => {
     }
 }
 
-export const renderSecondStep = (state: any, setState: Function) => {
+export const SecondStep = ({state, setState}: {state: WizardStepsState, setState: Function}) => {
     const [,step2,] = state.steps;
     if (state.currentStep === 1) {
         return (
@@ -150,4 +150,5 @@ export const renderSecondStep = (state: any, setState: Function) => {
                 <br/>
             </>)
     }
+    return null;
 };

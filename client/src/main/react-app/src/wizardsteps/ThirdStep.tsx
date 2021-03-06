@@ -20,10 +20,30 @@ export const ThirdStep: FC<{ state: WizardStepsState, setState: Function }> = ({
                     <Button type="primary" onClick={() => {
                         const id = uuidv4();
                         setState(produce((draft: WizardStepsState) => {
+
+                            const questionId = uuidv4();
+                            const answerId = uuidv4();
+
                             draft
                                 .steps[2]
                                 .quizzes[id] = {
-                                    questions: {},
+                                    questions: {
+                                     [id]: {
+                                         modified: false,
+                                         deleted: false,
+                                         id: questionId,
+                                         title: "Completeaza",
+                                         answers: {
+                                             [questionId]: {
+                                                 value: true,
+                                                 id: answerId,
+                                                 title: "Completeaza",
+                                                 modified: false,
+                                                 deleted: false,
+                                             }
+                                         }
+                                     }
+                                    },
                                     id,
                                     quizName: "Introduci o denumire",
                                     quizContent: "Introduci o descriere",

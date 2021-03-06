@@ -1,7 +1,7 @@
 import {Input, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import ReactQuill from "react-quill";
-import React from "react";
+import React, {FC} from "react";
 import {WizardStepsState} from "./WizardSteps";
 
 export const onNameChange = (state: WizardStepsState, setState: Function) => (e: any) => {
@@ -25,7 +25,7 @@ export const handleEditorChange = (state: any, setState: Function) => (value: st
     })
 }
 
-export const renderFirstStep = (state: WizardStepsState, setState: Function) => {
+export const FirstStep: FC<{ state: WizardStepsState, setState: Function }> = ({state, setState}) => {
     const [step1] = state.steps;
     if (state.currentStep === 0) {
         return (
@@ -47,4 +47,6 @@ export const renderFirstStep = (state: WizardStepsState, setState: Function) => 
 
             </>)
     }
+
+    return null;
 }

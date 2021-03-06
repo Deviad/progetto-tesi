@@ -2,8 +2,8 @@ import {Button, message, Modal, Steps} from 'antd';
 import {useState} from "reinspect";
 import React, {useEffect} from "react";
 import {Lesson, Quiz} from '../types';
-import {renderFirstStep} from "./renderFirstStep";
-import {renderSecondStep} from "./renderSecondStep";
+import {FirstStep} from "./FirstStep";
+import {SecondStep} from "./SecondStep";
 import {ThirdStep} from './ThirdStep';
 
 export interface StepContent {
@@ -140,8 +140,8 @@ export const renderModalContent = (state: any, setState: Function, next: Functio
             ))}
         </Steps>
         <div className="steps-content">
-            {renderFirstStep(state, setState)}
-            {renderSecondStep(state, setState)}
+            <FirstStep state={state} setState={setState} />
+            <SecondStep state={state} setState={setState} />
             <ThirdStep state={state} setState={setState} />
         </div>
         <div className="steps-action">
