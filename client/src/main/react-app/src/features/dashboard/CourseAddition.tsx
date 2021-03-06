@@ -3,6 +3,7 @@ import Title from "antd/es/typography/Title";
 import ReactQuill from "react-quill";
 import React, {FC, useEffect} from "react";
 import {useState} from "reinspect";
+import {registrationSchema, registrationUiSchema} from "../../constants";
 
 
 export const CourseAddition: FC = () => {
@@ -41,13 +42,19 @@ export const CourseAddition: FC = () => {
             </Row>
             <Row justify="start">
                 <Col span={20} push={1} flex="auto">
-                    <Form onFinish={onSubmit} form={form}>
+                    <Form onFinish={onSubmit} form={form} >
                         <Typography>
                             <Title level={4}>
                                 Denumire
                             </Title>
                         </Typography>
-                        <Form.Item name="denumire">
+                        <Form.Item
+                            name="name"
+                            rules={[{
+                                required: true,
+                                min: 3, max: 100,
+                                message: 'Introduci o denumire intre 3 si 100 de caractere',
+                                type: 'string' }]}>
                             <Input/>
                         </Form.Item>
                         <br/>
