@@ -239,3 +239,7 @@ export interface Answer {
     modified?: boolean,
     deleted?: boolean,
 }
+
+
+
+export type ErrorsMap = Record<string, string>;

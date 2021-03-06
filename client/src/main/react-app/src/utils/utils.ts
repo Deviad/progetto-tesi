@@ -1,6 +1,8 @@
 import * as Cookies from "js-cookie";
-import {AccessToken, AuthorizationResponse, Nullable, PageSlug, UserState} from "../types";
+import {AccessToken, AuthorizationResponse, ErrorsMap, Nullable, PageSlug, UserState} from "../types";
 import jwtDecode from "jwt-decode";
+import {SchemaOf, ValidationError} from "yup";
+import {trim} from "lodash";
 
 const utils = (function () {
 
@@ -176,6 +178,65 @@ const utils = (function () {
 
     const isNotTrue = (obj: any) => !isTrue(obj)
 
+
+    /*
+        cuvant-ul "is"  este folosit pentru a defini un type guard
+        si ii permite lui Typescript sa stie sa faca type inference in maniera correcta
+        cand ne gasim in o selectie (if=then-else).
+    */
+
+    const isString = (value: any): value is string => {
+        return typeof value === 'string';
+    }
+
+
+    /*
+       cuvant-ul "is"  este folosit pentru a defini un type guard
+       si ii permite lui Typescript sa stie sa faca type inference in maniera correcta
+       cand ne gasim in o selectie (if=then-else).
+   */
+
+
+    const hasText = (value: any): value is string => {
+        return isString(value) && trim(value) !== '';
+    }
+
+    const stripHtmlTags = (text: string): string => {
+        return text.replace(/(<([^>]+)>)/gi, "");
+    }
+
+    const validateBySchema =
+        <T extends unknown>(values: T, schema: SchemaOf<T>, validationPath?: string, context?: object) => {
+            const errors: ErrorsMap = {};
+
+            try {
+                if (hasText(validationPath)) {
+                    schema.validateSyncAt(validationPath, values, {
+                        abortEarly: false,
+                        strict: true,
+                        context,
+                    });
+                } else {
+                    schema.validateSync(values, {
+                        abortEarly: false,
+                        strict: true,
+                        context,
+                    });
+                }
+            } catch (e) {
+                // error thrown not by yup should be rethrown for problem visibility
+                if (Object.prototype.toString.call(e.inner) !== "[object Array]") {
+                    throw e;
+                }
+
+                e.inner.forEach(({path, message}: ValidationError) => {
+                    errors[path as string] = message;
+                });
+            }
+
+            return errors;
+        }
+
     return {
         toFormUrlEncoded,
         getParameterByName,
@@ -185,7 +246,11 @@ const utils = (function () {
         decodeAccessToken,
         getUserStateFromAuthResponse,
         isTrue,
+        hasText,
+        isString,
+        validateBySchema,
         isNotTrue,
+        stripHtmlTags,
         get storage() {
             return storageFactory.getStorage();
         }

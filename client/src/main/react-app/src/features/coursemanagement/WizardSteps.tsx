@@ -6,41 +6,48 @@ import {ThirdStep} from './steps/third';
 import {FirstStep} from "./steps/first";
 import {SecondStep} from "./steps/second/SecondStep";
 
-export interface StepContent {
+export interface RipetiStep {
 
 }
 
-export interface StepContent1 extends StepContent {
-    title: string,
-    content: {
-        id: string,
-        title: string,
-        description: string
-    },
+export interface NewLesson extends Lesson {
+    type: "new";
+    deleted: boolean;
+    modified: boolean;
 }
 
-export interface StepContent2 extends StepContent {
-    title: string,
-    newLesson: {
-        id: string,
-        lessonName: string,
-        lessonContent: string,
-        type: "new",
-        deleted: boolean,
-        modified: boolean,
-    }
-    lessons: Record<string, Lesson>
+
+export interface RipetiStep1Content {
+    id: string;
+    title: string;
+    description: string;
 }
 
-export interface StepContent3 extends StepContent {
-    title: string,
-    quizzes: Record<string, Quiz>
+
+
+export interface RipetiStep1 extends RipetiStep {
+    title: string;
+    content: RipetiStep1Content;
+    errors: Record<string, any>;
+}
+
+
+
+export interface RipetiStep2 extends RipetiStep {
+    title: string;
+    newLesson: NewLesson
+    lessons: Record<string, Lesson>;
+}
+
+export interface RipetiStep3 extends RipetiStep {
+    title: string;
+    quizzes: Record<string, Quiz>;
 }
 
 const {Step} = Steps;
 
 
-const steps: [StepContent1, StepContent2, StepContent3] = [
+const steps: [RipetiStep1, RipetiStep2, RipetiStep3] = [
     {
         title: 'Mod. info. generale',
         content: {
@@ -48,6 +55,9 @@ const steps: [StepContent1, StepContent2, StepContent3] = [
             title: "",
             description: ""
         },
+        errors: {
+
+        }
     },
     {
         title: 'Adauga lectile',
@@ -121,8 +131,9 @@ const steps: [StepContent1, StepContent2, StepContent3] = [
 
 
 export interface WizardStepsState {
-    steps: [StepContent1, StepContent2, StepContent3];
+    steps: [RipetiStep1, RipetiStep2, RipetiStep3];
     currentStep: number;
+    errors: Record<string, any>;
 }
 
 export const renderModalContent = (state: any, setState: Function, next: Function, prev: Function) => {

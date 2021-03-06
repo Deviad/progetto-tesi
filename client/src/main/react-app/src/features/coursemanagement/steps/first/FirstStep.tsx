@@ -4,10 +4,12 @@ import ReactQuill from "react-quill";
 import React, {FC} from "react";
 import {WizardStepsState} from "../../WizardSteps";
 import {handleEditorChange, onNameChange} from "./firstStepCallbacks";
+import {utils} from "../../../../utils";
 
 
 export const FirstStep: FC<{ state: WizardStepsState, setState: Function }> = ({state, setState}) => {
     const [step1] = state.steps;
+
     if (state.currentStep === 0) {
         return (
             <>
@@ -16,7 +18,8 @@ export const FirstStep: FC<{ state: WizardStepsState, setState: Function }> = ({
                         Denumire
                     </Title>
                 </Typography>
-                <Input name="name" onChange={onNameChange(state, setState)} value={step1.content.title}/>
+                <Input name="title" onChange={onNameChange(state, setState)} value={step1.content.title}/>
+                {utils.isTrue(state.steps[0].errors["title"]) && <div>{state.steps[0].errors["title"]}</div>}
                 <Typography>
                     <Title level={4}>
                         Descriere
@@ -25,6 +28,8 @@ export const FirstStep: FC<{ state: WizardStepsState, setState: Function }> = ({
                 <ReactQuill style={{background: "#fff"}} value={step1.content.description}
                             onChange={handleEditorChange(state, setState)}/>
                 <br/>
+
+                {utils.isTrue(state.steps[0].errors["description"]) && <div>{state.steps[0].errors["description"]}</div>}
 
             </>)
     }
