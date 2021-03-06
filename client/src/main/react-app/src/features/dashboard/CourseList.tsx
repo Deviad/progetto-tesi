@@ -5,7 +5,7 @@ import {EditOutlined} from "@ant-design/icons";
 import "./Card.scss";
 import "./CourseList.scss"
 import {useState} from "reinspect";
-import {WizardSteps} from "../../wizardsteps/WizardSteps";
+import {WizardSteps} from "../coursemanagement/WizardSteps";
 
 const renderCardList =
     ({courses, click}:

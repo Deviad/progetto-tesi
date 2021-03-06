@@ -1,8 +1,8 @@
 import {Button, message, Modal, Steps} from 'antd';
 import {useState} from "reinspect";
 import React, {useEffect} from "react";
-import {Lesson, Quiz} from '../types';
-import {ThirdStep} from './ThirdStep';
+import {Lesson, Quiz} from '../../types';
+import {ThirdStep} from './steps/third';
 import {FirstStep} from "./steps/first";
 import {SecondStep} from "./steps/second/SecondStep";
 

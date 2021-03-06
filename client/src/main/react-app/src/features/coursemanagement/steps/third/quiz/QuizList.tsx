@@ -1,8 +1,8 @@
 import {Collapse} from "antd";
 import React, {FC, useEffect} from "react";
 import {useState} from "reinspect";
-import {PanelWrapper} from "../../wizardsteps/PanelWrapper";
-import {WizardStepsState} from "../../wizardsteps/WizardSteps";
+import {PanelWrapper} from "../../../PanelWrapper";
+import {WizardStepsState} from "../../../WizardSteps";
 import {QuizComponent} from "./index";
 
 

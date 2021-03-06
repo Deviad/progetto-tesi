@@ -3,9 +3,9 @@ import {Col, Input, Row, Typography} from "antd";
 import Text from "antd/es/typography/Text";
 import {MinusCircleOutlined, PlusCircleOutlined} from "@ant-design/icons";
 import {addQuestion, removedQuestion} from "./questionCallbacks";
-import {WizardStepsState} from "../../wizardsteps/WizardSteps";
-import {Answer} from "../../types";
-import {addAnswer, changeAnswerTitle, changeAnswerValue, removeAnswer} from "../../wizardsteps/answerCallbacks";
+import {WizardStepsState} from "../../../WizardSteps";
+import {Answer} from "../../../../../types";
+import {addAnswer, changeAnswerTitle, changeAnswerValue, removeAnswer} from "../../../answerCallbacks";
 import {AnswerComponent} from "../answer";
 
 

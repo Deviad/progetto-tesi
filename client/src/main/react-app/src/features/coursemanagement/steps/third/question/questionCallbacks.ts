@@ -3,7 +3,7 @@ import produce from "immer";
 import {v4 as uuidv4} from "uuid";
 import {message} from "antd";
 import {omit} from "lodash";
-import {WizardStepsState} from "../../wizardsteps/WizardSteps";
+import {WizardStepsState} from "../../../WizardSteps";
 
 export const changeQuestionTitle = (quizId: string, questionId: string, state: WizardStepsState, setState: Function) =>
     (evt: ChangeEvent<HTMLInputElement>) => {

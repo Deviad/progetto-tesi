@@ -3,7 +3,7 @@ import {Button, Input, Typography} from "antd";
 import Text from "antd/es/typography/Text";
 import ReactQuill from "react-quill";
 import {omit} from "lodash";
-import {WizardStepsState} from "../../wizardsteps/WizardSteps";
+import {WizardStepsState} from "../../../WizardSteps";
 import {QuestionList} from "../question";
 
 

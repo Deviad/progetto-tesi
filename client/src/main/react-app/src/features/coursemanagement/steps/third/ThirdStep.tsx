@@ -1,9 +1,9 @@
 import {Button} from "antd";
 import React, {FC} from "react";
 import {v4 as uuidv4} from 'uuid';
-import {WizardStepsState} from "./WizardSteps";
+import {WizardStepsState} from "../../WizardSteps";
 import {produce} from 'immer';
-import {QuizList} from "../components/quiz";
+import {QuizList} from "./quiz";
 
 export const ThirdStep: FC<{ state: WizardStepsState, setState: Function }> = ({state, setState}) => {
 

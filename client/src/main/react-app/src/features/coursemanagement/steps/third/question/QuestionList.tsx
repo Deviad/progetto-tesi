@@ -1,6 +1,6 @@
 import React, {FC} from "react";
-import {QuestionComponent} from ".";
-import {WizardStepsState} from "../../wizardsteps/WizardSteps";
+import {QuestionComponent} from "./index";
+import {WizardStepsState} from "../../../WizardSteps";
 import {changeQuestionTitle} from "./questionCallbacks";
 
 
