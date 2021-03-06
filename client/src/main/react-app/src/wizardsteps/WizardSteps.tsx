@@ -2,9 +2,9 @@ import {Button, message, Modal, Steps} from 'antd';
 import {useState} from "reinspect";
 import React, {useEffect} from "react";
 import {Lesson, Quiz} from '../types';
-import {FirstStep} from "./FirstStep";
-import {SecondStep} from "./SecondStep";
 import {ThirdStep} from './ThirdStep';
+import {FirstStep} from "./steps/first";
+import {SecondStep} from "./steps/second/SecondStep";
 
 export interface StepContent {
 
@@ -120,7 +120,7 @@ const steps: [StepContent1, StepContent2, StepContent3] = [
 ];
 
 
-export interface WizardStepsState  {
+export interface WizardStepsState {
     steps: [StepContent1, StepContent2, StepContent3];
     currentStep: number;
 }
@@ -140,9 +140,9 @@ export const renderModalContent = (state: any, setState: Function, next: Functio
             ))}
         </Steps>
         <div className="steps-content">
-            <FirstStep state={state} setState={setState} />
-            <SecondStep state={state} setState={setState} />
-            <ThirdStep state={state} setState={setState} />
+            <FirstStep state={state} setState={setState}/>
+            <SecondStep state={state} setState={setState}/>
+            <ThirdStep state={state} setState={setState}/>
         </div>
         <div className="steps-action">
             {state.currentStep < steps.length - 1 && (
@@ -206,7 +206,7 @@ export const WizardSteps = ({
                 description,
             }
 
-           const backendData = [
+            const backendData = [
                 {
                     id: "123123-asdsads-sadasd-daadsa",
                     lessonName: "Test1",

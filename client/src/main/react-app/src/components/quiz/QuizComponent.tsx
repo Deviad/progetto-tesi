@@ -3,8 +3,8 @@ import {Button, Input, Typography} from "antd";
 import Text from "antd/es/typography/Text";
 import ReactQuill from "react-quill";
 import {omit} from "lodash";
-import {WizardStepsState} from "./WizardSteps";
-import {renderQuestions} from "./renderQuestions";
+import {WizardStepsState} from "../../wizardsteps/WizardSteps";
+import {QuestionList} from "../question";
 
 
 export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, quizId: string, quizName: string, quizContent: string }> =
@@ -63,7 +63,7 @@ export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, qu
                 />
                 <br/>
 
-                {renderQuestions(state, setState, quizId)}
+                <QuestionList state={state} setState={setState} currentQuiz={quizId}/>
 
                 <Button type="primary" danger
                         onClick={(data) => {
@@ -95,5 +95,4 @@ export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, qu
                 >Sterge</Button>
             </>
         );
-
     };

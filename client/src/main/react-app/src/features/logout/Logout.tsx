@@ -1,13 +1,13 @@
 import React, {useEffect} from "react";
 // @ts-ignore
-import { useHistory } from "react-router-dom";
-import {httpGet, httpPost} from "../../httpClient";
+import {useHistory} from "react-router-dom";
+import {httpGet} from "../../httpClient";
 import {BASE_URL, USER_ENDPOINT} from "../../constants";
-import {MediaType, PagePathName, PageSlug, UseProfileFormData} from "../../types";
+import {PagePathName, PageSlug, UseProfileFormData} from "../../types";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../app/rootReducer";
 import {utils} from "../../utils";
-import { getSetCurrentPage } from "../../app/appSharedSlice";
+import {getSetCurrentPage} from "../../app/appSharedSlice";
 
 
 export const Logout = () => {
@@ -19,20 +19,20 @@ export const Logout = () => {
 
     useEffect(() => {
 
-      const logout = async ()=> {
-          dispatch(getSetCurrentPage(PageSlug.LOGOUT))
+        const logout = async () => {
+            dispatch(getSetCurrentPage(PageSlug.LOGOUT))
 
-          await httpGet<UseProfileFormData>({
-              url: `${BASE_URL}${USER_ENDPOINT}/logout`,
-              headers: {
-                  "Authorization": `Bearer ${accessToken}`,
-              }
-          })
-          .then(() => utils.storage.removeItem("auth_res"))
-          .then(() => history.push(PagePathName.HOME));
-      }
+            await httpGet<UseProfileFormData>({
+                url: `${BASE_URL}${USER_ENDPOINT}/logout`,
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                }
+            })
+                .then(() => utils.storage.removeItem("auth_res"))
+                .then(() => history.push(PagePathName.HOME));
+        }
 
-      logout();
+        logout();
 
     }, []);
 

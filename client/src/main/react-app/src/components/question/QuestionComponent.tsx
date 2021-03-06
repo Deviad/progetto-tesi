@@ -1,12 +1,12 @@
 import React, {ChangeEvent, FC} from "react";
-import {Answer} from "../types";
 import {Col, Input, Row, Typography} from "antd";
-import {AnswerComponent} from "./AnswerComponent";
 import Text from "antd/es/typography/Text";
-import {WizardStepsState} from "./WizardSteps";
-import {addAnswer, changeAnswerTitle, changeAnswerValue, removeAnswer} from "./answerCallbacks";
 import {MinusCircleOutlined, PlusCircleOutlined} from "@ant-design/icons";
 import {addQuestion, removedQuestion} from "./questionCallbacks";
+import {WizardStepsState} from "../../wizardsteps/WizardSteps";
+import {Answer} from "../../types";
+import {addAnswer, changeAnswerTitle, changeAnswerValue, removeAnswer} from "../../wizardsteps/answerCallbacks";
+import {AnswerComponent} from "../answer";
 
 
 export const QuestionComponent: FC<{
@@ -35,13 +35,25 @@ export const QuestionComponent: FC<{
                 <Col span={10} push={1}> <Input name="name" value={title} onChange={changeTitle}/></Col>
                 <Col span={4} push={2} style={{display: "flex", alignItems: "center"}}>
                     <Col
-                        style={{width: "1rem", height: "1rem", display: "flex", justifyContent: "center", alignContent: "center"}}
+                        style={{
+                            width: "1rem",
+                            height: "1rem",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignContent: "center"
+                        }}
                         onClick={addQuestion(quizId, questionId, state, setState)}>
-                        <PlusCircleOutlined />
+                        <PlusCircleOutlined/>
                     </Col>
-                    <Col push={2} style={{width: "1rem", height: "1rem", display: "flex", justifyContent: "center", alignContent: "center"}}
+                    <Col push={2} style={{
+                        width: "1rem",
+                        height: "1rem",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignContent: "center"
+                    }}
                          onClick={removedQuestion(quizId, questionId, state, setState)}>
-                        <MinusCircleOutlined />
+                        <MinusCircleOutlined/>
                     </Col>
                 </Col>
             </Row>

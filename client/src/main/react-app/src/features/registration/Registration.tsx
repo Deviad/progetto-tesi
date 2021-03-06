@@ -32,7 +32,7 @@ const Form = withTheme(AntDTheme);
 // deci dupa primul T neaparat trebuie sa folosim extend
 // este o constrangere al limbajului
 
-const schimbaMesajDeEroare = <T extends unknown> (key: string, error: EroareGeneric<T>) => {
+const schimbaMesajDeEroare = <T extends unknown>(key: string, error: EroareGeneric<T>) => {
 
     const map = {
         "required": `${proprietati[error.property]} este un camp obligator`,
@@ -66,7 +66,7 @@ const onSubmit = (history: H.History) => async (form: FormProps<any>) => {
     }).then(() => history.push(PagePathName.USER_PROFILE));
 };
 
-const transformaEroarile = <T extends unknown> (errors: EroareGeneric<T>[]) => {
+const transformaEroarile = <T extends unknown>(errors: EroareGeneric<T>[]) => {
     return errors.map(error => {
         const ekey = error.name + ((error as any)?.params?.pattern ? (error as any).params.pattern : "");
         error.message = schimbaMesajDeEroare(ekey, error);
@@ -91,7 +91,7 @@ export const Registration: FC = () => {
             <Col span={12} flex="auto">
                 <Typography>
                     <Title>
-                       Inregistreaza-te
+                        Inregistreaza-te
                     </Title>
                 </Typography>
             </Col>

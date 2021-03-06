@@ -16,11 +16,10 @@ export const AuthGuard: FC = () => {
     const history = useHistory();
     useEffect(() => {
         if (user.email == null) {
-            if(utils.isValidStoredToken()) {
+            if (utils.isValidStoredToken()) {
                 const userState = utils.getUserStateFromAuthResponse(utils.decodeAuthResp(utils.storage.getItem("auth_res") as string));
                 dispatch(getUserSuccess(userState));
-            }
-            else {
+            } else {
                 history.push('/oauth/authorization');
             }
         }
@@ -33,7 +32,7 @@ export const AuthGuard: FC = () => {
                 <UserProfile/>
             </Route>
             <Route path="/dashboard">
-                <Dashboard />
+                <Dashboard/>
             </Route>
         </Switch>
     );

@@ -5,11 +5,11 @@ const {Panel} = Collapse;
 
 const buttonClick: (activeKey: string, setActiveKey: Function, id: string) => React.MouseEventHandler<HTMLElement> =
     (activeKey, setActiveKey, id) => (evt) => {
-        if(activeKey === "") {
+        if (activeKey === "") {
             setActiveKey(id);
         } else if (activeKey !== "" && activeKey !== id) {
             setActiveKey(id);
-        }  else {
+        } else {
             setActiveKey("");
         }
     };
@@ -22,5 +22,5 @@ export const PanelWrapper = (props: any) => {
                 Apasa aici
             </Button>
         </div>
-    } />
+    }/>
 };

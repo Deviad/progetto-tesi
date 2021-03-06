@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {useDispatch} from "react-redux";
-import { getSetCurrentPage } from "../../app/appSharedSlice";
+import {getSetCurrentPage} from "../../app/appSharedSlice";
 import {PageSlug} from "../../types";
 
 

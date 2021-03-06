@@ -1,7 +1,6 @@
 import {UploadOutlined} from "@ant-design/icons";
 import {Button, message, Upload} from "antd";
-import React, {FC} from "react";
-import {useState} from "react";
+import React, {FC, useState} from "react";
 
 
 export const Uploader: FC = () => {
@@ -14,7 +13,7 @@ export const Uploader: FC = () => {
             }
             return file.type === 'image/png';
         },
-        onChange: (info: any)  => {
+        onChange: (info: any) => {
             console.log(info.fileList);
             // file.status is empty when beforeUpload return false
             updateFileList(info.fileList.filter((file: any) => !!file.status));

@@ -2,7 +2,7 @@ import {AjvError} from "@rjsf/core";
 
 export type Nullable<T> = T | undefined | null;
 
-export interface EroareDeBaza extends AjvError{
+export interface EroareDeBaza extends AjvError {
     message: string,
     property: string,
 }
@@ -191,11 +191,12 @@ export enum PagePathName {
     LOGOUT = "/logout",
     DASHBOARD = "/dashboard"
 }
+
 export interface Lesson {
     id: string,
     lessonName: string,
     lessonContent: string,
-    type: "new"| "existing"
+    type: "new" | "existing"
     modified?: boolean,
     deleted?: boolean,
 }
@@ -212,7 +213,7 @@ export interface Quiz {
     id: string,
     quizName: string,
     quizContent: string,
-    type: "new"| "existing"
+    type: "new" | "existing"
     modified?: boolean,
     deleted?: boolean,
     questions: Record<string, Question>

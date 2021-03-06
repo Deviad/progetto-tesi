@@ -27,7 +27,8 @@ const user = createSlice({
     initialState: userInitialState,
     reducers: {
         getUserSuccess(state, {payload}: PayloadAction<UserState>) {
-            const {username,
+            const {
+                username,
                 email,
                 issuedAt,
                 expiresAt,
@@ -37,7 +38,8 @@ const user = createSlice({
                 refreshExpirationTime,
                 firstName,
                 lastName,
-                roles} = payload;
+                roles
+            } = payload;
 
             state.username = username;
             state.email = email;

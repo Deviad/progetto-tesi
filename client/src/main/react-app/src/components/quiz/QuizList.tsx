@@ -1,9 +1,9 @@
-import {WizardStepsState} from "./WizardSteps";
 import {Collapse} from "antd";
-import {PanelWrapper} from "./PanelWrapper";
-import {QuizComponent} from "./QuizComponent";
 import React, {FC, useEffect} from "react";
 import {useState} from "reinspect";
+import {PanelWrapper} from "../../wizardsteps/PanelWrapper";
+import {WizardStepsState} from "../../wizardsteps/WizardSteps";
+import {QuizComponent} from "./index";
 
 
 export const QuizList: FC<{
@@ -18,8 +18,8 @@ export const QuizList: FC<{
 
     const [activeKey, setActiveKey] = useState("", 'activeKey');
 
-    useEffect(()=>{
-       setActiveKey(keys[keys.length - 1])
+    useEffect(() => {
+        setActiveKey(keys[keys.length - 1])
     }, [keys.length]);
 
 
@@ -35,7 +35,8 @@ export const QuizList: FC<{
                 })
                 .map(([k, quiz], index) => {
                     return (
-                        <PanelWrapper header={quiz.quizName} id={k} key={k} activeKey={activeKey} setActiveKey={setActiveKey}>
+                        <PanelWrapper header={quiz.quizName} id={k} key={k} activeKey={activeKey}
+                                      setActiveKey={setActiveKey}>
                             <QuizComponent
                                 quizId={quiz.id}
                                 quizContent={quiz.quizContent}

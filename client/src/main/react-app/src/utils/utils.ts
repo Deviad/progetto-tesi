@@ -1,6 +1,5 @@
 import * as Cookies from "js-cookie";
 import {AccessToken, AuthorizationResponse, Nullable, PageSlug, UserState} from "../types";
-import {isEmpty, isNil} from "lodash";
 import jwtDecode from "jwt-decode";
 
 const utils = (function () {

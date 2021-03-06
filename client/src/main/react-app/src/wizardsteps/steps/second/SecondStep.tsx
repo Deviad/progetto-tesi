@@ -5,11 +5,12 @@ import React from "react";
 import Title from "antd/es/typography/Title";
 import {v4 as uuidv4} from 'uuid';
 import {omit} from "lodash";
-import {WizardStepsState} from "./WizardSteps";
+import {WizardStepsState} from "../../WizardSteps";
+
 const {Panel} = Collapse;
 
 export const renderLessons = (state: WizardStepsState, setState: Function) => {
-    const [,step2,] = state.steps;
+    const [, step2,] = state.steps;
 
     if (Object.keys(step2.lessons).length == 0) {
         return <div>Nu ai lectile existente</div>
@@ -26,7 +27,8 @@ export const renderLessons = (state: WizardStepsState, setState: Function) => {
                     value={step2.lessons[k].lessonName}
                     style={{marginBottom: "0.5rem"}}
                     onChange={(event) => {
-                        setState({...state, steps: [...state.steps.slice(0, 1), {
+                        setState({
+                            ...state, steps: [...state.steps.slice(0, 1), {
                                 ...step2,
                                 lessons: {
                                     ...step2.lessons,
@@ -36,7 +38,8 @@ export const renderLessons = (state: WizardStepsState, setState: Function) => {
                                         modified: true
                                     }
                                 }
-                            }, ...state.steps.slice(2)]})
+                            }, ...state.steps.slice(2)]
+                        })
                     }}
                 />
                 <Typography style={{marginBottom: "0.5rem"}}>
@@ -46,7 +49,8 @@ export const renderLessons = (state: WizardStepsState, setState: Function) => {
                 </Typography>
                 <ReactQuill style={{background: "#fff"}} value={l.lessonContent}
                             onChange={(data) => {
-                                setState({...state, steps: [...state.steps.slice(0, 1), {
+                                setState({
+                                    ...state, steps: [...state.steps.slice(0, 1), {
                                         ...step2,
                                         lessons: {
                                             ...step2.lessons,
@@ -56,26 +60,31 @@ export const renderLessons = (state: WizardStepsState, setState: Function) => {
                                                 modified: true
                                             }
                                         }
-                                    }, ...state.steps.slice(2)]})}}
+                                    }, ...state.steps.slice(2)]
+                                })
+                            }}
 
                 />
                 <br/>
                 <Button type="primary" danger
                         onClick={(data) => {
-                            setState({...state, steps: [...state.steps.slice(0, 1), {
+                            setState({
+                                ...state, steps: [...state.steps.slice(0, 1), {
                                     ...step2,
                                     lessons: {
-                                      ...omit(step2.lessons, k)
+                                        ...omit(step2.lessons, k)
                                     }
-                                }, ...state.steps.slice(2)]})}}
+                                }, ...state.steps.slice(2)]
+                            })
+                        }}
                 >Sterge</Button>
             </Panel>
         ))
     }
 }
 
-export const SecondStep = ({state, setState}: {state: WizardStepsState, setState: Function}) => {
-    const [,step2,] = state.steps;
+export const SecondStep = ({state, setState}: { state: WizardStepsState, setState: Function }) => {
+    const [, step2,] = state.steps;
     if (state.currentStep === 1) {
         return (
             <>
@@ -93,14 +102,16 @@ export const SecondStep = ({state, setState}: {state: WizardStepsState, setState
                         </Text>
                     </Typography>
                     <Input name="name" value={step2.newLesson.lessonName} style={{marginBottom: "0.5rem"}}
-                           onChange={(event)=>{
-                               setState({...state, steps: [...state.steps.slice(0, 1), {
+                           onChange={(event) => {
+                               setState({
+                                   ...state, steps: [...state.steps.slice(0, 1), {
                                        ...step2,
                                        newLesson: {
                                            ...step2.newLesson,
                                            lessonName: event.target.value,
                                        }
-                                   }, ...state.steps.slice(2)]});
+                                   }, ...state.steps.slice(2)]
+                               });
                            }}
                     />
                     <Typography style={{marginBottom: "0.5rem"}}>
@@ -109,19 +120,22 @@ export const SecondStep = ({state, setState}: {state: WizardStepsState, setState
                         </Text>
                     </Typography>
                     <ReactQuill style={{background: "#fff"}} value={step2.newLesson.lessonContent}
-                                onChange={(data)=>{
-                                    setState({...state, steps: [...state.steps.slice(0, 1), {
+                                onChange={(data) => {
+                                    setState({
+                                        ...state, steps: [...state.steps.slice(0, 1), {
                                             ...step2,
-                                             newLesson: {
-                                                 ...step2.newLesson,
-                                                 lessonContent: data
-                                             },
-                                        }, ...state.steps.slice(2)]});
+                                            newLesson: {
+                                                ...step2.newLesson,
+                                                lessonContent: data
+                                            },
+                                        }, ...state.steps.slice(2)]
+                                    });
                                 }}/>
-                    <br />
-                    <Button type="primary" onClick={()=> {
+                    <br/>
+                    <Button type="primary" onClick={() => {
                         const id = uuidv4();
-                        setState({...state, steps: [...state.steps.slice(0, 1), {
+                        setState({
+                            ...state, steps: [...state.steps.slice(0, 1), {
                                 ...step2,
                                 lessons: {
                                     ...step2.lessons,
@@ -134,7 +148,8 @@ export const SecondStep = ({state, setState}: {state: WizardStepsState, setState
                                         deleted: step2.newLesson.deleted,
                                     }
                                 }
-                            }, ...state.steps.slice(2)]})
+                            }, ...state.steps.slice(2)]
+                        })
                     }}>Adauga</Button>
                     <br/>
                     <br/>

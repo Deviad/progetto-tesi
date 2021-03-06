@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 // @ts-ignore
-import { useHistory } from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 
 export const Login = () => {

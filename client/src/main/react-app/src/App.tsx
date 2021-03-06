@@ -1,6 +1,6 @@
 import React, {FC, useEffect, useState} from 'react';
 
-import {Col, Layout, Menu, PageHeader, Row} from "antd";
+import {Col, Layout, Menu, PageHeader} from "antd";
 import Oauth2 from "./features/oauth2";
 import {Registration} from "./features/registration/Registration";
 import {Route, Switch, useHistory} from "react-router-dom";
@@ -61,43 +61,43 @@ const App: FC = () => {
             <PageHeader>
             </PageHeader>
             <Layout.Content className="ant-layout-content--ripeti">
-                    <Col span={16} flex="auto">
-                        <Switch>
+                <Col span={16} flex="auto">
+                    <Switch>
 
-                            {["/", PagePathName.HOME].map(path => (
-                                <Route exact path={path}>
-                                    <Home />
-                                </Route>
-                            ))}
-
-                            <Route path="/oauth">
-                                <Oauth2/>
+                        {["/", PagePathName.HOME].map(path => (
+                            <Route exact path={path}>
+                                <Home/>
                             </Route>
+                        ))}
 
-                            {guardedPaths.map(r => (
-                                <Route path={r}>
-                                    <AuthGuard/>
-                                </Route>
-                            ))}
+                        <Route path="/oauth">
+                            <Oauth2/>
+                        </Route>
 
-                            <Route path="/login">
-                                <Login/>
+                        {guardedPaths.map(r => (
+                            <Route path={r}>
+                                <AuthGuard/>
                             </Route>
+                        ))}
 
-                            <Route path="/logout">
-                                <Logout/>
-                            </Route>
+                        <Route path="/login">
+                            <Login/>
+                        </Route>
 
-                            <Route path="/register">
-                                <Registration/>
-                            </Route>
+                        <Route path="/logout">
+                            <Logout/>
+                        </Route>
 
-                            <Route path="/error">
-                                <ErrorComponent/>
-                            </Route>
-                            <Route path={`*`} component={NotFound}/>
-                        </Switch>
-                    </Col>
+                        <Route path="/register">
+                            <Registration/>
+                        </Route>
+
+                        <Route path="/error">
+                            <ErrorComponent/>
+                        </Route>
+                        <Route path={`*`} component={NotFound}/>
+                    </Switch>
+                </Col>
             </Layout.Content>
 
         </Layout>

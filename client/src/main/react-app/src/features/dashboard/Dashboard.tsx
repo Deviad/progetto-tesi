@@ -11,14 +11,14 @@ export const Dashboard: FC = () => {
     const user = useSelector((state: RootState) => state.user)
     const dispatch = useDispatch();
 
-   useEffect(()=> {
-       dispatch(getSetCurrentPage(PageSlug.DASHBOARD))
-   }, []);
+    useEffect(() => {
+        dispatch(getSetCurrentPage(PageSlug.DASHBOARD))
+    }, []);
 
 
     return (
         <>
-            { <ProfessorDashboard/>}
+            {<ProfessorDashboard/>}
 
             {/*{user.roles?.includes("STUDENT") && <StudentDashboard/>}*/}
 

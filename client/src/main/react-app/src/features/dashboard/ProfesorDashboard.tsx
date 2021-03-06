@@ -11,7 +11,7 @@ export const ProfessorDashboard: FC = () => {
 
     const history = useHistory();
 
-    useEffect(()=>{
+    useEffect(() => {
         history.push('/dashboard/professor/addcourse');
     });
 
@@ -35,19 +35,21 @@ export const ProfessorDashboard: FC = () => {
                     defaultSelectedKeys={['add']}
                     mode="horizontal"
                 >
-                    <Menu.Item key="add" onClick={()=>history.push('/dashboard/professor/addcourse')}>Adauga curs</Menu.Item>
-                    <Menu.Item key="list" onClick={()=>history.push('/dashboard/professor/listcourses')}>Lista cursurilor</Menu.Item>
+                    <Menu.Item key="add" onClick={() => history.push('/dashboard/professor/addcourse')}>Adauga
+                        curs</Menu.Item>
+                    <Menu.Item key="list" onClick={() => history.push('/dashboard/professor/listcourses')}>Lista
+                        cursurilor</Menu.Item>
                 </Menu>
             </Row>
-            <br />
-            <br />
+            <br/>
+            <br/>
             <Row gutter={[16, 16]} align="middle" justify="center" style={{display: "flex", alignItems: "flex-start"}}>
                 <Switch>
                     <Route path="*/professor/addcourse">
-                      <CourseAddition />
+                        <CourseAddition/>
                     </Route>
                     <Route path="*/professor/listcourses">
-                        <CourseList />
+                        <CourseList/>
                     </Route>
                 </Switch>
             </Row>

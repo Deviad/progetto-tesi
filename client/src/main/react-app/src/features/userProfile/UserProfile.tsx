@@ -5,7 +5,8 @@ import {
     EroareDePattern,
     EroareGeneric,
     MediaType,
-    Nullable, PageSlug,
+    Nullable,
+    PageSlug,
     UseProfileFormData,
     User,
     UserState
@@ -30,7 +31,7 @@ import {omit} from "lodash";
 import {Theme as AntDTheme} from '@rjsf/antd';
 import {PoweroffOutlined} from "@ant-design/icons";
 import {utils} from "../../utils";
-import {getAppFailure, getAppLoading, getStopLoading, getSetCurrentPage} from "../../app/appSharedSlice";
+import {getAppFailure, getAppLoading, getSetCurrentPage, getStopLoading} from "../../app/appSharedSlice";
 import {Dispatch} from "redux";
 
 const Form = withTheme(AntDTheme);
@@ -67,7 +68,7 @@ const transformaEroarile = <T extends unknown>(errors: EroareGeneric<T>[]) => {
 const profileSchema = (schema: any) => {
     const tmp: any = omit(schema, "properties.password", "properties.username", "required.password", "required.username")
 
-    tmp.required = tmp.required.filter((x: string)=>x !== "password").filter((x: string)=> x !== "username")
+    tmp.required = tmp.required.filter((x: string) => x !== "password").filter((x: string) => x !== "username")
     return tmp;
 }
 
@@ -104,12 +105,13 @@ export const userProfileInitialState: UseProfileFormData = {
         secondAddressLine: ""
     }
 }
+
 async function getData(dispatch: Dispatch<any>, setFData: Function, user: UserState) {
     const {body, status} = await handleGetUserData(user.accessToken, user.username);
-    if(body && !status) {
+    if (body && !status) {
         console.log(body);
         return;
-    } else if(body) {
+    } else if (body) {
         if (utils.isTrue(body)) {
             setFData(body);
             dispatch(getStopLoading());
@@ -127,14 +129,13 @@ const onSubmit = (dispatch: Dispatch<any>, setFData: Function, setDisabled: Func
             "Authorization": `Bearer ${user.accessToken}`,
         }
     })
-        .then(x=> getData(dispatch, setFData, user))
-        .then(x=> setDisabled(true))
-        .catch(err=>{
+        .then(x => getData(dispatch, setFData, user))
+        .then(x => setDisabled(true))
+        .catch(err => {
             dispatch(getAppFailure(err.toString()));
         })
     ;
 }
-
 
 
 const toggleSubmitButton = (formRef: RefObject<HTMLFormElement>, isDisabled: boolean) => {
@@ -161,17 +162,16 @@ const UserProfile = () => {
         dispatch(getAppLoading());
         dispatch(getSetCurrentPage(PageSlug.USER_PROFILE))
 
-        if(utils.isTrue(user.accessToken) && utils.isTrue(user.accessToken)) {
+        if (utils.isTrue(user.accessToken) && utils.isTrue(user.accessToken)) {
             getData(dispatch, setFData, user);
         }
 
     }, [fData.email, user.accessToken]);
 
 
-    useEffect(()=> {
+    useEffect(() => {
         toggleSubmitButton(formRef, isDisabled);
     }, [isDisabled])
-
 
 
     console.log("User", user);
@@ -219,31 +219,35 @@ const UserProfile = () => {
             </Row>
             <Row align="middle" justify="center">
                 <Col span={12} flex="auto">
-                    {  /* @ts-ignore */  }
-                    {( !fData?.email) ? <Form schema={profileSchema(registrationSchema)} uiSchema={profileUiSchema(registrationUiSchema)}
-                     /* @ts-ignore */
-                          onSubmit={onSubmit(dispatch, setFData, user)}
-                          noHtml5Validate={true}
-                          liveValidate={true}
-                          /* @ts-ignore */
-                          ref={formRef}
-                          showErrorList={false}
-                          transformErrors={transformaEroarile}
-                          disabled={isDisabled}
+                    {  /* @ts-ignore */}
+                    {(!fData?.email) ? <Form schema={profileSchema(registrationSchema)}
+                                               /* @ts-ignore */
+                                             uiSchema={profileUiSchema(registrationUiSchema)}
+                            /* @ts-ignore */
+                                             onSubmit={onSubmit(dispatch, setFData, user)}
+                                             noHtml5Validate={true}
+                                             liveValidate={true}
+                            /* @ts-ignore */
+                                             ref={formRef}
+                                             showErrorList={false}
+                                             transformErrors={transformaEroarile}
+                                             disabled={isDisabled}
 
-                    /> : /* @ts-ignore */
-                        <Form schema={profileSchema(registrationSchema)} uiSchema={profileUiSchema(registrationUiSchema)}
+                        /> : /* @ts-ignore */
+                        <Form schema={profileSchema(registrationSchema)}
+                            /* @ts-ignore */
+                              uiSchema={profileUiSchema(registrationUiSchema)}
                             /* @ts-ignore */
                               onSubmit={onSubmit(dispatch, setFData, setDisabled, user)}
-                                 noHtml5Validate={true}
-                                 liveValidate={true}
-                                 /* @ts-ignore */
-                                 ref={formRef}
-                                 showErrorList={false}
-                                 transformErrors={transformaEroarile}
-                                 formData={fData}
-                                 disabled={isDisabled}
-                    />}
+                              noHtml5Validate={true}
+                              liveValidate={true}
+                            /* @ts-ignore */
+                              ref={formRef}
+                              showErrorList={false}
+                              transformErrors={transformaEroarile}
+                              formData={fData}
+                              disabled={isDisabled}
+                        />}
                 </Col>
             </Row>
         </>

@@ -22,7 +22,7 @@ export const renderRegisterMenuButton = (history: H.History) => {
     const user = utils.storage.getItem("auth_res");
     return utils.isNotTrue(user) &&
         <Menu.Item key={PageSlug.REGISTER} onClick={() => history.push(PagePathName.REGISTER)}>
-           Inregistreazate
+            Inregistreazate
         </Menu.Item>;
 }
 export const renderUserProfileButton = (history: H.History) => {
@@ -37,7 +37,7 @@ export const renderDashboardMenuButton = (history: H.History) => {
     const user = utils.storage.getItem("auth_res");
     return utils.isTrue(user) &&
         <Menu.Item key={PageSlug.DASHBOARD} onClick={() => history.push("/dashboard")}>
-           Dashboard
+            Dashboard
         </Menu.Item>;
 }
 
