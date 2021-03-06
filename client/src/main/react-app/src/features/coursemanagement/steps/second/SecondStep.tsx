@@ -6,6 +6,7 @@ import Title from "antd/es/typography/Title";
 import {v4 as uuidv4} from 'uuid';
 import {omit} from "lodash";
 import {WizardStepsState} from "../../WizardSteps";
+import {lessonNameChange} from "./secondStepCallbacks";
 
 const {Panel} = Collapse;
 
@@ -26,21 +27,7 @@ export const renderLessons = (state: WizardStepsState, setState: Function) => {
                     name="lessonName"
                     value={step2.lessons[k].lessonName}
                     style={{marginBottom: "0.5rem"}}
-                    onChange={(event) => {
-                        setState({
-                            ...state, steps: [...state.steps.slice(0, 1), {
-                                ...step2,
-                                lessons: {
-                                    ...step2.lessons,
-                                    [k]: {
-                                        ...step2.lessons[k],
-                                        lessonName: event.target.value,
-                                        modified: true
-                                    }
-                                }
-                            }, ...state.steps.slice(2)]
-                        })
-                    }}
+                    onChange={lessonNameChange(state, setState, k)}
                 />
                 <Typography style={{marginBottom: "0.5rem"}}>
                     <Text style={{fontWeight: "bold"}}>
@@ -102,17 +89,7 @@ export const SecondStep = ({state, setState}: { state: WizardStepsState, setStat
                         </Text>
                     </Typography>
                     <Input name="name" value={step2.newLesson.lessonName} style={{marginBottom: "0.5rem"}}
-                           onChange={(event) => {
-                               setState({
-                                   ...state, steps: [...state.steps.slice(0, 1), {
-                                       ...step2,
-                                       newLesson: {
-                                           ...step2.newLesson,
-                                           lessonName: event.target.value,
-                                       }
-                                   }, ...state.steps.slice(2)]
-                               });
-                           }}
+                           onChange={lessonNameChange(state, setState)}
                     />
                     <Typography style={{marginBottom: "0.5rem"}}>
                         <Text style={{fontWeight: "bold"}}>
