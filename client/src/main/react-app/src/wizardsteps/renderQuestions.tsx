@@ -26,16 +26,6 @@ export const renderQuestions = (state: WizardStepsState, setState: Function, cur
                         />)
                 }
             </>
-            {/*<br/>*/}
-            {/*<br/>*/}
-            {/*<Row style={{display: "flex", flexDirection: "row"}}>*/}
-
-            {/*    <Col span={10} push={1}>*/}
-            {/*        <Button type="primary" onClick={() => {*/}
-            {/*            console.log("Adauga intrebare")*/}
-            {/*        }}> + Adauga intrebare</Button>*/}
-            {/*    </Col>*/}
-            {/*</Row>*/}
         </>)
 
 }
