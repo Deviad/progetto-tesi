@@ -22,6 +22,7 @@ export interface RipetiStep1Content {
     id: string;
     title: string;
     description: string;
+    errors: Record<string, any>;
 }
 
 
@@ -29,7 +30,6 @@ export interface RipetiStep1Content {
 export interface RipetiStep1 extends RipetiStep {
     title: string;
     content: RipetiStep1Content;
-    errors: Record<string, any>;
 }
 
 
@@ -56,11 +56,10 @@ const steps: [RipetiStep1, RipetiStep2, RipetiStep3] = [
         content: {
             id: "",
             title: "",
-            description: ""
+            description: "",
+            errors: {
+            }
         },
-        errors: {
-
-        }
     },
     {
         title: 'Adauga lectile',
@@ -74,7 +73,7 @@ const steps: [RipetiStep1, RipetiStep2, RipetiStep3] = [
             errors: {},
         },
         lessons: {} as Record<string, Lesson>,
-        
+
     },
 
     {
@@ -221,6 +220,7 @@ export const WizardSteps = ({
                 id,
                 title,
                 description,
+                errors: {},
             }
 
             const backendData = [

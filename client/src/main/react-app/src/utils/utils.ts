@@ -2,8 +2,10 @@ import * as Cookies from "js-cookie";
 import {AccessToken, AuthorizationResponse, ErrorsMap, FormError, Nullable, PageSlug, UserState} from "../types";
 import jwtDecode from "jwt-decode";
 import {SchemaOf, string, ValidationError} from "yup";
-import {cloneDeep, trim} from "lodash";
+import {cloneDeep, omit, trim} from "lodash";
 import {SecondStepSchema} from "../features/coursemanagement/steps/second/secondStepCallbacks";
+import React from "react";
+import {message} from "antd";
 
 const utils = (function () {
 
@@ -260,6 +262,45 @@ const utils = (function () {
         return acc;
     }
 
+    type ValidateFormInputType<T> =  { objectToValidate: { [key: string]: any, errors?: FormError }, schema: any, value: T, path: string }
+
+    function validateFormInput<T extends unknown>({objectToValidate, schema, value, path}: ValidateFormInputType<T>) {
+        const copy = cloneDeep(objectToValidate);
+
+        if ((value as React.ChangeEvent<HTMLInputElement>).target && typeof (value as React.ChangeEvent<HTMLInputElement>).target.value !== undefined) {
+            copy[path] = utils.stripHtmlTags( (value as React.ChangeEvent<HTMLInputElement>).target.value)
+        } else {
+            copy[path] = utils.stripHtmlTags( (value as string));
+        }
+
+        let errorsMap;
+
+        try {
+            errorsMap = utils.validateBySchema(copy, schema, path);
+        } catch (error) {
+            console.log(error);
+            message.error(error.message);
+            return;
+        }
+        if (Object.keys(errorsMap).length === 0) {
+
+            if (objectToValidate.errors && objectToValidate.errors[path]) {
+
+                //Daca acum user-ul a introdus un sir fara erori atunci scoatem eroarile din stare lui step2.
+
+                objectToValidate.errors = omit(objectToValidate.errors, path);
+            }
+
+        } else {
+
+            if (!objectToValidate.errors) {
+                objectToValidate.errors = {};
+            }
+
+            objectToValidate.errors = {...objectToValidate.errors, [path]: errorsMap[path]};
+        }
+    }
+
     const validateFormBlock = (objectToValidate: { [key: string]: any, errors?: FormError }) => {
         const copy = cloneDeep(objectToValidate);
 
@@ -283,6 +324,7 @@ const utils = (function () {
         isNotTrue,
         stripHtmlTags,
         validateFormBlock,
+        validateFormInput,
         get storage() {
             return storageFactory.getStorage();
         }

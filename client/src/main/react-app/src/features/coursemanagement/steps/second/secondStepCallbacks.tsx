@@ -19,42 +19,7 @@ export const SecondStepSchema = object().shape({
 type LessonNameChanged = (props: LessonNameChangedProps) => (event: ChangeEvent<HTMLInputElement>) => void;
 
 
-function validateFormInput<T extends unknown>(objectToValidate: { [key: string]: any, errors?: FormError }, value: T, path: string) {
-    const copy = cloneDeep(objectToValidate);
 
-    if ((value as React.ChangeEvent<HTMLInputElement>).target && typeof (value as React.ChangeEvent<HTMLInputElement>).target.value !== undefined) {
-        copy[path] = (value as React.ChangeEvent<HTMLInputElement>).target.value
-    } else {
-        copy[path] = value;
-    }
-
-    let errorsMap;
-
-    try {
-        errorsMap = utils.validateBySchema(copy, SecondStepSchema, path);
-    } catch (error) {
-        console.log(error);
-        message.error(error.message);
-        return;
-    }
-    if (Object.keys(errorsMap).length === 0) {
-
-        if (objectToValidate.errors && objectToValidate.errors[path]) {
-
-            //Daca acum user-ul a introdus un sir fara erori atunci scoatem eroarile din stare lui step2.
-
-            objectToValidate.errors = omit(objectToValidate.errors, path);
-        }
-
-    } else {
-
-        if (!objectToValidate.errors) {
-            objectToValidate.errors = {};
-        }
-
-        objectToValidate.errors = {...objectToValidate.errors, [path]: errorsMap[path]};
-    }
-}
 
 
 
@@ -63,10 +28,14 @@ export const lessonNameChangeChanged: LessonNameChanged =
 
         const step2 = state.steps[1];
 
-
         if (id) {
             const currentLesson = step2.lessons[id];
-            validateFormInput(currentLesson, event, "lessonName");
+
+            utils.validateFormInput({
+                objectToValidate: currentLesson,
+                schema: SecondStepSchema,
+                value: event,
+                path: "lessonName"});
 
             setState({
                 ...state, steps: [...state.steps.slice(0, 1), {
@@ -82,7 +51,13 @@ export const lessonNameChangeChanged: LessonNameChanged =
                 }, ...state.steps.slice(2)]
             })
         } else {
-            validateFormInput(step2.newLesson, event, "lessonName");
+
+            utils.validateFormInput({
+                objectToValidate: step2.newLesson,
+                schema: SecondStepSchema,
+                value: event,
+                path: "lessonName"});
+
             setState({
                 ...state, steps: [...state.steps.slice(0, 1), {
                     ...step2,
@@ -106,8 +81,11 @@ export const lessonContentChanged: LessonContentChanged =
         if (id) {
             const currentLesson = step2.lessons[id];
 
-            validateFormInput(currentLesson, utils.stripHtmlTags(data), "lessonContent");
-
+            utils.validateFormInput({
+                objectToValidate: currentLesson,
+                schema: SecondStepSchema,
+                value: utils.stripHtmlTags(data),
+                path: "lessonContent"});
             setState({
                 ...state, steps: [...state.steps.slice(0, 1), {
                     ...step2,
@@ -123,7 +101,11 @@ export const lessonContentChanged: LessonContentChanged =
             })
         } else {
 
-            validateFormInput(step2.newLesson, utils.stripHtmlTags(data), "lessonContent");
+            utils.validateFormInput({
+                objectToValidate: step2.newLesson,
+                schema: SecondStepSchema,
+                value: utils.stripHtmlTags(data),
+                path: "lessonContent"});
 
             setState({
                 ...state, steps: [...state.steps.slice(0, 1), {
