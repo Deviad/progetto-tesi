@@ -7,6 +7,7 @@ import {v4 as uuidv4} from 'uuid';
 import {omit} from "lodash";
 import {WizardStepsState} from "../../WizardSteps";
 import {lessonDataAdded, lessonContentChanged, lessonNameChangeChanged, lessonDataRemoved} from "./secondStepCallbacks";
+import {utils} from "../../../../utils";
 
 const {Panel} = Collapse;
 
@@ -67,6 +68,8 @@ export const SecondStep = ({state, setState}: { state: WizardStepsState, setStat
                     <Input name="name" value={step2.newLesson.lessonName} style={{marginBottom: "0.5rem"}}
                            onChange={lessonNameChangeChanged({state, setState})}
                     />
+                    {utils.isTrue(state.steps[1].errors["lessonName"]) && <div>{state.steps[1].errors["lessonName"]}</div>}
+
                     <Typography style={{marginBottom: "0.5rem"}}>
                         <Text style={{fontWeight: "bold"}}>
                             Continut

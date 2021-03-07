@@ -37,11 +37,13 @@ export interface RipetiStep2 extends RipetiStep {
     title: string;
     newLesson: NewLesson
     lessons: Record<string, Lesson>;
+    errors: Record<string, any>;
 }
 
 export interface RipetiStep3 extends RipetiStep {
     title: string;
     quizzes: Record<string, Quiz>;
+    errors: Record<string, any>;
 }
 
 const {Step} = Steps;
@@ -69,7 +71,8 @@ const steps: [RipetiStep1, RipetiStep2, RipetiStep3] = [
             deleted: false,
             modified: false,
         },
-        lessons: {} as Record<string, Lesson>
+        lessons: {} as Record<string, Lesson>,
+        errors: {},
     },
 
     {
@@ -125,7 +128,8 @@ const steps: [RipetiStep1, RipetiStep2, RipetiStep3] = [
                 quizName: "sadsadsa",
                 type: "existing",
             }
-        } as Record<string, Quiz>
+        } as Record<string, Quiz>,
+        errors: {}
     },
 ];
 
