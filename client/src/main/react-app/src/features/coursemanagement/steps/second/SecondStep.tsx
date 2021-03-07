@@ -7,6 +7,7 @@ import {WizardStepsState} from "../../WizardSteps";
 import {lessonContentChanged, lessonDataAdded, lessonDataRemoved, lessonNameChangeChanged} from "./secondStepCallbacks";
 import {utils} from "../../../../utils";
 import {DangerText} from "../../../common/DangerText";
+import {FormError} from "../../../../types";
 
 const {Panel} = Collapse;
 
@@ -29,8 +30,8 @@ export const renderLessons = (state: WizardStepsState, setState: Function) => {
                     style={{marginBottom: "0.5rem"}}
                     onChange={lessonNameChangeChanged({state, setState, id: k})}
                 />
-                {utils.isTrue(state.steps[1].errors["lessonName"]) &&
-                <DangerText>{state.steps[1].errors["lessonName"]}</DangerText>}
+                {(step2.lessons[k].errors && utils.isTrue((step2.lessons[k].errors as FormError)["lessonName"])) &&
+                <DangerText>{(step2.lessons[k].errors as FormError)["lessonName"]}</DangerText>}
 
                 <Typography style={{marginBottom: "0.5rem"}}>
                     <Text style={{fontWeight: "bold"}}>
@@ -40,8 +41,8 @@ export const renderLessons = (state: WizardStepsState, setState: Function) => {
                 <ReactQuill style={{background: "#fff"}} value={l.lessonContent}
                             onChange={lessonContentChanged({state, setState, id: k})}
                 />
-                {utils.isTrue(state.steps[1].errors["lessonContent"]) &&
-                <DangerText>{state.steps[1].errors["lessonContent"]}</DangerText>}
+                {(step2.lessons[k].errors && utils.isTrue((step2.lessons[k].errors as FormError)["lessonContent"])) &&
+                <DangerText>{(step2.lessons[k].errors as FormError)["lessonContent"]}</DangerText>}
                 <br/>
                 <Button type="primary" danger
                         onClick={lessonDataRemoved({state, setState, id: k})}
@@ -72,8 +73,8 @@ export const SecondStep = ({state, setState}: { state: WizardStepsState, setStat
                     <Input name="name" value={step2.newLesson.lessonName} style={{marginBottom: "0.5rem"}}
                            onChange={lessonNameChangeChanged({state, setState})}
                     />
-                    {utils.isTrue(state.steps[1].errors["lessonName"]) &&
-                    <DangerText>{state.steps[1].errors["lessonName"]}</DangerText>}
+                    {utils.isTrue(step2.newLesson.errors["lessonName"]) &&
+                    <DangerText>{step2.newLesson.errors["lessonName"]}</DangerText>}
 
                     <Typography style={{marginBottom: "0.5rem"}}>
                         <Text style={{fontWeight: "bold"}}>
@@ -83,8 +84,8 @@ export const SecondStep = ({state, setState}: { state: WizardStepsState, setStat
                     <ReactQuill style={{background: "#fff"}} value={step2.newLesson.lessonContent}
                                 onChange={lessonContentChanged({state, setState})}/>
                     <br/>
-                    {utils.isTrue(state.steps[1].errors["lessonContent"]) &&
-                    <DangerText>{state.steps[1].errors["lessonContent"]}</DangerText>}
+                    {utils.isTrue(step2.newLesson.errors["lessonContent"]) &&
+                    <DangerText>{step2.newLesson.errors["lessonContent"]}</DangerText>}
                     <Button type="primary" onClick={lessonDataAdded({state, setState})}>Adauga</Button>
                     <br/>
                     <br/>

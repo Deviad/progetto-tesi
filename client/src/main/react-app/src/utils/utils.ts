@@ -229,7 +229,8 @@ const utils = (function () {
                     });
                 }
             } catch (e) {
-                // error thrown not by yup should be rethrown for problem visibility
+                //o eroare care nu este aruncata din yup ar trebui sa fie aruncata pentru a fi managiuita din un handler
+                // diferit
                 if (Object.prototype.toString.call(e.inner) !== "[object Array]") {
                     throw e;
                 }

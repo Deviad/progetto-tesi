@@ -199,7 +199,11 @@ export interface Lesson {
     type: "new" | "existing"
     modified?: boolean,
     deleted?: boolean,
+    errors?: Record<string, any>;
 }
+
+
+export type FormError = Record<string, any>;
 
 export interface Question {
     id: string,

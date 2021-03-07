@@ -5,6 +5,7 @@ import React, {FC} from "react";
 import {WizardStepsState} from "../../WizardSteps";
 import {handleEditorChange, onTitleChange} from "./firstStepCallbacks";
 import {utils} from "../../../../utils";
+import {DangerText} from "../../../common/DangerText";
 
 
 export const FirstStep: FC<{ state: WizardStepsState, setState: Function }> = ({state, setState}) => {
@@ -19,7 +20,10 @@ export const FirstStep: FC<{ state: WizardStepsState, setState: Function }> = ({
                     </Title>
                 </Typography>
                 <Input name="title" onChange={onTitleChange(state, setState)} value={step1.content.title}/>
-                {utils.isTrue(state.steps[0].errors["title"]) && <div>{state.steps[0].errors["title"]}</div>}
+                {
+                    utils.isTrue(state.steps[0].errors["title"]) &&
+                    <DangerText>{state.steps[0].errors["title"]}</DangerText>
+                }
                 <Typography>
                     <Title level={4}>
                         Descriere
@@ -29,7 +33,10 @@ export const FirstStep: FC<{ state: WizardStepsState, setState: Function }> = ({
                             onChange={handleEditorChange(state, setState)}/>
                 <br/>
 
-                {utils.isTrue(state.steps[0].errors["description"]) && <div>{state.steps[0].errors["description"]}</div>}
+                {
+                    utils.isTrue(state.steps[0].errors["description"]) &&
+                    <DangerText>{state.steps[0].errors["description"]}</DangerText>
+                }
 
             </>)
     }
