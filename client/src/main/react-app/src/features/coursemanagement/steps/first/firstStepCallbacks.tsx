@@ -3,6 +3,8 @@ import {utils} from "../../../../utils";
 import {object, string} from "yup";
 import {ChangeEvent} from "react";
 
+import "../../../../utils/yupConfig"
+
 export const FirstStepSchema = object().shape({
     description: string().required().trim().min(3).test('is-blank', '${path} nu poate fi gol', (value,)=> value !== ''),
     title: string().required().trim().min(3).max(100).test('is-blank', '${path} nu poate fi gol', (value,)=> value !== ''),

@@ -23,6 +23,8 @@ import {Logout} from "./features/logout/Logout";
 import {Home} from "./features/home";
 import "./App.scss";
 
+import "./utils/yupConfig";
+
 const NotFound = () => <div>Page not Found</div>;
 
 const App: FC = () => {

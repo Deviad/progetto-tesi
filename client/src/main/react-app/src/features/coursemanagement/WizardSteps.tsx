@@ -1,10 +1,13 @@
 import {Button, message, Modal, Steps} from 'antd';
 import {useState} from "reinspect";
 import React, {useEffect} from "react";
-import {Lesson, Quiz} from '../../types';
+import {Lesson, Nullable, Quiz} from '../../types';
 import {ThirdStep} from './steps/third';
 import {FirstStep} from "./steps/first";
 import {SecondStep} from "./steps/second/SecondStep";
+import {utils} from "../../utils";
+import {SecondStepSchema} from "./steps/second/secondStepCallbacks";
+import {FirstStepSchema} from "./steps/first/firstStepCallbacks";
 
 export interface RipetiStep {
 
@@ -26,12 +29,10 @@ export interface RipetiStep1Content {
 }
 
 
-
 export interface RipetiStep1 extends RipetiStep {
     title: string;
     content: RipetiStep1Content;
 }
-
 
 
 export interface RipetiStep2 extends RipetiStep {
@@ -57,8 +58,7 @@ const steps: [RipetiStep1, RipetiStep2, RipetiStep3] = [
             id: "",
             title: "",
             description: "",
-            errors: {
-            }
+            errors: {}
         },
     },
     {
@@ -191,98 +191,128 @@ export const WizardSteps = ({
                                 modalVisible,
                                 toggleModal
                             }: { id: string, title: string, content: string, modalVisible: boolean, toggleModal: Function }) => {
-    const [state, setState] = useState({steps: [] as Record<string, any>[], currentStep: 0}, 'wizard-steps');
+        const [state, setState] = useState({steps: [] as Record<string, any>[], currentStep: 0}, 'wizard-steps');
 
-    const next = () => {
-        setState({...state, currentStep: state.currentStep + 1});
-    };
+        const next = () => {
 
-    const prev = () => {
-        setState({...state, currentStep: state.currentStep - 1});
-    };
+            let errors: Nullable<Record<string, any>> = {};
+            if (state.currentStep === 0) {
+                errors = utils.validateFormBlock(state.steps[state.currentStep].content, FirstStepSchema);
 
-    const ok = () => {
-        setState({currentStep: 0, steps: []})
-        toggleModal(false);
-    }
-    const cancel = () => {
-        setState({currentStep: 0, steps: []})
-        toggleModal(false);
-    }
-
-
-    useEffect(() => {
-
-        const [step1, step2] = steps;
-
-        setTimeout(() => {
-            step1.content = {
-                id,
-                title,
-                description,
-                errors: {},
+            } else if (state.currentStep === 1) {
+                for (const [key, lesson] of Object.entries((state.steps[state.currentStep].lessons as Lesson[]))) {
+                    errors[lesson.lessonName] = utils.validateFormBlock(lesson, SecondStepSchema);
+                }
             }
 
-            const backendData = [
-                {
-                    id: "123123-asdsads-sadasd-daadsa",
-                    lessonName: "Test1",
-                    lessonContent: "Content1"
-                },
-                {
-                    id: "123123-asdsads-sadasd-daadsb",
-                    lessonName: "Test2",
-                    lessonContent: "Content2"
-                },
-                {
-                    id: "123123-asdsads-sadasd-daadsc",
-                    lessonName: "Test3",
-                    lessonContent: "Content3"
-                },
-                {
-                    id: "123123-asdsads-sadasd-daadsd",
-                    lessonName: "Test4",
-                    lessonContent: "Content4"
-                },
-                {
-                    id: "123123-asdsads-sadasd-daadse",
-                    lessonName: "Test5",
-                    lessonContent: "Content5"
+            if (utils.isTrue(errors) && Object.keys(errors).length > 0) {
+
+                let acc = [] as React.ReactNodeArray;
+
+                for (const [eKey, eVal] of Object.entries(errors)) {
+                    if (typeof eVal === "string") {
+                        acc.push(<>{eVal} <br/></>);
+                    } else if (Object.keys(eVal).length && Object.keys(eVal).length > 0) {
+                         Object.values(eVal).forEach(val => acc.push(<>{eKey} -  {val} <br/></>));
+                    }
                 }
-            ];
 
-            // enrichment phase: faza unde adaug niste proprietati suplimentare pe lectile ca
-            // sa pot efectua operatiunile relative mai usor.
-
-            step2.lessons = backendData.reduce((acc: Record<string, Lesson>, curr: Record<string, any>) => {
-                acc[curr.id] = {
-                    id: curr.id,
-                    lessonName: curr.lessonName,
-                    lessonContent: curr.lessonContent,
-                    type: "existing",
-                    deleted: false,
-                    modified: false,
+                if (acc.length > 0 ) {
+                    message.error(Object.values(acc).map(x => x));
+                    return;
                 }
-                return acc;
-            }, {} as Record<string, Lesson>)
+            }
 
-            setState({...state, steps});
-        }, 2000);
+            setState({...state, currentStep: state.currentStep + 1});
+        };
 
-    }, [modalVisible]);
+        const prev = () => {
+            setState({...state, currentStep: state.currentStep - 1});
+        };
 
-    return (
-        <>
-            <Modal
-                title={title}
-                centered={true}
-                visible={modalVisible}
-                onOk={ok}
-                onCancel={cancel}
-                width={"60vw"}
-            >
-                {renderModalContent(state, setState, next, prev)}
-            </Modal>
-        </>
-    );
-};
+        const ok = () => {
+            setState({currentStep: 0, steps: []})
+            toggleModal(false);
+        }
+        const cancel = () => {
+            setState({currentStep: 0, steps: []})
+            toggleModal(false);
+        }
+
+
+        useEffect(() => {
+
+            const [step1, step2] = steps;
+
+            setTimeout(() => {
+                step1.content = {
+                    id,
+                    title,
+                    description,
+                    errors: {},
+                }
+
+                const backendData = [
+                    {
+                        id: "123123-asdsads-sadasd-daadsa",
+                        lessonName: "Test1",
+                        lessonContent: "Content1"
+                    },
+                    {
+                        id: "123123-asdsads-sadasd-daadsb",
+                        lessonName: "Test2",
+                        lessonContent: "Content2"
+                    },
+                    {
+                        id: "123123-asdsads-sadasd-daadsc",
+                        lessonName: "Test3",
+                        lessonContent: "Content3"
+                    },
+                    {
+                        id: "123123-asdsads-sadasd-daadsd",
+                        lessonName: "Test4",
+                        lessonContent: "Content4"
+                    },
+                    {
+                        id: "123123-asdsads-sadasd-daadse",
+                        lessonName: "Test5",
+                        lessonContent: "Content5"
+                    }
+                ];
+
+                // enrichment phase: faza unde adaug niste proprietati suplimentare pe lectile ca
+                // sa pot efectua operatiunile relative mai usor.
+
+                step2.lessons = backendData.reduce((acc: Record<string, Lesson>, curr: Record<string, any>) => {
+                    acc[curr.id] = {
+                        id: curr.id,
+                        lessonName: curr.lessonName,
+                        lessonContent: curr.lessonContent,
+                        type: "existing",
+                        deleted: false,
+                        modified: false,
+                    }
+                    return acc;
+                }, {} as Record<string, Lesson>)
+
+                setState({...state, steps});
+            }, 2000);
+
+        }, [modalVisible]);
+
+        return (
+            <>
+                <Modal
+                    title={title}
+                    centered={true}
+                    visible={modalVisible}
+                    onOk={ok}
+                    onCancel={cancel}
+                    width={"60vw"}
+                >
+                    {renderModalContent(state, setState, next, prev)}
+                </Modal>
+            </>
+        );
+    }
+;

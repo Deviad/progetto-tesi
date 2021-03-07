@@ -301,12 +301,12 @@ const utils = (function () {
         }
     }
 
-    const validateFormBlock = (objectToValidate: { [key: string]: any, errors?: FormError }) => {
+    const validateFormBlock = (objectToValidate: { [key: string]: any, errors?: FormError }, schema: any) => {
         const copy = cloneDeep(objectToValidate);
 
-        const errorsMap = utils.validateBySchema(stripHtmlFromAttributes(copy), SecondStepSchema);
-        console.log(errorsMap)
+        return utils.validateBySchema(stripHtmlFromAttributes(copy), schema);
     }
+
 
 
     return {
