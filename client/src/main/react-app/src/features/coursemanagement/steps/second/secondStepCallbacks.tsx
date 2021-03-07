@@ -56,6 +56,8 @@ function validateFormInput<T extends unknown>(objectToValidate: { [key: string]:
     }
 }
 
+
+
 export const lessonNameChangeChanged: LessonNameChanged =
     ({state, setState, id}) => (event) => {
 
@@ -145,6 +147,7 @@ type LessonDataAdded = (props: LessonDataAddedProps) => (event: React.MouseEvent
 
 export const lessonDataAdded: LessonDataAdded =
     ({state, setState}) => (event) => {
+        utils.validateFormBlock(state.steps[1].newLesson);
         const step2 = state.steps[1];
         const newId = uuidv4();
         setState({

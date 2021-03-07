@@ -1,8 +1,9 @@
 import * as Cookies from "js-cookie";
-import {AccessToken, AuthorizationResponse, ErrorsMap, Nullable, PageSlug, UserState} from "../types";
+import {AccessToken, AuthorizationResponse, ErrorsMap, FormError, Nullable, PageSlug, UserState} from "../types";
 import jwtDecode from "jwt-decode";
-import {SchemaOf, ValidationError} from "yup";
-import {trim} from "lodash";
+import {SchemaOf, string, ValidationError} from "yup";
+import {cloneDeep, trim} from "lodash";
+import {SecondStepSchema} from "../features/coursemanagement/steps/second/secondStepCallbacks";
 
 const utils = (function () {
 
@@ -243,6 +244,30 @@ const utils = (function () {
             return errors;
         }
 
+    const stripHtmlFromAttributes = (obj: Record<string, any>) => {
+
+        const acc = {} as Record<string, any>;
+
+        for (const [k, v] of Object.entries(obj)) {
+
+            if( typeof v === "string") {
+                acc[k] = utils.stripHtmlTags(v);
+            }
+            else {
+                acc[k] = v;
+            }
+        }
+        return acc;
+    }
+
+    const validateFormBlock = (objectToValidate: { [key: string]: any, errors?: FormError }) => {
+        const copy = cloneDeep(objectToValidate);
+
+        const errorsMap = utils.validateBySchema(stripHtmlFromAttributes(copy), SecondStepSchema);
+        console.log(errorsMap)
+    }
+
+
     return {
         toFormUrlEncoded,
         getParameterByName,
@@ -257,6 +282,7 @@ const utils = (function () {
         validateBySchema,
         isNotTrue,
         stripHtmlTags,
+        validateFormBlock,
         get storage() {
             return storageFactory.getStorage();
         }
