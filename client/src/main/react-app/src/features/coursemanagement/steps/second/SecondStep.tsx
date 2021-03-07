@@ -6,7 +6,7 @@ import Title from "antd/es/typography/Title";
 import {v4 as uuidv4} from 'uuid';
 import {omit} from "lodash";
 import {WizardStepsState} from "../../WizardSteps";
-import {lessonNameChange} from "./secondStepCallbacks";
+import {lessonDataAdded, lessonContentChanged, lessonNameChangeChanged, lessonDataRemoved} from "./secondStepCallbacks";
 
 const {Panel} = Collapse;
 
@@ -27,7 +27,7 @@ export const renderLessons = (state: WizardStepsState, setState: Function) => {
                     name="lessonName"
                     value={step2.lessons[k].lessonName}
                     style={{marginBottom: "0.5rem"}}
-                    onChange={lessonNameChange(state, setState, k)}
+                    onChange={lessonNameChangeChanged({state, setState, id: k})}
                 />
                 <Typography style={{marginBottom: "0.5rem"}}>
                     <Text style={{fontWeight: "bold"}}>
@@ -35,35 +35,11 @@ export const renderLessons = (state: WizardStepsState, setState: Function) => {
                     </Text>
                 </Typography>
                 <ReactQuill style={{background: "#fff"}} value={l.lessonContent}
-                            onChange={(data) => {
-                                setState({
-                                    ...state, steps: [...state.steps.slice(0, 1), {
-                                        ...step2,
-                                        lessons: {
-                                            ...step2.lessons,
-                                            [k]: {
-                                                ...step2.lessons[k],
-                                                lessonContent: data,
-                                                modified: true
-                                            }
-                                        }
-                                    }, ...state.steps.slice(2)]
-                                })
-                            }}
-
+                            onChange={lessonContentChanged({state, setState, id: k})}
                 />
                 <br/>
                 <Button type="primary" danger
-                        onClick={(data) => {
-                            setState({
-                                ...state, steps: [...state.steps.slice(0, 1), {
-                                    ...step2,
-                                    lessons: {
-                                        ...omit(step2.lessons, k)
-                                    }
-                                }, ...state.steps.slice(2)]
-                            })
-                        }}
+                        onClick={lessonDataRemoved({state, setState, id: k})}
                 >Sterge</Button>
             </Panel>
         ))
@@ -89,7 +65,7 @@ export const SecondStep = ({state, setState}: { state: WizardStepsState, setStat
                         </Text>
                     </Typography>
                     <Input name="name" value={step2.newLesson.lessonName} style={{marginBottom: "0.5rem"}}
-                           onChange={lessonNameChange(state, setState)}
+                           onChange={lessonNameChangeChanged({state, setState})}
                     />
                     <Typography style={{marginBottom: "0.5rem"}}>
                         <Text style={{fontWeight: "bold"}}>
@@ -97,37 +73,9 @@ export const SecondStep = ({state, setState}: { state: WizardStepsState, setStat
                         </Text>
                     </Typography>
                     <ReactQuill style={{background: "#fff"}} value={step2.newLesson.lessonContent}
-                                onChange={(data) => {
-                                    setState({
-                                        ...state, steps: [...state.steps.slice(0, 1), {
-                                            ...step2,
-                                            newLesson: {
-                                                ...step2.newLesson,
-                                                lessonContent: data
-                                            },
-                                        }, ...state.steps.slice(2)]
-                                    });
-                                }}/>
+                                onChange={lessonContentChanged({state, setState})}/>
                     <br/>
-                    <Button type="primary" onClick={() => {
-                        const id = uuidv4();
-                        setState({
-                            ...state, steps: [...state.steps.slice(0, 1), {
-                                ...step2,
-                                lessons: {
-                                    ...step2.lessons,
-                                    [id]: {
-                                        id,
-                                        lessonName: step2.newLesson.lessonName,
-                                        lessonContent: step2.newLesson.lessonContent,
-                                        type: step2.newLesson.type,
-                                        modified: step2.newLesson.modified,
-                                        deleted: step2.newLesson.deleted,
-                                    }
-                                }
-                            }, ...state.steps.slice(2)]
-                        })
-                    }}>Adauga</Button>
+                    <Button type="primary" onClick={lessonDataAdded({state, setState})}>Adauga</Button>
                     <br/>
                     <br/>
                     <Typography>
