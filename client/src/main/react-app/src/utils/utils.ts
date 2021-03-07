@@ -202,6 +202,11 @@ const utils = (function () {
     }
 
     const stripHtmlTags = (text: string): string => {
+
+        //^ in pozitia curenta in interiorul lui regex insemna toate caractere posibile in afara de,
+        // deci in afara de > fiind ca este folosit ca token de inchidere unui tag HTML.
+        // /g in replace insemna sa inlocuiesca toate aparitile, nu doar prima.
+
         return text.replace(/(<([^>]+)>)/gi, "");
     }
 

@@ -3,7 +3,7 @@ import Title from "antd/es/typography/Title";
 import ReactQuill from "react-quill";
 import React, {FC} from "react";
 import {WizardStepsState} from "../../WizardSteps";
-import {handleEditorChange, onNameChange} from "./firstStepCallbacks";
+import {handleEditorChange, onTitleChange} from "./firstStepCallbacks";
 import {utils} from "../../../../utils";
 
 
@@ -18,7 +18,7 @@ export const FirstStep: FC<{ state: WizardStepsState, setState: Function }> = ({
                         Denumire
                     </Title>
                 </Typography>
-                <Input name="title" onChange={onNameChange(state, setState)} value={step1.content.title}/>
+                <Input name="title" onChange={onTitleChange(state, setState)} value={step1.content.title}/>
                 {utils.isTrue(state.steps[0].errors["title"]) && <div>{state.steps[0].errors["title"]}</div>}
                 <Typography>
                     <Title level={4}>

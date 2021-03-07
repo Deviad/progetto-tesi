@@ -2,6 +2,7 @@ import {WizardStepsState} from "../../WizardSteps";
 import {utils} from "../../../../utils";
 import {object, string} from "yup";
 import {cloneDeep, omit} from 'lodash';
+import {ChangeEvent} from "react";
 
 export const FirstStepSchema = object().shape({
     description: string().required().min(3),
@@ -9,14 +10,16 @@ export const FirstStepSchema = object().shape({
 }).required();
 
 
-export const onNameChange = (state: WizardStepsState, setState: Function) => (e: any) => {
+export const onTitleChange = (state: WizardStepsState, setState: Function) => (e: ChangeEvent<HTMLInputElement>) => {
 
     const [step1] = state.steps;
 
     step1.content = {...step1.content, title: e.target.value}
 
+    const copy = cloneDeep(step1.content);
+    copy.title = e.target.value;
 
-    const errorsMap = utils.validateBySchema(step1.content, FirstStepSchema, "title");
+    const errorsMap = utils.validateBySchema(copy, FirstStepSchema, "title");
 
 
     if (Object.keys(errorsMap).length === 0) {
@@ -48,10 +51,8 @@ export const handleEditorChange = (state: any, setState: Function) => (value: st
 
     const copy = cloneDeep(step1.content);
 
-    //^ in pozitia curenta in interiorul lui regex insemna toate caractere posibile in afara de,
-    // deci in afara de > fiind ca este folosit ca token de inchidere unui tag HTML.
-    // /g in replace insemna sa inlocuiesca toate aparitile, nu doar prima.
-    copy.description = utils.stripHtmlTags(copy.description);
+
+    copy.description = utils.stripHtmlTags(value);
 
     const errorsMap = utils.validateBySchema(copy, FirstStepSchema, "description");
 
