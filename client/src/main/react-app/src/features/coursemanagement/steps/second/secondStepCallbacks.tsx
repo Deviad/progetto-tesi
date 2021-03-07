@@ -1,7 +1,7 @@
 import {WizardStepsState} from "../../WizardSteps";
 import React, {ChangeEvent} from "react";
 import {v4 as uuidv4} from "uuid";
-import {omit} from "lodash";
+import {cloneDeep, omit} from "lodash";
 import {utils} from "../../../../utils";
 import {object, string} from "yup";
 
@@ -20,8 +20,10 @@ export const lessonNameChangeChanged: LessonNameChanged =
     ({state, setState, id}) => (event) => {
 
         const step2 = state.steps[1];
+        const copy = cloneDeep(step2.newLesson);
+        copy.lessonName = event.target.value;
 
-        const errorsMap = utils.validateBySchema(step2.newLesson, SecondStepSchema, "lessonName");
+        const errorsMap = utils.validateBySchema(copy, SecondStepSchema, "lessonName");
 
         if (Object.keys(errorsMap).length === 0) {
 
@@ -69,6 +71,24 @@ type LessonContentChanged = (props: LessonContentChangedProps) => (data: string)
 export const lessonContentChanged: LessonContentChanged =
     ({state, setState, id}) => (data) => {
         const step2 = state.steps[1];
+
+        const copy = cloneDeep(step2.newLesson);
+
+        copy.lessonContent = utils.stripHtmlTags(data);
+
+        const errorsMap = utils.validateBySchema(copy, SecondStepSchema, "lessonContent");
+
+        if (Object.keys(errorsMap).length === 0) {
+
+            //Daca acum user-ul a introdus un sir fara erori atunci scoatem eroarile din stare lui step2.
+
+            if (step2.errors["lessonContent"]) {
+                step2.errors = omit(step2.errors, "lessonContent");
+            }
+
+        } else {
+            step2.errors = {...step2.errors, lessonContent: errorsMap["lessonContent"]};
+        }
 
         if (id) {
             setState({

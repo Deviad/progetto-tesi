@@ -3,10 +3,8 @@ import Text from "antd/es/typography/Text";
 import ReactQuill from "react-quill";
 import React from "react";
 import Title from "antd/es/typography/Title";
-import {v4 as uuidv4} from 'uuid';
-import {omit} from "lodash";
 import {WizardStepsState} from "../../WizardSteps";
-import {lessonDataAdded, lessonContentChanged, lessonNameChangeChanged, lessonDataRemoved} from "./secondStepCallbacks";
+import {lessonContentChanged, lessonDataAdded, lessonDataRemoved, lessonNameChangeChanged} from "./secondStepCallbacks";
 import {utils} from "../../../../utils";
 
 const {Panel} = Collapse;
@@ -78,6 +76,7 @@ export const SecondStep = ({state, setState}: { state: WizardStepsState, setStat
                     <ReactQuill style={{background: "#fff"}} value={step2.newLesson.lessonContent}
                                 onChange={lessonContentChanged({state, setState})}/>
                     <br/>
+                    {utils.isTrue(state.steps[1].errors["lessonContent"]) && <div>{state.steps[1].errors["lessonContent"]}</div>}
                     <Button type="primary" onClick={lessonDataAdded({state, setState})}>Adauga</Button>
                     <br/>
                     <br/>
