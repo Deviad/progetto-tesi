@@ -19,7 +19,7 @@ export const SecondStepSchema = object().shape({
 type LessonNameChanged = (props: LessonNameChangedProps) => (event: ChangeEvent<HTMLInputElement>) => void;
 
 
-function validateFormObject<T extends unknown>(objectToValidate: { [key: string]: any, errors?: FormError }, value: T, path: string) {
+function validateFormInput<T extends unknown>(objectToValidate: { [key: string]: any, errors?: FormError }, value: T, path: string) {
     const copy = cloneDeep(objectToValidate);
 
     if ((value as React.ChangeEvent<HTMLInputElement>).target && typeof (value as React.ChangeEvent<HTMLInputElement>).target.value !== undefined) {
@@ -64,7 +64,7 @@ export const lessonNameChangeChanged: LessonNameChanged =
 
         if (id) {
             const currentLesson = step2.lessons[id];
-            validateFormObject(currentLesson, event, "lessonName");
+            validateFormInput(currentLesson, event, "lessonName");
 
             setState({
                 ...state, steps: [...state.steps.slice(0, 1), {
@@ -80,7 +80,7 @@ export const lessonNameChangeChanged: LessonNameChanged =
                 }, ...state.steps.slice(2)]
             })
         } else {
-            validateFormObject(step2.newLesson, event, "lessonName");
+            validateFormInput(step2.newLesson, event, "lessonName");
             setState({
                 ...state, steps: [...state.steps.slice(0, 1), {
                     ...step2,
@@ -104,7 +104,7 @@ export const lessonContentChanged: LessonContentChanged =
         if (id) {
             const currentLesson = step2.lessons[id];
 
-            validateFormObject(currentLesson, utils.stripHtmlTags(data), "lessonContent");
+            validateFormInput(currentLesson, utils.stripHtmlTags(data), "lessonContent");
 
             setState({
                 ...state, steps: [...state.steps.slice(0, 1), {
@@ -121,7 +121,7 @@ export const lessonContentChanged: LessonContentChanged =
             })
         } else {
 
-            validateFormObject(step2.newLesson, utils.stripHtmlTags(data), "lessonContent");
+            validateFormInput(step2.newLesson, utils.stripHtmlTags(data), "lessonContent");
 
             setState({
                 ...state, steps: [...state.steps.slice(0, 1), {
