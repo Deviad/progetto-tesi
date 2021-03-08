@@ -23,16 +23,12 @@ export const QuizList: FC<{
     }, [keys.length]);
 
 
-    if (keys.length == 0) {
+    if (keys.length === 0) {
         return <div>Nu ai chestionare existente</div>
     } else {
         return <Collapse activeKey={activeKey} accordion>{
             Object.entries(step3.quizzes)
-                .filter(([k, q]) => {
-                    if (!q.deleted) {
-                        return [k, q];
-                    }
-                })
+                .filter(([, q]) => !q.deleted)
                 .map(([k, quiz], index) => {
                     return (
                         <PanelWrapper header={quiz.quizName} id={k} key={k} activeKey={activeKey}

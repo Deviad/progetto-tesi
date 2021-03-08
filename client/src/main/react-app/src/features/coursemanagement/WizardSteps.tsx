@@ -8,6 +8,7 @@ import {SecondStep} from "./steps/second/SecondStep";
 import {utils} from "../../utils";
 import {SecondStepSchema} from "./steps/second/secondStepCallbacks";
 import {FirstStepSchema} from "./steps/first/firstStepCallbacks";
+import {kebabCase} from "lodash";
 
 export interface RipetiStep {
 
@@ -195,13 +196,21 @@ export const WizardSteps = ({
 
         const next = () => {
 
+            const usedNames: string[] = [];
+
             let errors: Nullable<Record<string, any>> = {};
             if (state.currentStep === 0) {
                 errors = utils.validateFormBlock(state.steps[state.currentStep].content, FirstStepSchema);
 
             } else if (state.currentStep === 1) {
                 for (const [key, lesson] of Object.entries((state.steps[state.currentStep].lessons as Lesson[]))) {
-                    errors[lesson.lessonName] = utils.validateFormBlock(lesson, SecondStepSchema);
+                    if(usedNames.some(l => l === kebabCase(lesson.lessonName.toLowerCase()))) {
+                        message.error("Nu poti avea 2 lecti cu aceasi denumire");
+                       return;
+                    }
+                    errors[kebabCase(lesson.lessonName.toLowerCase())] = utils.validateFormBlock(lesson, SecondStepSchema);
+                    usedNames.push(kebabCase(lesson.lessonName.toLowerCase()));
+
                 }
             }
 

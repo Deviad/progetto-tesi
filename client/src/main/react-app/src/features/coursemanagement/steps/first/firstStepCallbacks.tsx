@@ -6,7 +6,9 @@ import {ChangeEvent} from "react";
 import "../../../../utils/yupConfig"
 
 export const FirstStepSchema = object().shape({
+    // eslint-disable-next-line no-template-curly-in-string
     description: string().required().trim().min(3).test('is-blank', '${path} nu poate fi gol', (value,)=> value !== ''),
+    // eslint-disable-next-line no-template-curly-in-string
     title: string().required().trim().min(3).max(100).test('is-blank', '${path} nu poate fi gol', (value,)=> value !== ''),
 }).required();
 
