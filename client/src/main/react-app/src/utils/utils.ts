@@ -4,7 +4,7 @@ import jwtDecode from "jwt-decode";
 import {SchemaOf, string, ValidationError} from "yup";
 import {cloneDeep, omit, trim} from "lodash";
 import {SecondStepSchema} from "../features/coursemanagement/steps/second/secondStepCallbacks";
-import React from "react";
+import React, {SyntheticEvent} from "react";
 import {message} from "antd";
 
 const utils = (function () {
@@ -267,7 +267,7 @@ const utils = (function () {
     function validateFormInput<T extends unknown>({objectToValidate, schema, value, path}: ValidateFormInputType<T>) {
         const copy = cloneDeep(objectToValidate);
 
-        if ((value as React.ChangeEvent<HTMLInputElement>).target && typeof (value as React.ChangeEvent<HTMLInputElement>).target.value !== undefined) {
+        if ((value as React.SyntheticEvent<HTMLInputElement>).target && typeof (value as React.ChangeEvent<HTMLInputElement>).target.value !== undefined) {
             copy[path] = utils.stripHtmlTags( (value as React.ChangeEvent<HTMLInputElement>).target.value)
         } else {
             copy[path] = utils.stripHtmlTags( (value as string));

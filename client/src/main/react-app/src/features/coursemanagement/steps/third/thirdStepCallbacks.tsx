@@ -26,8 +26,10 @@ export function newDefaultQuizAdded(setState: Function) {
                                 title: "Completeaza",
                                 modified: false,
                                 deleted: false,
+                                errors: {},
                             }
-                        }
+                        },
+                        errors: {},
                     }
                 },
                 quizName: "Introduci o denumire",
@@ -35,6 +37,7 @@ export function newDefaultQuizAdded(setState: Function) {
                 type: "new",
                 modified: false,
                 deleted: false,
+                errors: {},
             }
         }));
     };

@@ -7,6 +7,7 @@ import {WizardStepsState} from "../../../WizardSteps";
 import {Answer} from "../../../../../types";
 import {addAnswer, changeAnswerTitle, changeAnswerValue, removeAnswer} from "../../../answerCallbacks";
 import {AnswerComponent} from "../answer";
+import {DangerText} from "../../../../common/DangerText";
 
 
 export const QuestionComponent: FC<{
@@ -19,7 +20,7 @@ export const QuestionComponent: FC<{
 }> = (props) => {
 
     const {state, setState, answers, title, id: questionId, quizId, changeTitle} = props;
-
+    const [, , step3] = state.steps;
     return (
         <React.Fragment key={questionId}>
             <Row style={{display: "flex", flexDirection: "row"}}>
@@ -32,7 +33,12 @@ export const QuestionComponent: FC<{
                 </Col>
             </Row>
             <Row style={{display: "flex", flexDirection: "row"}}>
-                <Col span={10} push={1}> <Input name="name" value={title} onChange={changeTitle}/></Col>
+                <Col span={10} push={1}>
+                    <Input name="name" value={title} onChange={changeTitle}/>
+                    <DangerText>{step3.quizzes[quizId].questions[questionId].errors["title"]}</DangerText>
+                    <br/>
+                </Col>
+
                 <Col span={4} push={2} style={{display: "flex", alignItems: "center"}}>
                     <Col
                         style={{

@@ -199,7 +199,7 @@ export interface Lesson {
     type: "new" | "existing"
     modified?: boolean,
     deleted?: boolean,
-    errors?: Record<string, any>;
+    errors?: FormError;
 }
 
 
@@ -211,6 +211,7 @@ export interface Question {
     modified?: boolean,
     deleted?: false,
     answers: Record<string, Answer>
+    errors: FormError,
 }
 
 export interface Quiz {
@@ -221,6 +222,7 @@ export interface Quiz {
     modified?: boolean,
     deleted?: boolean,
     questions: Record<string, Question>
+    errors: FormError,
 }
 
 
@@ -242,6 +244,7 @@ export interface Answer {
     value: boolean;
     modified?: boolean,
     deleted?: boolean,
+    errors: FormError,
 }
 
 

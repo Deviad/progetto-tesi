@@ -4,6 +4,15 @@ import {v4 as uuidv4} from "uuid";
 import {message} from "antd";
 import {omit} from "lodash";
 import {WizardStepsState} from "../../../WizardSteps";
+import {utils} from "../../../../../utils";
+import {FirstStepSchema} from "../../first/firstStepCallbacks";
+import {object, string} from "yup";
+
+export const QuestionSchema = object().shape({
+    // eslint-disable-next-line no-template-curly-in-string
+    title: string().required().trim().min(3).max(100).test('is-blank', 'Titlu nu poate fi gol', (value,)=> value !== ''),
+}).required();
+
 
 export const changeQuestionTitle = (quizId: string, questionId: string, state: WizardStepsState, setState: Function) =>
     (evt: ChangeEvent<HTMLInputElement>) => {
@@ -12,6 +21,12 @@ export const changeQuestionTitle = (quizId: string, questionId: string, state: W
                 .steps[2]
                 .quizzes[quizId]
                 .questions[questionId]
+
+            utils.validateFormInput({
+                objectToValidate: question,
+                schema: FirstStepSchema,
+                value: evt,
+                path: "title"});
 
             question.title = evt.target.value;
             question.modified = true;
@@ -39,8 +54,10 @@ export const addQuestion = (quizId: string, questionId: string, state: WizardSte
                         title: "Completeaza",
                         modified: false,
                         deleted: false,
+                        errors: {},
                     }
-                }
+                },
+                errors: {},
             }
         }));
     }

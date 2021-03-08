@@ -52,6 +52,7 @@ export const addAnswer = (quizId: string, questionId: string, state: WizardSteps
                 deleted: false,
                 modified: false,
                 value: false,
+                errors: {},
             }
 
         }));
