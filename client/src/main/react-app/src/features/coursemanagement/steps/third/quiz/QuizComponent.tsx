@@ -5,6 +5,7 @@ import ReactQuill from "react-quill";
 import {WizardStepsState} from "../../../WizardSteps";
 import {QuestionList} from "../question";
 import {quizDeleted, quizDescriptionChanged, quizNameChanged} from "./quizCallbacks";
+import {DangerText} from "../../../../common/DangerText";
 
 
 export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, quizId: string, quizName: string, quizContent: string }> =
@@ -23,7 +24,8 @@ export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, qu
                     value={step3.quizzes[quizId].quizName}
                     style={{marginBottom: "0.5rem"}}
                     onChange={quizNameChanged(state, setState, quizId)}
-                />
+                /> <br />
+                <DangerText>{step3.quizzes[quizId].errors.quizName}</DangerText>
                 <Typography style={{marginBottom: "0.5rem"}}>
                     <Text style={{fontWeight: "bold"}}>
                         Descriere
@@ -33,7 +35,7 @@ export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, qu
                             onChange={quizDescriptionChanged(state, setState, quizId)}
                 />
                 <br/>
-
+                <DangerText>{step3.quizzes[quizId].errors.quizContent}</DangerText>
                 <QuestionList state={state} setState={setState} currentQuiz={quizId}/>
 
                 <Button type="primary" danger

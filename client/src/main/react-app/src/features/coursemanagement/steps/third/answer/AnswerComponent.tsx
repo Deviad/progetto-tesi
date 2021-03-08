@@ -2,6 +2,8 @@ import React, {ChangeEvent, FC} from "react";
 import {Col, Input, Radio, Row} from "antd";
 import {RadioChangeEvent} from "antd/lib/radio/interface";
 import {MinusCircleOutlined, PlusCircleOutlined} from "@ant-design/icons";
+import {FormError} from "../../../../../types";
+import {DangerText} from "../../../../common/DangerText";
 
 
 export const AnswerComponent: FC<{
@@ -11,14 +13,19 @@ export const AnswerComponent: FC<{
     changeValue: (e: RadioChangeEvent) => void,
     changeTitle: (e: ChangeEvent<HTMLInputElement>) => void,
     addAnswer: React.MouseEventHandler<HTMLElement>,
+    errors: FormError
     removeAnswer: React.MouseEventHandler<HTMLElement>,
 }> = (props) => {
+
+    console.log("errors", props.errors);
 
     return (
         <Row style={{display: "flex", flexDirection: "row", marginBottom: "0.5rem"}} key={props.id}>
             <Col span={5} push={2}>
-                <Input name="name" value={props.answerTitle} onChange={props.changeTitle}/>
+                <Input name="name" value={props.answerTitle} onChange={props.changeTitle}/> <br />
+                <DangerText>{props.errors.title || ""}</DangerText>
             </Col>
+
             <Col span={4} push={3} style={{display: "flex", alignItems: "center"}}>
                 <Radio.Group value={props.value} onChange={props.changeValue}>
                     <Radio value={true}>corect</Radio>

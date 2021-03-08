@@ -1,10 +1,20 @@
-import {WizardStepsState} from "./WizardSteps";
+import {WizardStepsState} from "../../../WizardSteps";
 import {RadioChangeEvent} from "antd/lib/radio/interface";
 import produce from "immer";
 import React, {ChangeEvent} from "react";
 import {v4 as uuidv4} from 'uuid';
 import {omit} from "lodash";
 import {message} from "antd";
+import {utils} from "../../../../../utils";
+import {FirstStepSchema} from "../../first/firstStepCallbacks";
+import "../../../../../utils/yupConfig";
+import {object, string} from "yup";
+
+export const AnswerSchema = object().shape({
+    // eslint-disable-next-line no-template-curly-in-string
+    title: string().required().trim().min(3).max(100).test('is-blank', '${path} nu poate fi gol', (value,)=> value !== ''),
+}).required();
+
 
 export const changeAnswerValue = (quizId: string, questionId: string, answerId: string, state: WizardStepsState, setState: Function) =>
     (evt: RadioChangeEvent) => {
@@ -30,6 +40,13 @@ export const changeAnswerTitle = (quizId: string, questionId: string, answerId: 
                 .quizzes[quizId]
                 .questions[questionId]
                 .answers[answerId];
+
+            utils.validateFormInput({
+                objectToValidate: answer,
+                schema: AnswerSchema,
+                value: evt.target.value,
+                path: "title"});
+
             answer.title = evt.target.value;
             answer.modified = true;
         }));

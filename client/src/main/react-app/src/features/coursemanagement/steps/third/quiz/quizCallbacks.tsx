@@ -1,13 +1,29 @@
 import React, {ChangeEvent} from "react";
 import {WizardStepsState} from "../../../WizardSteps";
 import {omit} from "lodash";
+import {utils} from "../../../../../utils";
+import {object, string} from "yup";
 
+export const QuizSchema = object().shape({
+    // eslint-disable-next-line no-template-curly-in-string
+    quizName: string().required().trim().min(3).max(100).test('is-blank', 'Titlu nu poate fi gol', (value,)=> value !== ''),
+    // eslint-disable-next-line no-template-curly-in-string
+    quizContent: string().required().trim().min(3).test('is-blank', '${path} nu poate fi gol', (value,)=> value !== ''),
+
+}).required();
 
 type QuizNameChanged = (state: WizardStepsState, setState: Function, quizId: string) => (event: ChangeEvent<HTMLInputElement>) => void;
 
 export const quizNameChanged: QuizNameChanged = (state, setState, quizId) => (event) => {
 
     const [, , step3] = state.steps;
+
+    utils.validateFormInput({
+        objectToValidate: step3.quizzes[quizId],
+        schema: QuizSchema,
+        value: event,
+        path: "quizName"});
+
 
     setState({
         ...state, steps: [...state.steps.slice(0, 2), {
@@ -30,6 +46,12 @@ type QuizDescriptionChanged = (state: WizardStepsState, setState: Function, quiz
 export const quizDescriptionChanged: QuizDescriptionChanged = (state, setState, quizId) => (data: string) => {
 
     const [, , step3] = state.steps;
+
+    utils.validateFormInput({
+        objectToValidate: step3.quizzes[quizId],
+        schema: QuizSchema,
+        value: data,
+        path: "quizContent"});
 
     setState({
         ...state, steps: [...state.steps.slice(0, 2), {

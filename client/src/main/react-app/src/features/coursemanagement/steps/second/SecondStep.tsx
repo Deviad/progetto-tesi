@@ -8,6 +8,7 @@ import {lessonContentChanged, lessonDataAdded, lessonDataRemoved, lessonNameChan
 import {utils} from "../../../../utils";
 import {DangerText} from "../../../common/DangerText";
 import {FormError} from "../../../../types";
+import "../../../../utils/yupConfig";
 
 const {Panel} = Collapse;
 

@@ -5,7 +5,7 @@ import {MinusCircleOutlined, PlusCircleOutlined} from "@ant-design/icons";
 import {addQuestion, removedQuestion} from "./questionCallbacks";
 import {WizardStepsState} from "../../../WizardSteps";
 import {Answer} from "../../../../../types";
-import {addAnswer, changeAnswerTitle, changeAnswerValue, removeAnswer} from "../../../answerCallbacks";
+import {addAnswer, changeAnswerTitle, changeAnswerValue, removeAnswer} from "../answer/answerCallbacks";
 import {AnswerComponent} from "../answer";
 import {DangerText} from "../../../../common/DangerText";
 
@@ -34,9 +34,8 @@ export const QuestionComponent: FC<{
             </Row>
             <Row style={{display: "flex", flexDirection: "row"}}>
                 <Col span={10} push={1}>
-                    <Input name="name" value={title} onChange={changeTitle}/>
+                    <Input name="name" value={title} onChange={changeTitle}/><br />
                     <DangerText>{step3.quizzes[quizId].questions[questionId].errors["title"]}</DangerText>
-                    <br/>
                 </Col>
 
                 <Col span={4} push={2} style={{display: "flex", alignItems: "center"}}>
@@ -79,6 +78,7 @@ export const QuestionComponent: FC<{
                     changeTitle={changeAnswerTitle(quizId, questionId, a.id, state, setState)}
                     changeValue={changeAnswerValue(quizId, questionId, a.id, state, setState)}
                     addAnswer={addAnswer(quizId, questionId, state, setState)}
+                    errors={step3.quizzes[quizId].questions[questionId].answers[a.id].errors}
                     removeAnswer={removeAnswer(quizId, questionId, a.id, state, setState)}
                     key={a.id}
                     id={a.id}/>

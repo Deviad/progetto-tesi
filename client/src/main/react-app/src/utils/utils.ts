@@ -284,6 +284,12 @@ const utils = (function () {
         }
         if (Object.keys(errorsMap).length === 0) {
 
+            //TODO : verify why I need to make it writable.
+
+            // Object.defineProperty(errorsMap, 'errors', {
+            //     writable: true,
+            // });
+
             if (objectToValidate.errors && objectToValidate.errors[path]) {
 
                 //Daca acum user-ul a introdus un sir fara erori atunci scoatem eroarile din stare lui step2.
@@ -297,7 +303,11 @@ const utils = (function () {
                 objectToValidate.errors = {};
             }
 
-            objectToValidate.errors = {...objectToValidate.errors, [path]: errorsMap[path]};
+
+            if(errorsMap && errorsMap[path]) {
+                objectToValidate.errors = {...objectToValidate.errors, [path]: errorsMap[path]};
+            }
+
         }
     }
 
