@@ -2,9 +2,9 @@ import React, {FC} from "react";
 import {Button, Input, Typography} from "antd";
 import Text from "antd/es/typography/Text";
 import ReactQuill from "react-quill";
-import {omit} from "lodash";
 import {WizardStepsState} from "../../../WizardSteps";
 import {QuestionList} from "../question";
+import {quizDeleted, quizDescriptionChanged, quizNameChanged} from "./quizCallbacks";
 
 
 export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, quizId: string, quizName: string, quizContent: string }> =
@@ -22,21 +22,7 @@ export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, qu
                     name="quizName"
                     value={step3.quizzes[quizId].quizName}
                     style={{marginBottom: "0.5rem"}}
-                    onChange={(event) => {
-                        setState({
-                            ...state, steps: [...state.steps.slice(0, 2), {
-                                ...step3,
-                                quizzes: {
-                                    ...step3.quizzes,
-                                    [quizId]: {
-                                        ...step3.quizzes[quizId],
-                                        quizName: event.target.value,
-                                        modified: true
-                                    }
-                                }
-                            }]
-                        })
-                    }}
+                    onChange={quizNameChanged(state, setState, quizId)}
                 />
                 <Typography style={{marginBottom: "0.5rem"}}>
                     <Text style={{fontWeight: "bold"}}>
@@ -44,54 +30,14 @@ export const QuizComponent: FC<{ state: WizardStepsState, setState: Function, qu
                     </Text>
                 </Typography>
                 <ReactQuill style={{background: "#fff"}} value={quizContent}
-                            onChange={(data) => {
-                                setState({
-                                    ...state, steps: [...state.steps.slice(0, 2), {
-                                        ...step3,
-                                        quizzes: {
-                                            ...step3.quizzes,
-                                            [quizId]: {
-                                                ...step3.quizzes[quizId],
-                                                quizContent: data,
-                                                modified: true
-                                            }
-                                        }
-                                    }]
-                                })
-                            }}
-
+                            onChange={quizDescriptionChanged(state, setState, quizId)}
                 />
                 <br/>
 
                 <QuestionList state={state} setState={setState} currentQuiz={quizId}/>
 
                 <Button type="primary" danger
-                        onClick={(data) => {
-
-                            if (step3.quizzes[quizId].type === "new") {
-                                setState({
-                                    ...state, steps: [...state.steps.slice(0, 2), {
-                                        ...step3,
-                                        quizzes: {
-                                            ...omit(step3.quizzes, quizId)
-                                        }
-                                    }]
-                                })
-                            } else {
-                                setState({
-                                    ...state, steps: [...state.steps.slice(0, 2), {
-                                        ...step3,
-                                        quizzes: {
-                                            ...step3.quizzes,
-                                            [quizId]: {
-                                                ...step3.quizzes[quizId],
-                                                deleted: true
-                                            }
-                                        }
-                                    }]
-                                })
-                            }
-                        }}
+                        onClick={quizDeleted(state, setState, quizId)}
                 >Sterge</Button>
             </>
         );
