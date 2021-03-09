@@ -35,7 +35,7 @@ export const onTitleChange = (state: WizardStepsState, setState: Function) => (e
 export const handleEditorChange = (state: any, setState: Function) => (value: string) => {
     const [step1] = state.steps;
 
-    utils.validateFormInput({
+    step1.content.errors = utils.validateFormInput({
         objectToValidate: step1.content,
         value,
         schema: FirstStepSchema,

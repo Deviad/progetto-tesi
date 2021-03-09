@@ -1,17 +1,11 @@
-import {Button, message, Modal, Steps} from 'antd';
+import {Button, Modal, Steps} from 'antd';
 import {useState} from "reinspect";
 import React, {useCallback, useEffect} from "react";
-import {ILesson, Nullable, IQuiz} from '../../types';
+import {ILesson, IQuiz} from '../../types';
 import {ThirdStep} from './steps/third';
 import {FirstStep} from "./steps/first";
 import {SecondStep} from "./steps/second/SecondStep";
-import {utils} from "../../utils";
-import {SecondStepSchema} from "./steps/second/secondStepCallbacks";
-import {FirstStepSchema} from "./steps/first/firstStepCallbacks";
-import {kebabCase} from "lodash";
-import {QuizSchema} from "./steps/third/quiz/quizCallbacks";
-import {QuestionSchema} from "./steps/third/question/questionCallbacks";
-import {AnswerSchema} from "./steps/third/answer/answerCallbacks";
+import {next} from "./wizardStepsCallbacks";
 
 export interface RipetiStep {
 
@@ -174,16 +168,12 @@ export const renderModalContent = (state: any, setState: Function, next: Functio
     </div>
     <div className="steps-action">
       {state.currentStep < steps.length - 1 && (
-        <Button type="primary" onClick={() => next()}>
+        <Button type="primary" onClick={next(state, setState)}>
           Urmator
         </Button>
       )}
       {state.currentStep === steps.length - 1 && (
-        <Button type="primary" onClick={() => {
-          console.log(state)
-          // message.success('Processing complete!');
-          next();
-        }}>
+        <Button type="primary" onClick={next(state, setState)}>
           Finalizeaza
         </Button>
       )}
@@ -210,65 +200,8 @@ export const WizardSteps = ({
     }, 'wizard-steps');
 
 
-    const setState = useCallback((state: any)=> mutableSetState(state), []);
+    const setState = useCallback((state: any) => mutableSetState(state), []);
 
-    const next = async () => {
-
-
-      const usedNames: string[] = [];
-
-      let errors: Nullable<Record<string, any>> = {};
-      if (state.currentStep === 0) {
-        errors = utils.validateFormBlock(state.steps[state.currentStep].content, FirstStepSchema);
-
-      } else if (state.currentStep === 1) {
-        for (const [, lesson] of Object.entries((state.steps[1].lessons as Record<string, ILesson>))) {
-          if (usedNames.some(l => l === kebabCase(lesson.lessonName.toLowerCase()))) {
-            await message.error("Nu poti avea 2 lecti cu aceasi denumire");
-            return;
-          }
-          errors[kebabCase(lesson.lessonName.toLowerCase())] = utils.validateFormBlock(lesson, SecondStepSchema);
-          usedNames.push(kebabCase(lesson.lessonName.toLowerCase()));
-
-        }
-      }
-
-      //TODO: verify that the same name is not used twice as I did for step 2 (step[1]).
-      else if (state.currentStep === 2) {
-        for (const quizValue of Object.values(state.steps[2].quizzes as Record<string, IQuiz>)) {
-          errors[kebabCase(quizValue.quizName.toLowerCase())] = utils.validateFormBlock(quizValue, QuizSchema);
-          for (const question of Object.values(quizValue.questions)) {
-            errors[`${kebabCase(quizValue.quizName.toLowerCase())}-${kebabCase(question.title.toLowerCase())}`] =
-              utils.validateFormBlock(question, QuestionSchema)
-
-            for (const answer of Object.values(question.answers)) {
-              errors[`${kebabCase(quizValue.quizName.toLowerCase())}-${kebabCase(question.title.toLowerCase())}-${kebabCase(answer.title.toLowerCase())}`] =
-                utils.validateFormBlock(answer, AnswerSchema)
-            }
-          }
-        }
-      }
-
-      if (utils.isTrue(errors) && Object.keys(errors).length > 0) {
-
-        let acc = [] as React.ReactNodeArray;
-
-        for (const [eKey, eVal] of Object.entries(errors)) {
-          if (typeof eVal === "string") {
-            acc.push(<>{eVal} <br/></>);
-          } else if (Object.keys(eVal).length && Object.keys(eVal).length > 0) {
-            Object.values(eVal).forEach(val => acc.push(<>{eKey} - {val} <br/></>));
-          }
-        }
-
-        if (acc.length > 0) {
-          await message.error(Object.values(acc).map(x => x));
-          return;
-        }
-      }
-
-      setState({...state, currentStep: state.currentStep + 1});
-    };
 
     const prev = () => {
       setState({...state, currentStep: state.currentStep - 1});
@@ -289,14 +222,14 @@ export const WizardSteps = ({
       const [step1, step2] = steps;
 
       setTimeout(() => {
-       if (step1) {
-         step1.content = {
-           id,
-           title,
-           description,
-           errors: {},
-         }
-       }
+        if (step1) {
+          step1.content = {
+            id,
+            title,
+            description,
+            errors: {},
+          }
+        }
 
         const backendData = [
           {

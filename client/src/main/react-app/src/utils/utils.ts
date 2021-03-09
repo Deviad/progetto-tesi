@@ -268,9 +268,9 @@ const utils = (function () {
         path: string }
 
     function validateFormInput<T extends unknown>({objectToValidate, schema, value, path}: ValidateFormInputType<T>): IFormError {
-        const copy = cloneDeep(objectToValidate);
+        const copy = objectToValidate.errors ? cloneDeep(objectToValidate.errors) : {};
 
-        let errors = {};
+        let errors: IFormError = {};
 
         if ((value as React.SyntheticEvent<HTMLInputElement>).target && typeof (value as React.ChangeEvent<HTMLInputElement>).target.value !== undefined) {
             copy[path] = utils.stripHtmlTags( (value as React.ChangeEvent<HTMLInputElement>).target.value)
@@ -292,16 +292,14 @@ const utils = (function () {
 
                 //Daca acum user-ul a introdus un sir fara erori atunci scoatem eroarile din stare lui step2.
 
-                objectToValidate.errors = omit(objectToValidate.errors, path);
+               return omit(objectToValidate.errors, path);
             }
 
-        } else {
-
-            const previousErrors = objectToValidate.errors ? objectToValidate.errors : {};
-
-            errors = {...previousErrors, [path]: errorsMap[path]};
-
         }
+        const previousErrors = objectToValidate.errors ? objectToValidate.errors : {};
+        const newError = errorsMap[path] ? {[path]: errorsMap[path]} : {}
+
+        errors = {...previousErrors, ...newError};
 
         return errors;
     }
