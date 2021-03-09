@@ -262,7 +262,11 @@ const utils = (function () {
         return acc;
     }
 
-    type ValidateFormInputType<T> =  { objectToValidate: { [key: string]: any, errors: Nullable<IFormError> }, schema: any, value: T, path: string }
+    type ValidateFormInputType<T> =  {
+        objectToValidate: { [key: string]: any, errors: Nullable<IFormError> },
+        schema: any,
+        value: T,
+        path: string }
 
     function validateFormInput<T extends unknown>({objectToValidate, schema, value, path}: ValidateFormInputType<T>) {
         const copy = cloneDeep(objectToValidate);
@@ -273,7 +277,7 @@ const utils = (function () {
             copy[path] = utils.stripHtmlTags( (value as string));
         }
 
-        let errorsMap;
+        let errorsMap: IFormError = {};
 
         try {
             errorsMap = utils.validateBySchema(copy, schema, path);
@@ -297,8 +301,7 @@ const utils = (function () {
                 objectToValidate.errors = {};
             }
 
-
-            if(errorsMap && errorsMap[path]) {
+            if(errorsMap[path]) {
                 objectToValidate.errors = {...objectToValidate.errors, [path]: errorsMap[path]};
             }
 
