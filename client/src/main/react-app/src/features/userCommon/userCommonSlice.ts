@@ -1,13 +1,13 @@
 import {createSlice, Dispatch, PayloadAction} from '@reduxjs/toolkit'
 
 import {AppThunk} from "../../app/store";
-import {AuthorizationResponse, PagePathName, UserState} from "../../types";
+import {IAuthorizationResponse, PagePathName, IUserState} from "../../types";
 import {utils} from "../../utils";
 import * as H from 'history';
 import {getAppFailure, getAppLoading} from '../../app/appSharedSlice';
 import {notification} from "antd";
 
-export const userInitialState: UserState = {
+export const userInitialState: IUserState = {
     username: null,
     email: null,
     expirationTime: null,
@@ -26,7 +26,7 @@ const user = createSlice({
     name: 'user',
     initialState: userInitialState,
     reducers: {
-        getUserSuccess(state, {payload}: PayloadAction<UserState>) {
+        getUserSuccess(state, {payload}: PayloadAction<IUserState>) {
             const {
                 username,
                 email,
@@ -63,7 +63,7 @@ export const {
 export default user.reducer
 
 export const fetchUser = (
-    user: UserState,
+    user: IUserState,
     history: H.History
 ): AppThunk => async (dispatch: Dispatch) => {
 
@@ -79,7 +79,7 @@ export const fetchUser = (
 }
 
 
-const handleLocalAuth = (user: UserState): Promise<UserState> => {
+const handleLocalAuth = (user: IUserState): Promise<IUserState> => {
 
     if (user.email != null) {
         return Promise.resolve(user);
@@ -113,11 +113,11 @@ const handleLocalAuth = (user: UserState): Promise<UserState> => {
             throw new Error(JSON.stringify(res));
         })
         .then(res => (res as Response).json())
-        .then((auth: AuthorizationResponse) => {
+        .then((auth: IAuthorizationResponse) => {
             const result = utils.getUserStateFromAuthResponse(auth);
             console.log('Request succeeded with JSON response', auth);
             utils.storage.setItem("auth_res", JSON.stringify(auth));
-            return result as UserState;
+            return result as IUserState;
         })
         .catch(error => {
             console.log('Request failed', error);

@@ -2,31 +2,31 @@ import {AjvError} from "@rjsf/core";
 
 export type Nullable<T> = T | undefined | null;
 
-export interface EroareDeBaza extends AjvError {
+export interface IEroareDeBaza extends AjvError {
     message: string,
     property: string,
 }
 
 
-export interface EroareLipseste extends EroareDeBaza {
+export interface IEroareLipseste extends IEroareDeBaza {
     name: "required"
 }
 
-export interface EroareDeLimita extends EroareDeBaza {
+export interface IEroareDeLimita extends IEroareDeBaza {
     name: "minLength",
     params: {
         limit: number
     }
 }
 
-export interface EroareDePattern extends EroareDeBaza {
+export interface IEroareDePattern extends IEroareDeBaza {
     name: "pattern",
     params: {
         pattern: string;
     }
 }
 
-export type EroareGeneric<T> = T extends EroareLipseste | EroareDeLimita | EroareDePattern ? AjvError : AjvError;
+export type EroareGeneric<T> = T extends IEroareLipseste | IEroareDeLimita | IEroareDePattern ? AjvError : AjvError;
 
 
 export enum MediaType {
@@ -58,7 +58,7 @@ export type HttpPostReqParams = {
 
 export type HttpPutReqParams = HttpPostReqParams;
 
-export interface UserState extends User {
+export interface IUserState extends IUser {
     issuedAt: Nullable<number>;
     expiresAt: Nullable<number>;
     refreshExpirationTime: Nullable<number>;
@@ -77,7 +77,7 @@ type Address = {
     country: string;
 }
 
-export interface UseProfileFormData {
+export interface IUseProfileFormData {
     firstName: string;
     lastName: string;
     username: string;
@@ -86,18 +86,18 @@ export interface UseProfileFormData {
 }
 
 
-export interface SharedState {
+export interface ISharedState {
     isLoading: boolean,
     error: Nullable<string>;
     currentPage: Nullable<string>;
 }
 
-export interface User {
+export interface IUser {
     username: Nullable<string>,
     email: Nullable<string>,
 }
 
-export interface AuthorizationResponse {
+export interface IAuthorizationResponse {
     access_token: string;
     expires_in: number;
     id_token: string;
@@ -142,7 +142,7 @@ export interface AuthorizationResponse {
     sub: "fafd791f-ec63-4250-8659-8be9221b088d"
     typ: "Bearer"
 */
-export interface AccessToken {
+export interface IAccessToken {
     acr: number;
     "allow-origins": string[],
     aud: string;
@@ -192,59 +192,47 @@ export enum PagePathName {
     DASHBOARD = "/dashboard"
 }
 
-export interface Lesson {
+export type IFormError = Record<string, any>;
+
+export interface ILesson {
     id: string,
     lessonName: string,
     lessonContent: string,
     type: "new" | "existing"
-    modified?: boolean,
-    deleted?: boolean,
-    errors?: FormError;
+    modified: Nullable<boolean>,
+    deleted: Nullable<boolean>,
+    errors: Nullable<IFormError>;
 }
 
-
-export type FormError = Record<string, any>;
-
-export interface Question {
+export interface IQuestion {
     id: string,
     title: string,
-    modified?: boolean,
-    deleted?: false,
-    answers: Record<string, Answer>
-    errors: FormError,
+    modified: Nullable<boolean>,
+    deleted: Nullable<boolean>,
+    answers: Record<string, IAnswer>
+    errors: IFormError,
+    type: "new" | "existing"
 }
 
-export interface Quiz {
+export interface IQuiz {
     id: string,
     quizName: string,
     quizContent: string,
     type: "new" | "existing"
-    modified?: boolean,
-    deleted?: boolean,
-    questions: Record<string, Question>
-    errors: FormError,
+    modified: Nullable<boolean>,
+    deleted: Nullable<boolean>,
+    questions: Record<string, IQuestion>
+    errors: IFormError,
 }
 
-
-export interface Test {
-    id: string,
-    quizName: string,
-    quizContent: string,
-    type: "new" | "existing",
-    deleted?: boolean,
-    modified?: boolean,
-    newQuestion: Question,
-    questions: Record<string, Question>,
-}
-
-
-export interface Answer {
+export interface IAnswer {
     id: string;
     title: string;
     value: boolean;
-    modified?: boolean,
-    deleted?: boolean,
-    errors: FormError,
+    type: "new" | "existing"
+    modified: Nullable<boolean>,
+    deleted: Nullable<boolean>,
+    errors: IFormError,
 }
 
 

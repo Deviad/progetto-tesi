@@ -26,9 +26,11 @@ export function newDefaultQuizAdded(setState: Function) {
                                 title: "Completeaza",
                                 modified: false,
                                 deleted: false,
+                                type: "new",
                                 errors: {},
                             }
                         },
+                        type: "new",
                         errors: {},
                     }
                 },

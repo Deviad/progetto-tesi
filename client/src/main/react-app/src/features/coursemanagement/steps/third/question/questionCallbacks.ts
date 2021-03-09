@@ -54,10 +54,13 @@ export const addQuestion = (quizId: string, questionId: string, state: WizardSte
                         title: "Completeaza",
                         modified: false,
                         deleted: false,
+                        type: "new",
                         errors: {},
                     }
                 },
+                type: "new",
                 errors: {},
+                deleted: false,
             }
         }));
     }

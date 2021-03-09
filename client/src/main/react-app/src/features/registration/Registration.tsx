@@ -12,7 +12,7 @@ import {
     registrationUiSchema,
     USER_ENDPOINT
 } from "../../constants";
-import {EroareDeLimita, EroareDePattern, EroareGeneric, MediaType, PagePathName} from "../../types";
+import {IEroareDeLimita, IEroareDePattern, EroareGeneric, MediaType, PagePathName} from "../../types";
 // @ts-ignore
 import {Theme as AntDTheme} from '@rjsf/antd';
 import * as H from 'history';
@@ -36,9 +36,9 @@ const schimbaMesajDeEroare = <T extends unknown>(key: string, error: EroareGener
 
     const map = {
         "required": `${proprietati[error.property]} este un camp obligator`,
-        "minLength": `${proprietati[error.property]} trebuie sa contina cel putin ${(error as EroareDeLimita).params.limit} caractere`,
-        "pattern[a-zA-Z ]+": `${proprietati[(error as EroareDePattern).property]} poate contine doar litere`,
-        "pattern[a-z]+": `${proprietati[(error as EroareDePattern).property]} poate contine doar litere`,
+        "minLength": `${proprietati[error.property]} trebuie sa contina cel putin ${(error as IEroareDeLimita).params.limit} caractere`,
+        "pattern[a-zA-Z ]+": `${proprietati[(error as IEroareDePattern).property]} poate contine doar litere`,
+        "pattern[a-z]+": `${proprietati[(error as IEroareDePattern).property]} poate contine doar litere`,
         [`pattern${emailPattern}`]: "Adresa de mail nu este valida",
         [`pattern${passwordPattern}`]:
             `parola trebuie sa aiba o lungime de cel 

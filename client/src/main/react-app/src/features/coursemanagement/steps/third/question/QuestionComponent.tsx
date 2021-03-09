@@ -4,7 +4,7 @@ import Text from "antd/es/typography/Text";
 import {MinusCircleOutlined, PlusCircleOutlined} from "@ant-design/icons";
 import {addQuestion, removedQuestion} from "./questionCallbacks";
 import {WizardStepsState} from "../../../WizardSteps";
-import {Answer} from "../../../../../types";
+import {IAnswer} from "../../../../../types";
 import {addAnswer, changeAnswerTitle, changeAnswerValue, removeAnswer} from "../answer/answerCallbacks";
 import {AnswerComponent} from "../answer";
 import {DangerText} from "../../../../common/DangerText";
@@ -12,7 +12,7 @@ import {DangerText} from "../../../../common/DangerText";
 
 export const QuestionComponent: FC<{
     state: WizardStepsState, setState: Function,
-    answers: Record<string, Answer>,
+    answers: Record<string, IAnswer>,
     title: string,
     id: string
     quizId: string,

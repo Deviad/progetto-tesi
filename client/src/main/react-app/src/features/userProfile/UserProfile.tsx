@@ -1,15 +1,15 @@
 import React, {RefObject, useCallback, useEffect, useRef, useState} from "react";
 import {useDispatch, useSelector} from 'react-redux';
 import {
-    EroareDeLimita,
-    EroareDePattern,
+    IEroareDeLimita,
+    IEroareDePattern,
     EroareGeneric,
     MediaType,
     Nullable,
     PageSlug,
-    UseProfileFormData,
-    User,
-    UserState
+    IUseProfileFormData,
+    IUser,
+    IUserState
 } from "../../types";
 import {RootState} from "../../app/rootReducer";
 import {Avatar, Button, Col, Row, Typography} from "antd";
@@ -43,8 +43,8 @@ const firstLetter = (arg: string) => {
 const schimbaMesajDeEroare = <T extends unknown>(key: string, error: EroareGeneric<T>) => {
     const map = {
         "required": `${proprietati[error.property]} este un camp obligator`,
-        "minLength": `${proprietati[error.property]} trebuie sa contina cel putin ${(error as EroareDeLimita).params.limit} caractere`,
-        "pattern[a-zA-Z]+": `${proprietati[(error as EroareDePattern).property]} poate contine doar litere`,
+        "minLength": `${proprietati[error.property]} trebuie sa contina cel putin ${(error as IEroareDeLimita).params.limit} caractere`,
+        "pattern[a-zA-Z]+": `${proprietati[(error as IEroareDePattern).property]} poate contine doar litere`,
         [`pattern${emailPattern}`]: "Adresa de mail nu este valida",
         [`pattern${passwordPattern}`]:
             `parola trebuie sa aiba o lungime de cel 
@@ -85,7 +85,7 @@ export const handleGetUserData = async (accessToken: Nullable<string>, username:
         throw new Error("you are not logged in");
     }
 
-    return await httpGet<UseProfileFormData>({
+    return await httpGet<IUseProfileFormData>({
         url: `${BASE_URL}${USER_ENDPOINT}/${username}`,
         headers: {
             "Authorization": `Bearer ${accessToken}`,
@@ -93,7 +93,7 @@ export const handleGetUserData = async (accessToken: Nullable<string>, username:
     });
 }
 
-export const userProfileInitialState: UseProfileFormData = {
+export const userProfileInitialState: IUseProfileFormData = {
     username: "",
     lastName: "",
     firstName: "",
@@ -106,7 +106,7 @@ export const userProfileInitialState: UseProfileFormData = {
     }
 }
 
-async function getData(dispatch: Dispatch<any>, setFData: Function, user: UserState) {
+async function getData(dispatch: Dispatch<any>, setFData: Function, user: IUserState) {
     const {body, status} = await handleGetUserData(user.accessToken, user.username);
     if (body && !status) {
         console.log(body);
@@ -119,7 +119,7 @@ async function getData(dispatch: Dispatch<any>, setFData: Function, user: UserSt
     }
 }
 
-const onSubmit = (dispatch: Dispatch<any>, setFData: Function, setDisabled: Function, user: UserState) => (form: FormProps<any>) => {
+const onSubmit = (dispatch: Dispatch<any>, setFData: Function, setDisabled: Function, user: IUserState) => (form: FormProps<any>) => {
     dispatch(getAppLoading());
     httpPut({
         url: `${BASE_URL}${USER_ENDPOINT}`,

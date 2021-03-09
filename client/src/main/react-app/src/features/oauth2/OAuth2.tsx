@@ -6,7 +6,7 @@ import {utils} from "../../utils";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../app/rootReducer";
 import {fetchUser} from "../userCommon/userCommonSlice";
-import {Nullable, User} from "../../types";
+import {Nullable, IUser} from "../../types";
 import {Route, useHistory} from "react-router-dom";
 
 
@@ -27,7 +27,7 @@ const Authorization = () => {
 
 const Token = () => {
 
-    const cache = useRef<Nullable<User>>(null);
+    const cache = useRef<Nullable<IUser>>(null);
 
     const dispatch = useDispatch();
     const history = useHistory();

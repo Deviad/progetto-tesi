@@ -1,5 +1,5 @@
 import * as Cookies from "js-cookie";
-import {AccessToken, AuthorizationResponse, ErrorsMap, FormError, Nullable, PageSlug, UserState} from "../types";
+import {IAccessToken, IAuthorizationResponse, ErrorsMap, IFormError, Nullable, PageSlug, IUserState} from "../types";
 import jwtDecode from "jwt-decode";
 import {SchemaOf, string, ValidationError} from "yup";
 import {cloneDeep, omit, trim} from "lodash";
@@ -128,9 +128,9 @@ const utils = (function () {
         }
     })
 
-    const getUserStateFromAuthResponse = (auth: AuthorizationResponse) => {
-        const access: AccessToken = jwtDecode(auth.access_token);
-        const result: UserState = {
+    const getUserStateFromAuthResponse = (auth: IAuthorizationResponse) => {
+        const access: IAccessToken = jwtDecode(auth.access_token);
+        const result: IUserState = {
             email: access.email,
             expirationTime: auth.expires_in,
             expiresAt: access.exp,
@@ -146,11 +146,11 @@ const utils = (function () {
         return result;
     }
 
-    const decodeAuthResp = (serAuthResp: string): AuthorizationResponse => {
-        return JSON.parse(serAuthResp) as AuthorizationResponse;
+    const decodeAuthResp = (serAuthResp: string): IAuthorizationResponse => {
+        return JSON.parse(serAuthResp) as IAuthorizationResponse;
     }
 
-    const decodeAccessToken = (serAuthResp: string): AccessToken => {
+    const decodeAccessToken = (serAuthResp: string): IAccessToken => {
         const deserAuthResp = decodeAuthResp(serAuthResp);
 
         return jwtDecode(deserAuthResp.access_token);
@@ -262,7 +262,7 @@ const utils = (function () {
         return acc;
     }
 
-    type ValidateFormInputType<T> =  { objectToValidate: { [key: string]: any, errors?: FormError }, schema: any, value: T, path: string }
+    type ValidateFormInputType<T> =  { objectToValidate: { [key: string]: any, errors: Nullable<IFormError> }, schema: any, value: T, path: string }
 
     function validateFormInput<T extends unknown>({objectToValidate, schema, value, path}: ValidateFormInputType<T>) {
         const copy = cloneDeep(objectToValidate);
@@ -283,12 +283,6 @@ const utils = (function () {
             return;
         }
         if (Object.keys(errorsMap).length === 0) {
-
-            //TODO : verify why I need to make it writable.
-
-            // Object.defineProperty(errorsMap, 'errors', {
-            //     writable: true,
-            // });
 
             if (objectToValidate.errors && objectToValidate.errors[path]) {
 
@@ -311,7 +305,7 @@ const utils = (function () {
         }
     }
 
-    const validateFormBlock = (objectToValidate: { [key: string]: any, errors?: FormError }, schema: any) => {
+    const validateFormBlock = (objectToValidate: { [key: string]: any, errors: Nullable<IFormError> }, schema: any) => {
         const copy = cloneDeep(objectToValidate);
 
         return utils.validateBySchema(stripHtmlFromAttributes(copy), schema);

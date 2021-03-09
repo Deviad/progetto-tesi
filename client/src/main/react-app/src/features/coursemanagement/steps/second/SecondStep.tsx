@@ -7,7 +7,7 @@ import {WizardStepsState} from "../../WizardSteps";
 import {lessonContentChanged, lessonDataAdded, lessonDataRemoved, lessonNameChangeChanged} from "./secondStepCallbacks";
 import {utils} from "../../../../utils";
 import {DangerText} from "../../../common/DangerText";
-import {FormError} from "../../../../types";
+import {IFormError} from "../../../../types";
 import "../../../../utils/yupConfig";
 
 const {Panel} = Collapse;
@@ -15,7 +15,7 @@ const {Panel} = Collapse;
 export const renderLessons = (state: WizardStepsState, setState: Function) => {
     const [, step2,] = state.steps;
 
-    if (Object.keys(step2.lessons).length == 0) {
+    if (Object.keys(step2.lessons).length === 0) {
         return <div>Nu ai lectile existente</div>
     } else {
         return Object.entries(step2.lessons).map(([k, l]: [string, any]) => (
@@ -31,8 +31,8 @@ export const renderLessons = (state: WizardStepsState, setState: Function) => {
                     style={{marginBottom: "0.5rem"}}
                     onChange={lessonNameChangeChanged({state, setState, id: k})}
                 />
-                {(step2.lessons[k].errors && utils.isTrue((step2.lessons[k].errors as FormError)["lessonName"])) &&
-                <DangerText>{(step2.lessons[k].errors as FormError)["lessonName"]}</DangerText>}
+                {(step2.lessons[k].errors && utils.isTrue((step2.lessons[k].errors as IFormError)["lessonName"])) &&
+                <DangerText>{(step2.lessons[k].errors as IFormError)["lessonName"]}</DangerText>}
 
                 <Typography style={{marginBottom: "0.5rem"}}>
                     <Text style={{fontWeight: "bold"}}>
@@ -42,8 +42,8 @@ export const renderLessons = (state: WizardStepsState, setState: Function) => {
                 <ReactQuill style={{background: "#fff"}} value={l.lessonContent}
                             onChange={lessonContentChanged({state, setState, id: k})}
                 />
-                {(step2.lessons[k].errors && utils.isTrue((step2.lessons[k].errors as FormError)["lessonContent"])) &&
-                <DangerText>{(step2.lessons[k].errors as FormError)["lessonContent"]}</DangerText>}
+                {(step2.lessons[k].errors && utils.isTrue((step2.lessons[k].errors as IFormError)["lessonContent"])) &&
+                <DangerText>{(step2.lessons[k].errors as IFormError)["lessonContent"]}</DangerText>}
                 <br/>
                 <Button type="primary" danger
                         onClick={lessonDataRemoved({state, setState, id: k})}

@@ -1,4 +1,4 @@
-import {SharedState} from "../types";
+import {ISharedState} from "../types";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 
@@ -9,25 +9,25 @@ export const sharedInitialState = {
 }
 
 
-function startLoading(state: SharedState) {
+function startLoading(state: ISharedState) {
     state.isLoading = true
 }
 
-function stopLoading(state: SharedState) {
+function stopLoading(state: ISharedState) {
     state.isLoading = true
 }
 
-function loadingFailed(state: SharedState, action: PayloadAction<string>) {
+function loadingFailed(state: ISharedState, action: PayloadAction<string>) {
     state.isLoading = false
     state.error = action.payload
 }
 
-function clearState(state: SharedState) {
+function clearState(state: ISharedState) {
     state.isLoading = false
     state.error = null
 }
 
-function setCurrentPage(state: SharedState, action: PayloadAction<string>) {
+function setCurrentPage(state: ISharedState, action: PayloadAction<string>) {
     state.currentPage = action.payload;
 }
 

@@ -2,7 +2,7 @@ import React, {ChangeEvent, FC} from "react";
 import {Col, Input, Radio, Row} from "antd";
 import {RadioChangeEvent} from "antd/lib/radio/interface";
 import {MinusCircleOutlined, PlusCircleOutlined} from "@ant-design/icons";
-import {FormError} from "../../../../../types";
+import {IFormError} from "../../../../../types";
 import {DangerText} from "../../../../common/DangerText";
 
 
@@ -13,7 +13,7 @@ export const AnswerComponent: FC<{
     changeValue: (e: RadioChangeEvent) => void,
     changeTitle: (e: ChangeEvent<HTMLInputElement>) => void,
     addAnswer: React.MouseEventHandler<HTMLElement>,
-    errors: FormError
+    errors: IFormError
     removeAnswer: React.MouseEventHandler<HTMLElement>,
 }> = (props) => {
 

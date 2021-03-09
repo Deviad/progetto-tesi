@@ -1,7 +1,7 @@
 import {Button, message, Modal, Steps} from 'antd';
 import {useState} from "reinspect";
 import React, {useEffect} from "react";
-import {Lesson, Nullable, Quiz} from '../../types';
+import {ILesson, Nullable, IQuiz} from '../../types';
 import {ThirdStep} from './steps/third';
 import {FirstStep} from "./steps/first";
 import {SecondStep} from "./steps/second/SecondStep";
@@ -16,7 +16,7 @@ export interface RipetiStep {
 
 }
 
-export interface NewLesson extends Lesson {
+export interface NewLesson extends ILesson {
   type: "new";
   deleted: boolean;
   modified: boolean;
@@ -41,13 +41,13 @@ export interface RipetiStep1 extends RipetiStep {
 export interface RipetiStep2 extends RipetiStep {
   title: string;
   newLesson: NewLesson
-  lessons: Record<string, Lesson>;
+  lessons: Record<string, ILesson>;
 
 }
 
 export interface RipetiStep3 extends RipetiStep {
   title: string;
-  quizzes: Record<string, Quiz>;
+  quizzes: Record<string, IQuiz>;
 }
 
 const {Step} = Steps;
@@ -74,7 +74,7 @@ const steps: [RipetiStep1, RipetiStep2, RipetiStep3] = [
       modified: false,
       errors: {},
     },
-    lessons: {} as Record<string, Lesson>,
+    lessons: {} as Record<string, ILesson>,
 
   },
 
@@ -97,11 +97,13 @@ const steps: [RipetiStep1, RipetiStep2, RipetiStep3] = [
                 modified: false,
                 deleted: false,
                 errors: {},
+                type: "existing",
               }
             },
             modified: false,
             deleted: false,
             errors: {},
+            type: "existing",
           }
         },
         quizContent: "",
@@ -125,19 +127,22 @@ const steps: [RipetiStep1, RipetiStep2, RipetiStep3] = [
                 modified: false,
                 deleted: false,
                 errors: {},
+                type: "existing",
               }
             },
             modified: false,
             deleted: false,
-            errors: {}
+            errors: {},
+            type: "existing",
           }
         },
         quizContent: "",
         quizName: "sadsadsa",
         type: "existing",
-        errors: {}
+        errors: {},
+
       }
-    } as Record<string, Quiz>,
+    } as Record<string, IQuiz>,
   },
 ];
 
@@ -212,7 +217,7 @@ export const WizardSteps = ({
         errors = utils.validateFormBlock(state.steps[state.currentStep].content, FirstStepSchema);
 
       } else if (state.currentStep === 1) {
-        for (const [, lesson] of Object.entries((state.steps[1].lessons as Record<string, Lesson>))) {
+        for (const [, lesson] of Object.entries((state.steps[1].lessons as Record<string, ILesson>))) {
           if (usedNames.some(l => l === kebabCase(lesson.lessonName.toLowerCase()))) {
             message.error("Nu poti avea 2 lecti cu aceasi denumire");
             return;
@@ -222,19 +227,19 @@ export const WizardSteps = ({
 
         }
       }
+
+      //TODO: verify that the same name is not used twice as I did for step 2 (step[1]).
       else if (state.currentStep === 2) {
-        for (const quizValue of Object.values(state.steps[2].quizzes as Record<string, Quiz>)) {
+        for (const quizValue of Object.values(state.steps[2].quizzes as Record<string, IQuiz>)) {
           errors[kebabCase(quizValue.quizName.toLowerCase())] = utils.validateFormBlock(quizValue, QuizSchema);
           for (const question of Object.values(quizValue.questions)) {
             errors[`${kebabCase(quizValue.quizName.toLowerCase())}-${kebabCase(question.title.toLowerCase())}`] =
               utils.validateFormBlock(question, QuestionSchema)
 
             for (const answer of Object.values(question.answers)) {
-
               errors[`${kebabCase(quizValue.quizName.toLowerCase())}-${kebabCase(question.title.toLowerCase())}-${kebabCase(answer.title.toLowerCase())}`] =
                 utils.validateFormBlock(answer, QuestionSchema)
             }
-
           }
         }
       }
@@ -319,7 +324,7 @@ export const WizardSteps = ({
         // enrichment phase: faza unde adaug niste proprietati suplimentare pe lectile ca
         // sa pot efectua operatiunile relative mai usor.
 
-        step2.lessons = backendData.reduce((acc: Record<string, Lesson>, curr: Record<string, any>) => {
+        step2.lessons = backendData.reduce((acc: Record<string, ILesson>, curr: Record<string, any>) => {
           acc[curr.id] = {
             id: curr.id,
             lessonName: curr.lessonName,
@@ -327,9 +332,10 @@ export const WizardSteps = ({
             type: "existing",
             deleted: false,
             modified: false,
+            errors: {},
           }
           return acc;
-        }, {} as Record<string, Lesson>)
+        }, {} as Record<string, ILesson>)
 
         setState({...state, steps});
       }, 2000);

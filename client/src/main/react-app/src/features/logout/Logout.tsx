@@ -3,7 +3,7 @@ import React, {useEffect} from "react";
 import {useHistory} from "react-router-dom";
 import {httpGet} from "../../httpClient";
 import {BASE_URL, USER_ENDPOINT} from "../../constants";
-import {PagePathName, PageSlug, UseProfileFormData} from "../../types";
+import {PagePathName, PageSlug, IUseProfileFormData} from "../../types";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../app/rootReducer";
 import {utils} from "../../utils";
@@ -22,7 +22,7 @@ export const Logout = () => {
         const logout = async () => {
             dispatch(getSetCurrentPage(PageSlug.LOGOUT))
 
-            await httpGet<UseProfileFormData>({
+            await httpGet<IUseProfileFormData>({
                 url: `${BASE_URL}${USER_ENDPOINT}/logout`,
                 headers: {
                     "Authorization": `Bearer ${accessToken}`,
