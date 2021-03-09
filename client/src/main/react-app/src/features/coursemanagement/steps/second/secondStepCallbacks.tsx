@@ -131,14 +131,14 @@ type LessonDataAddedProps = {
   setState: Function;
 }
 
-type LessonDataAdded = (props: LessonDataAddedProps) => (event: React.MouseEvent<HTMLElement>) => void;
+type LessonDataAdded = (props: LessonDataAddedProps) => (event: React.MouseEvent<HTMLElement>) => Promise<void>;
 
 export const lessonDataAdded: LessonDataAdded =
-  ({state, setState}) => (event) => {
+  ({state, setState}) => async (event) => {
     const errors = utils.validateFormBlock(state.steps[1].newLesson, SecondStepSchema);
 
     if (Object.keys(errors).length > 0) {
-      message.error(Object.values(errors).map(x => <>{x} <br/></>));
+      await message.error(Object.values(errors).map(x => <>{x} <br/></>));
       return;
     }
 

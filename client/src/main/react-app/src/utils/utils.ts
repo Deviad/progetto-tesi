@@ -278,14 +278,13 @@ const utils = (function () {
             copy[path] = utils.stripHtmlTags( (value as string));
         }
 
-        let errorsMap;
+        let errorsMap: IFormError = {};
 
         try {
             errorsMap = utils.validateBySchema(copy, schema, path);
         } catch (error) {
             console.log(error);
             message.error(error.message);
-            return {};
         }
         if (Object.keys(errorsMap).length === 0) {
 

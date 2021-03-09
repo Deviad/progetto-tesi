@@ -75,10 +75,10 @@ export const addAnswer = (quizId: string, questionId: string, state: WizardSteps
     }));
   }
 export const removeAnswer = (quizId: string, questionId: string, answerId: string, state: WizardStepsState, setState: Function) =>
-  (evt: React.MouseEvent<HTMLElement>) => {
+  async (evt: React.MouseEvent<HTMLElement>) => {
 
     if ((Object.keys(state.steps[2]?.quizzes[quizId]?.questions[questionId]?.answers) || {}).length === 1) {
-      message.error('Trebuie sa fie cel putin un raspuns');
+      await message.error('Trebuie sa fie cel putin un raspuns');
     } else {
       setState(produce((draft: WizardStepsState) => {
 

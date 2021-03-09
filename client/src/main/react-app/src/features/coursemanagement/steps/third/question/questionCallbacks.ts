@@ -65,10 +65,10 @@ export const addQuestion = (quizId: string, questionId: string, state: WizardSte
         }));
     }
 export const removedQuestion = (quizId: string, questionId: string, state: WizardStepsState, setState: Function) =>
-    (evt: React.MouseEvent<HTMLElement>) => {
+    async (evt: React.MouseEvent<HTMLElement>) => {
 
         if ((Object.keys(state.steps[2]?.quizzes[quizId]?.questions || {})).length === 1) {
-            message.error('Trebuie sa fie cel putin o intrebare');
+            await message.error('Trebuie sa fie cel putin o intrebare');
         } else {
             setState(produce((draft: WizardStepsState) => {
                 const questions = draft

@@ -11,6 +11,7 @@ import {FirstStepSchema} from "./steps/first/firstStepCallbacks";
 import {kebabCase} from "lodash";
 import {QuizSchema} from "./steps/third/quiz/quizCallbacks";
 import {QuestionSchema} from "./steps/third/question/questionCallbacks";
+import {AnswerSchema} from "./steps/third/answer/answerCallbacks";
 
 export interface RipetiStep {
 
@@ -211,7 +212,7 @@ export const WizardSteps = ({
 
     const setState = useCallback((state: any)=> mutableSetState(state), []);
 
-    const next = () => {
+    const next = async () => {
 
 
       const usedNames: string[] = [];
@@ -223,7 +224,7 @@ export const WizardSteps = ({
       } else if (state.currentStep === 1) {
         for (const [, lesson] of Object.entries((state.steps[1].lessons as Record<string, ILesson>))) {
           if (usedNames.some(l => l === kebabCase(lesson.lessonName.toLowerCase()))) {
-            message.error("Nu poti avea 2 lecti cu aceasi denumire");
+            await message.error("Nu poti avea 2 lecti cu aceasi denumire");
             return;
           }
           errors[kebabCase(lesson.lessonName.toLowerCase())] = utils.validateFormBlock(lesson, SecondStepSchema);
@@ -242,7 +243,7 @@ export const WizardSteps = ({
 
             for (const answer of Object.values(question.answers)) {
               errors[`${kebabCase(quizValue.quizName.toLowerCase())}-${kebabCase(question.title.toLowerCase())}-${kebabCase(answer.title.toLowerCase())}`] =
-                utils.validateFormBlock(answer, QuestionSchema)
+                utils.validateFormBlock(answer, AnswerSchema)
             }
           }
         }
@@ -261,7 +262,7 @@ export const WizardSteps = ({
         }
 
         if (acc.length > 0) {
-          message.error(Object.values(acc).map(x => x));
+          await message.error(Object.values(acc).map(x => x));
           return;
         }
       }
