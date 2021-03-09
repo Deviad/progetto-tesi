@@ -16,12 +16,12 @@ export const onTitleChange = (state: WizardStepsState, setState: Function) => (e
 
     const [step1] = state.steps;
 
-
-    utils.validateFormInput({
+    step1.content.errors = utils.validateFormInput({
         objectToValidate: step1.content,
         schema: FirstStepSchema,
         value: e,
-        path: "title"});
+        path: "title"
+    });
 
     step1.content = {...step1.content, title: e.target.value}
 

@@ -40,15 +40,14 @@ export const changeAnswerTitle = (quizId: string, questionId: string, answerId: 
         .questions[questionId]
         .answers[answerId];
 
-      utils.validateFormInput({
+      answer.title = evt.target.value;
+      answer.modified = true;
+      answer.errors = utils.validateFormInput({
         objectToValidate: answer,
         schema: AnswerSchema,
         value: evt.target.value,
         path: "title"
       });
-
-      answer.title = evt.target.value;
-      answer.modified = true;
     }));
   }
 

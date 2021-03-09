@@ -1,6 +1,6 @@
 import {Button, message, Modal, Steps} from 'antd';
 import {useState} from "reinspect";
-import React, {useEffect} from "react";
+import React, {useCallback, useEffect} from "react";
 import {ILesson, Nullable, IQuiz} from '../../types';
 import {ThirdStep} from './steps/third';
 import {FirstStep} from "./steps/first";
@@ -203,12 +203,16 @@ export const WizardSteps = ({
                               modalVisible,
                               toggleModal
                             }: { id: string, title: string, content: string, modalVisible: boolean, toggleModal: Function }) => {
-    const [state, setState] = useState({
+    const [state, mutableSetState] = useState({
       steps: ([] as Record<string, any>[]),
       currentStep: 0
     }, 'wizard-steps');
 
+
+    const setState = useCallback((state: any)=> mutableSetState(state), []);
+
     const next = () => {
+
 
       const usedNames: string[] = [];
 

@@ -1,10 +1,9 @@
 import * as Cookies from "js-cookie";
-import {IAccessToken, IAuthorizationResponse, ErrorsMap, IFormError, Nullable, PageSlug, IUserState} from "../types";
+import {ErrorsMap, IAccessToken, IAuthorizationResponse, IFormError, IUserState, Nullable, PageSlug} from "../types";
 import jwtDecode from "jwt-decode";
-import {SchemaOf, string, ValidationError} from "yup";
+import {SchemaOf, ValidationError} from "yup";
 import {cloneDeep, omit, trim} from "lodash";
-import {SecondStepSchema} from "../features/coursemanagement/steps/second/secondStepCallbacks";
-import React, {SyntheticEvent} from "react";
+import React from "react";
 import {message} from "antd";
 
 const utils = (function () {
@@ -268,8 +267,10 @@ const utils = (function () {
         value: T,
         path: string }
 
-    function validateFormInput<T extends unknown>({objectToValidate, schema, value, path}: ValidateFormInputType<T>) {
+    function validateFormInput<T extends unknown>({objectToValidate, schema, value, path}: ValidateFormInputType<T>): IFormError {
         const copy = cloneDeep(objectToValidate);
+
+        let errors = {};
 
         if ((value as React.SyntheticEvent<HTMLInputElement>).target && typeof (value as React.ChangeEvent<HTMLInputElement>).target.value !== undefined) {
             copy[path] = utils.stripHtmlTags( (value as React.ChangeEvent<HTMLInputElement>).target.value)
@@ -277,14 +278,14 @@ const utils = (function () {
             copy[path] = utils.stripHtmlTags( (value as string));
         }
 
-        let errorsMap: IFormError = {};
+        let errorsMap;
 
         try {
             errorsMap = utils.validateBySchema(copy, schema, path);
         } catch (error) {
             console.log(error);
             message.error(error.message);
-            return;
+            return {};
         }
         if (Object.keys(errorsMap).length === 0) {
 
@@ -297,15 +298,13 @@ const utils = (function () {
 
         } else {
 
-            if (!objectToValidate.errors) {
-                objectToValidate.errors = {};
-            }
+            const previousErrors = objectToValidate.errors ? objectToValidate.errors : {};
 
-            if(errorsMap[path]) {
-                objectToValidate.errors = {...objectToValidate.errors, [path]: errorsMap[path]};
-            }
+            errors = {...previousErrors, [path]: errorsMap[path]};
 
         }
+
+        return errors;
     }
 
     const validateFormBlock = (objectToValidate: { [key: string]: any, errors: Nullable<IFormError> }, schema: any) => {

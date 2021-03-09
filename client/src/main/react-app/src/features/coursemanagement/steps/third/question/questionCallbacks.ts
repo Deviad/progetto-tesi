@@ -22,14 +22,14 @@ export const changeQuestionTitle = (quizId: string, questionId: string, state: W
                 .quizzes[quizId]
                 .questions[questionId]
 
-            utils.validateFormInput({
+            const errors = utils.validateFormInput({
                 objectToValidate: question,
                 schema: FirstStepSchema,
                 value: evt,
                 path: "title"});
-
             question.title = evt.target.value;
             question.modified = true;
+            question.errors = errors;
 
         }));
     }
