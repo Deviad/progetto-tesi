@@ -9,6 +9,7 @@ import lombok.SneakyThrows;
 import org.springframework.util.unit.DataSize;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Map;
 
 import static org.springframework.util.StringUtils.hasText;
@@ -38,10 +39,21 @@ public class MappingUtils {
     return hasText(jsonString) ? MAPPER.readValue(jsonString, toValueType) : null;
   }
 
+
+  @SneakyThrows(IOException.class)
+  public static <T> T fromByteArray(byte[] input, Class<T> toValueType) {
+    return (input != null && input.length > 0) ? MAPPER.readValue(input, toValueType) : null;
+  }
+
   /** Method to convert object data to json. */
   @SneakyThrows(JsonProcessingException.class)
   public static String toJson(Object data) {
     return data == null ? null : MAPPER.writeValueAsString(data);
+  }
+
+  @SneakyThrows(JsonProcessingException.class)
+  public static ByteBuffer toByteBuffer(Object data) {
+    return data == null ? null : ByteBuffer.wrap(MAPPER.writeValueAsBytes(data));
   }
 
   /** Method to convert object data to Map. */

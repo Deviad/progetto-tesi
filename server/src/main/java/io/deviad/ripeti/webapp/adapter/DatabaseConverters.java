@@ -3,6 +3,7 @@ package io.deviad.ripeti.webapp.adapter;
 import io.deviad.ripeti.webapp.domain.valueobject.course.CourseStatus;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
+import io.r2dbc.postgresql.codec.Json;
 import lombok.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -83,18 +85,18 @@ public class DatabaseConverters {
   }
 
   @WritingConverter
-  public class AddressToDbConverter implements Converter<Address, String> {
+  public class AddressToDbConverter implements Converter<Address, Json> {
     @Override
-    public String convert(Address address) {
-      return MappingUtils.toJson(address);
+    public Json convert(Address address) {
+      return Json.of( address.toString().getBytes(StandardCharsets.UTF_8));
     }
   }
 
   @ReadingConverter
-  public class AddressFromDbConverter implements Converter<String, Address> {
+  public class AddressFromDbConverter implements Converter<Json, Address> {
     @Override
-    public Address convert(String address) {
-      return MappingUtils.fromJson(address, Address.class);
+    public Address convert(Json address) {
+      return MappingUtils.fromJson(address.asString(), Address.class);
     }
   }
 }

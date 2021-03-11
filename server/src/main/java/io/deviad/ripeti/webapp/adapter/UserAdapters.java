@@ -23,17 +23,18 @@ public class UserAdapters {
       };
 
   public static UserInfoDto mapToUserInfo(UserAggregate u) {
-    return UserInfoDto.of(
-        u.username(),
-        u.email(),
-        u.firstName(),
-        u.lastName(),
-        u.role(),
-        Address.builder()
-            .firstAddressLine(u.address().firstAddressLine())
-            .secondAddressLine(u.address().secondAddressLine())
-            .city(u.address().city())
-            .country(u.address().country())
-            .build());
+   var result =  UserInfoDto.of(
+              u.username(),
+              u.email(),
+              u.firstName(),
+              u.lastName(),
+              u.role(),
+              Address.builder()
+                      .firstAddressLine(u.address().firstAddressLine())
+                      .secondAddressLine(u.address().secondAddressLine())
+                      .city(u.address().city())
+                      .country(u.address().country())
+                      .build());
+   return result;
   }
 }

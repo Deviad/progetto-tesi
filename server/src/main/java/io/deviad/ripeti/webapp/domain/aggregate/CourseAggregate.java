@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -28,7 +30,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CourseAggregate {
+public class CourseAggregate implements Persistable<UUID> {
 
   public static final String DOES_NOT_EXIST_YET =
       "You cannot assign a %s to a course that does not exist yet";
@@ -85,7 +87,26 @@ public class CourseAggregate {
         teacherId(),
         studentIds(),
         lessonIds(),
-        quizIds());
+        quizIds(),
+        newCourse());
+  }
+
+  @Transient private boolean newCourse;
+
+  @Override
+  public UUID getId() {
+    return id();
+  }
+
+  @Override
+  @Transient
+  public boolean isNew() {
+    return this.newCourse || id == null;
+  }
+
+  public CourseAggregate setAsNew() {
+    this.newCourse = true;
+    return this;
   }
 
   public CourseAggregate assignStudentToCourse(UUID student) {
@@ -127,7 +148,15 @@ public class CourseAggregate {
       throw new RuntimeException(String.format(DOES_NOT_EXIST_YET, "course"));
     }
     return new CourseAggregate(
-        id(), name, description(), status(), teacherId(), studentIds(), lessonIds(), quizIds());
+        id(),
+        name,
+        description(),
+        status(),
+        teacherId(),
+        studentIds(),
+        lessonIds(),
+        quizIds(),
+        newCourse());
   }
 
   public CourseAggregate changeCourseDescription(String description) {
@@ -142,7 +171,8 @@ public class CourseAggregate {
         teacherId(),
         studentIds(),
         lessonIds(),
-        quizIds());
+        quizIds(),
+        newCourse());
   }
 
   public CourseAggregate addQuizToCourse(UUID quiz) {

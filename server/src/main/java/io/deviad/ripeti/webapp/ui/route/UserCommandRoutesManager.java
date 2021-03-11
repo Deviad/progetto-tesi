@@ -96,7 +96,7 @@ public class UserCommandRoutesManager {
                 Utils.fetchPrincipal(request)))
         .map(r -> userManagement.updateUser(r.getT1(), (JwtAuthenticationToken) r.getT2()).onErrorResume(Mono::error))
         .flatMap(Function.identity())
-        .flatMap(r -> ServerResponse.ok().build());
+        .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
 
 }

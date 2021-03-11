@@ -20,6 +20,7 @@ import io.vavr.API;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.representations.UserInfo;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -31,6 +32,8 @@ import reactor.util.function.Tuple2;
 
 import javax.validation.Validator;
 import java.util.Optional;
+
+import static io.deviad.ripeti.webapp.adapter.UserAdapters.mapToUserInfo;
 
 @Service
 @Slf4j
@@ -98,7 +101,7 @@ public class UserCommandService {
 
   @Transactional
   @SneakyThrows
-  public Mono<Void> updateUser(
+  public Mono<UserInfoDto> updateUser(
       @RequestBody(required = true) UpdateUserRequest r, JwtAuthenticationToken token) {
 
     final String email = common.getEmailFromToken(token);
@@ -121,7 +124,7 @@ public class UserCommandService {
   }
 
 
-  Mono<Void> handleUpdate(UpdateUserRequest r, UserAggregate userEntity) {
+  Mono<UserInfoDto> handleUpdate(UpdateUserRequest r, UserAggregate userEntity) {
     return Mono.just(userEntity)
         .flatMap(
             x -> {
@@ -129,10 +132,10 @@ public class UserCommandService {
               return Mono.just(
                       API
                       .unchecked(()-> objectReader.readValue(writeCurrentEntityValues(r), UserAggregate.class))
-                      .get());
+                      .get()).onErrorResume(Mono::error);
             })
-        .map(x -> userRepository.save(x).subscribe())
-        .then(Mono.empty());
+            .flatMap(x -> userRepository.save(x).onErrorResume(Mono::error))
+            .flatMap(t -> Mono.just(mapToUserInfo(t)).onErrorResume(Mono::error));
   }
   @SneakyThrows
   private String writeCurrentEntityValues(UpdateUserRequest u) {

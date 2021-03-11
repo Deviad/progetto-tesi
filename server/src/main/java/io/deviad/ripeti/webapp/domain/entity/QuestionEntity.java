@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.With;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -25,7 +27,7 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class QuestionEntity {
+public class QuestionEntity implements Persistable<UUID> {
   @Id
   @Column("id")
   private UUID id;
@@ -35,4 +37,23 @@ public class QuestionEntity {
 
   @Column("answer_ids")
   private Set<UUID> answerIds = new LinkedHashSet<>();
+
+  @Transient
+  boolean newQuestion;
+
+  @Override
+  public UUID getId() {
+    return id();
+  }
+
+  @Override
+  @Transient
+  public boolean isNew() {
+    return this.newQuestion || id == null;
+  }
+
+  public QuestionEntity setAsNew() {
+    this.newQuestion = true;
+    return this;
+  }
 }
