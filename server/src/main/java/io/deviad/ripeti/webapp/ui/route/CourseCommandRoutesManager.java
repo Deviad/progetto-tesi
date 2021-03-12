@@ -1,12 +1,16 @@
 package io.deviad.ripeti.webapp.ui.route;
 
 import io.deviad.ripeti.webapp.application.command.CourseCommandService;
+import io.deviad.ripeti.webapp.application.command.LessonCommandService;
 import io.deviad.ripeti.webapp.application.command.UserCommandService;
+import io.deviad.ripeti.webapp.domain.aggregate.CourseAggregate;
+import io.deviad.ripeti.webapp.domain.entity.LessonEntity;
 import io.deviad.ripeti.webapp.ui.Utils;
-import io.deviad.ripeti.webapp.ui.command.AddLessonToCourseRequest;
-import io.deviad.ripeti.webapp.ui.command.AddQuizToCourseRequest;
-import io.deviad.ripeti.webapp.ui.command.CreateCourseRequest;
-import io.deviad.ripeti.webapp.ui.command.UpdateCourseRequest;
+import io.deviad.ripeti.webapp.ui.command.create.AddLessonsToCourseRequestCommand;
+import io.deviad.ripeti.webapp.ui.command.create.AddQuizToCourseCommand;
+import io.deviad.ripeti.webapp.ui.command.create.CreateCourseRequest;
+import io.deviad.ripeti.webapp.ui.command.update.UpdateCourseRequest;
+import io.deviad.ripeti.webapp.ui.command.update.UpdateLessonsCommand;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +26,10 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
+import java.security.Principal;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -35,7 +42,7 @@ public class CourseCommandRoutesManager {
 
   CourseCommandService courseService;
   UserCommandService userCommandService;
-
+  LessonCommandService lessonCommandService;
   @RouterOperations({
     @RouterOperation(
         path = "/api/course",
@@ -135,7 +142,14 @@ public class CourseCommandRoutesManager {
                 .POST(
                     "/api/course/{courseId}/addlesson",
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
-                    this::addLessonToCourse)
+                    this::addLessonsToCourse)
+                .build())
+        .and(
+            route()
+                .PUT(
+                        "/api/course/{courseId}/addlesson",
+                        RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+                        this::updateLessons)
                 .build())
         .and(route().DELETE("/api/course/removelesson/{lessonId}", this::removeLesson).build())
         .and(
@@ -224,21 +238,17 @@ public class CourseCommandRoutesManager {
   }
 
   @SneakyThrows
-  Mono<ServerResponse> addLessonToCourse(ServerRequest request) {
-    UUID courseId = UUID.fromString(request.pathVariable("courseId"));
-
-    return Utils.fetchPrincipal(request)
-        .flatMap(
-            p ->
-                Mono.zip(
-                    Mono.just(p),
-                    request.bodyToMono(AddLessonToCourseRequest.class).onErrorResume(Mono::error)))
-        .flatMap(
-            t ->
-                courseService.addLessonToCourse(
-                    courseId, t.getT2(), (JwtAuthenticationToken) t.getT1()))
-        .flatMap(x -> ServerResponse.ok().bodyValue(x));
+  Mono<ServerResponse> addLessonsToCourse(ServerRequest request) {
+    return courseService.addUpdateLessonHandler(request, AddLessonsToCourseRequestCommand.class);
   }
+
+
+
+  @SneakyThrows
+  Mono<ServerResponse> updateLessons(ServerRequest request) {
+    return courseService.addUpdateLessonHandler(request, UpdateLessonsCommand.class);
+  }
+
 
   @SneakyThrows
   Mono<ServerResponse> removeLesson(ServerRequest request) {
@@ -261,7 +271,7 @@ public class CourseCommandRoutesManager {
             p ->
                 Mono.zip(
                     Mono.just(p),
-                    request.bodyToMono(AddQuizToCourseRequest.class).onErrorResume(Mono::error)))
+                    request.bodyToMono(AddQuizToCourseCommand.class).onErrorResume(Mono::error)))
         .flatMap(
             t ->
                 courseService.addQuizToCourse(
@@ -277,4 +287,8 @@ public class CourseCommandRoutesManager {
         .flatMap(p -> courseService.removeQuizFromCourse(quizId, (JwtAuthenticationToken) p))
         .flatMap(x -> ServerResponse.ok().build());
   }
+
+
+
+
 }

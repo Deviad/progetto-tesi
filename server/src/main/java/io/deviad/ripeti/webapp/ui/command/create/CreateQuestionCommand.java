@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.ui.command;
+package io.deviad.ripeti.webapp.ui.command.create;
 
 import lombok.Value;
 
@@ -8,7 +8,9 @@ import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Value(staticConstructor = "of")
-public class QuestionRequestDto {
+public class CreateQuestionCommand {
+
   @NotBlank String title;
-  Set<@Valid @NotNull AnswerDto> answers;
+  Set<@Valid @NotNull CreateAnswerDto> answers;
+
 }

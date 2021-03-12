@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.ui.command;
+package io.deviad.ripeti.webapp.ui.command.create;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -15,8 +15,9 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class UpdateCourseRequest {
-  @NotNull UUID courseId;
+public class CreateCourseRequest {
+
+  @NotNull UUID teacherId;
   @NotBlank String courseName;
   @NotBlank String courseDescription;
 }

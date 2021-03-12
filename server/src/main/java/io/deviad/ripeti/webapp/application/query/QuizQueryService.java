@@ -1,7 +1,8 @@
 package io.deviad.ripeti.webapp.application.query;
 
 import io.deviad.ripeti.webapp.adapter.QuizAdapters;
-import io.deviad.ripeti.webapp.ui.command.AnswerDto;
+import io.deviad.ripeti.webapp.ui.command.create.CreateAnswerDto;
+import io.deviad.ripeti.webapp.ui.queries.AnswerQuery;
 import io.deviad.ripeti.webapp.ui.queries.QuestionResponseDto;
 import io.deviad.ripeti.webapp.ui.queries.QuizWithoutResults;
 import io.micrometer.core.annotation.Timed;
@@ -102,7 +103,7 @@ public class QuizQueryService {
     }
 
     @Timed("getAnswers")
-    Flux<AnswerDto> getAnswers(String questionId) {
+    Flux<AnswerQuery> getAnswers(String questionId) {
         //language=PostgreSQL
         String query = """
             select a.* from unnest(array(select qs.answer_ids from questions qs where qs.id::text = $1)) answer_id
@@ -113,7 +114,6 @@ public class QuizQueryService {
                 .bind("$1", questionId)
                 .map(QuizAdapters.ANSWER_FROM_ROW_MAP::apply)
                 .all();
-
     }
 
 

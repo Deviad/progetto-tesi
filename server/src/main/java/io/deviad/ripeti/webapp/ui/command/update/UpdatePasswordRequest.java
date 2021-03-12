@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.ui.command;
+package io.deviad.ripeti.webapp.ui.command.update;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

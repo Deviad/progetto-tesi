@@ -1,6 +1,7 @@
 package io.deviad.ripeti.webapp.adapter;
 
-import io.deviad.ripeti.webapp.ui.command.AnswerDto;
+import io.deviad.ripeti.webapp.ui.command.create.CreateAnswerDto;
+import io.deviad.ripeti.webapp.ui.queries.AnswerQuery;
 import io.deviad.ripeti.webapp.ui.queries.QuestionResponseDto;
 import io.deviad.ripeti.webapp.ui.queries.QuizWithoutResults;
 import io.r2dbc.spi.Row;
@@ -34,11 +35,11 @@ public class QuizAdapters {
         return result;
       };
 
-  public static BiFunction<Row, Object, AnswerDto> ANSWER_FROM_ROW_MAP =
+  public static BiFunction<Row, Object, AnswerQuery> ANSWER_FROM_ROW_MAP =
       (Row row, Object o) -> {
         var id = row.get("id", UUID.class);
         var title = row.get("title", String.class);
         var correct = row.get("correct", Boolean.class);
-        return AnswerDto.builder().id(id).title(title).value(correct).build();
+        return AnswerQuery.builder().id(id).title(title).value(correct).build();
       };
 }

@@ -1,31 +1,40 @@
-package io.deviad.ripeti.webapp.ui.command;
+package io.deviad.ripeti.webapp.ui.command.create;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Address;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
+import lombok.Value;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
+/*
+   The following two lines are used to tell Jackson that
+   getters/setters are not standard with prefix get/set.
+*/
+@Value
 @Accessors(fluent = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class UpdateUserRequest {
+public class RegistrationRequest {
   @NotBlank
   @Length(min = 3, max = 20)
   @Pattern(regexp = "^[a-z]+$")
   String username;
+
+  @NotBlank
+  @Pattern(
+      regexp =
+          "^(?=.*[a-z])(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}:\";,.<>?|=])[a-zA-Z0-9!@#$%^&*()_+{}:\";,.<>?|=-_]{8,20}$")
+  String password;
 
   /*
    General Email Regex (RFC 5322 Official Standard)
@@ -46,5 +55,7 @@ public class UpdateUserRequest {
   @NotBlank
   String lastName;
 
-  @Valid Address address;
+  @Valid @NotNull Address address;
+
+  @NotNull Role role;
 }

@@ -1,14 +1,12 @@
 package io.deviad.ripeti.webapp.adapter;
 
-import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
-import io.deviad.ripeti.webapp.ui.command.RegistrationRequest;
-import io.deviad.ripeti.webapp.ui.command.UpdateUserRequest;
+import io.deviad.ripeti.webapp.ui.command.create.RegistrationRequest;
+import io.deviad.ripeti.webapp.ui.command.update.UpdateUserRequest;
 import lombok.NoArgsConstructor;
 import org.keycloak.common.util.Time;
 import org.keycloak.representations.idm.UserRepresentation;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 

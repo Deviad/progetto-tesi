@@ -5,7 +5,7 @@ set search_path to ripeti;
 ----- begin these are to be used only for the first time in order to create the full schema ---
 
 -- drop type if exists user_role cascade;
--- create type user_role as enum ('STUDENT', 'TEACHER');
+-- create type user_role as enum ('STUDENT', 'PROFESSOR');
 
 -- alter table if exists users
 --     add role user_role;
@@ -111,3 +111,5 @@ create table if not exists quiz_run
 );
 
 
+-- drop type if exists user_role cascade;
+-- create type user_role as enum ('STUDENT', 'PROFESSOR');

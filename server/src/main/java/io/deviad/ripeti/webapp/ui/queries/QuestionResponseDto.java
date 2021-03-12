@@ -3,7 +3,7 @@ package io.deviad.ripeti.webapp.ui.queries;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.deviad.ripeti.webapp.ui.command.AnswerDto;
+import io.deviad.ripeti.webapp.ui.command.create.CreateAnswerDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,5 +27,5 @@ import java.util.UUID;
 public class QuestionResponseDto {
   UUID id;
   String title;
-  Set<AnswerDto> answers = new LinkedHashSet<>();
+  Set<AnswerQuery> answers = new LinkedHashSet<>();
 }

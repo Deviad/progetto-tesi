@@ -1,9 +1,9 @@
 package io.deviad.ripeti.webapp.api;
 
 import io.deviad.ripeti.webapp.adapter.UserRequestMapper;
-import io.deviad.ripeti.webapp.ui.command.RegistrationRequest;
-import io.deviad.ripeti.webapp.ui.command.UpdatePasswordRequest;
-import io.deviad.ripeti.webapp.ui.command.UpdateUserRequest;
+import io.deviad.ripeti.webapp.ui.command.create.RegistrationRequest;
+import io.deviad.ripeti.webapp.ui.command.update.UpdatePasswordRequest;
+import io.deviad.ripeti.webapp.ui.command.update.UpdateUserRequest;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.OAuth2Constants;

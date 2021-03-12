@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.ui.command;
+package io.deviad.ripeti.webapp.ui.command.create;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -7,7 +7,10 @@ import lombok.Value;
 import lombok.With;
 import lombok.experimental.Accessors;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @Value
 @Accessors(fluent = true)
@@ -15,7 +18,8 @@ import javax.validation.constraints.NotBlank;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @With
-public class AddLessonToCourseRequest {
-  @NotBlank String lessonName;
-  @NotBlank String lessonContent;
+public class AddQuizToCourseCommand {
+  @NotBlank String quizName;
+  @NotBlank String quizContent;
+  Set<@Valid @NotNull CreateQuestionCommand> questions;
 }

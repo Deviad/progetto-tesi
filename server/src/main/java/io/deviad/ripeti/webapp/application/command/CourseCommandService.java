@@ -15,11 +15,13 @@ import io.deviad.ripeti.webapp.persistence.repository.LessonRepository;
 import io.deviad.ripeti.webapp.persistence.repository.QuestionRepository;
 import io.deviad.ripeti.webapp.persistence.repository.QuizRepository;
 import io.deviad.ripeti.webapp.persistence.repository.UserRepository;
-import io.deviad.ripeti.webapp.ui.command.AddLessonToCourseRequest;
-import io.deviad.ripeti.webapp.ui.command.AddQuizToCourseRequest;
-import io.deviad.ripeti.webapp.ui.command.AnswerDto;
-import io.deviad.ripeti.webapp.ui.command.CreateCourseRequest;
-import io.deviad.ripeti.webapp.ui.command.UpdateCourseRequest;
+import io.deviad.ripeti.webapp.ui.command.LessonCommand;
+import io.deviad.ripeti.webapp.ui.command.create.AddLessonsToCourseRequestCommand;
+import io.deviad.ripeti.webapp.ui.command.create.AddQuizToCourseCommand;
+import io.deviad.ripeti.webapp.ui.command.create.CreateAnswerDto;
+import io.deviad.ripeti.webapp.ui.command.create.CreateCourseRequest;
+import io.deviad.ripeti.webapp.ui.command.update.UpdateCourseRequest;
+import io.deviad.ripeti.webapp.ui.command.update.UpdateLessonsCommand;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -30,6 +32,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -58,6 +62,7 @@ public class CourseCommandService {
   AnswerRepository answerRepository;
   Validator validator;
   Common common;
+  LessonCommandService lessonCommandService;
 
   @Transactional
   public Mono<CourseAggregate> createCourse(
@@ -95,7 +100,7 @@ public class CourseCommandService {
 
     String email = common.getEmailFromToken(token);
 
-    return verifyCourseOwner(courseId, email)
+    return common.verifyCourseOwner(courseId, email)
         .flatMap(
             x ->
                 courseRepository
@@ -111,7 +116,7 @@ public class CourseCommandService {
       @Parameter(in = ParameterIn.PATH) UUID courseId,
       @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
     String email = common.getEmailFromToken(token);
-    return verifyCourseOwner(courseId, email)
+    return common.verifyCourseOwner(courseId, email)
         .flatMap(x -> courseRepository.deleteById(courseId).onErrorResume(Mono::error))
         .flatMap(x -> Mono.empty());
   }
@@ -168,30 +173,8 @@ public class CourseCommandService {
 
     final String email = common.getEmailFromToken(token);
 
-    return verifyCourseOwner(courseId, email)
+    return common.verifyCourseOwner(courseId, email)
         .flatMap(t -> courseRepository.save(t.getT1().publishCourse()));
-  }
-
-  @Transactional
-  public Mono<CourseAggregate> addLessonToCourse(
-      @Parameter(in = ParameterIn.PATH) UUID courseId,
-      @RequestBody(required = true) AddLessonToCourseRequest lessonDetails,
-      @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
-
-    LessonEntity lessonEntity = MappingUtils.MAPPER.convertValue(lessonDetails, LessonEntity.class);
-
-    final String email = common.getEmailFromToken(token);
-
-    Mono<LessonEntity> lesson = lessonRepository.save(lessonEntity).onErrorResume(Mono::error);
-
-    return verifyCourseOwner(courseId, email)
-        .flatMap(t -> Mono.zip(Mono.just(t.getT1()), lesson))
-        .flatMap(
-            t -> {
-              t.getT1().addLessonToCourse(t.getT2().id());
-              return courseRepository.save(t.getT1());
-            })
-        .flatMap(Mono::just);
   }
 
   @Transactional
@@ -217,7 +200,7 @@ public class CourseCommandService {
   @Transactional
   public Mono<Void> addQuizToCourse(
       @Parameter(in = ParameterIn.PATH) UUID courseId,
-      @RequestBody(required = true) AddQuizToCourseRequest quizDetails,
+      @RequestBody(required = true) AddQuizToCourseCommand quizDetails,
       @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
 
     final OAuth2IntrospectionAuthenticatedPrincipal principal = common.getPrincipalFromToken(token);
@@ -271,7 +254,7 @@ public class CourseCommandService {
   }
 
   private static Function<Set<UUID>, Mono<QuizEntity>> saveQuiz(
-      AddQuizToCourseRequest quizDetails, QuizRepository quizRepository) {
+          AddQuizToCourseCommand quizDetails, QuizRepository quizRepository) {
     return qs ->
         quizRepository
             .save(
@@ -282,6 +265,15 @@ public class CourseCommandService {
                     .build())
             .onErrorResume(Mono::error);
   }
+
+
+  public Mono<ServerResponse> addUpdateLessonHandler(
+          ServerRequest request, Class<? extends LessonCommand> command) {
+          return lessonCommandService.addUpdateLessonHandler(request, command);
+
+    }
+
+
 
   private static Function<Set<QuestionEntity>, Mono<Set<UUID>>> saveUpdatedQuestions(
       QuestionRepository questionRepository) {
@@ -308,7 +300,7 @@ public class CourseCommandService {
   }
 
   private Mono<Tuple2<Set<QuestionEntity>, Set<UUID>>> saveAnswers(
-      AddQuizToCourseRequest quizDetails, Set<QuestionEntity> questionEntities) {
+          AddQuizToCourseCommand quizDetails, Set<QuestionEntity> questionEntities) {
     return Mono.from(
         Flux.fromIterable(quizDetails.questions())
             .flatMap(
@@ -324,7 +316,7 @@ public class CourseCommandService {
                 }));
   }
 
-  private Mono<Set<QuestionEntity>> createInitialQuestions(AddQuizToCourseRequest quizDetails) {
+  private Mono<Set<QuestionEntity>> createInitialQuestions(AddQuizToCourseCommand quizDetails) {
 
     final var qd =
         quizDetails.questions().stream()
@@ -334,46 +326,17 @@ public class CourseCommandService {
     return questionRepository.saveAll(qd).collect(Collectors.toSet());
   }
 
-  private Set<AnswerEntity> mapToAnswerEntity(Set<AnswerDto> answers) {
+  private Set<AnswerEntity> mapToAnswerEntity(Set<CreateAnswerDto> answers) {
     return answers.stream()
         .map(adto -> AnswerEntity.builder().correct(adto.value()).title(adto.title()).build())
         .collect(Collectors.toSet());
   }
 
-  private Mono<CourseAggregate> getCourseByCourseId(UUID courseId) {
-    return courseRepository
-        .findById(courseId)
-        .onErrorResume(Mono::error)
-        .switchIfEmpty(
-            Mono.error(
-                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course does not exist")));
-  }
-
-  private Mono<Tuple2<CourseAggregate, UserAggregate>> verifyCourseOwner(
-      @Parameter(in = ParameterIn.PATH) UUID courseId, String email) {
-    return isTeacherOfCourse(courseId, email)
-        .filter(tuple -> tuple.getT1().teacherId().equals(tuple.getT2().id()))
-        .switchIfEmpty(
-            Mono.error(
-                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You don't own this course")))
-        .onErrorResume(Mono::error);
-  }
-
-  private Mono<Tuple2<CourseAggregate, UserAggregate>> isTeacherOfCourse(
-      UUID courseId, String email) {
-    return getCourseByCourseId(courseId)
-        .flatMap(c -> Mono.zip(Mono.just(c), common.getUserByEmail(email)))
-        .filter(tuple -> tuple.getT2().role().equals(Role.PROFESSOR))
-        .switchIfEmpty(
-            Mono.error(
-                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not a teacher")))
-        .onErrorResume(Mono::error);
-  }
-
-  boolean isTeacher(OAuth2IntrospectionAuthenticatedPrincipal principal) {
+  public boolean isTeacher(OAuth2IntrospectionAuthenticatedPrincipal principal) {
     return ((List)
             ((Map) ((Map) principal.getClaims().get("resource_access")).get("ripeti-web"))
                 .get("roles"))
         .contains(Role.PROFESSOR.name());
   }
+
 }

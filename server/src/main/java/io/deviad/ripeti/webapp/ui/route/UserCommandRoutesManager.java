@@ -2,9 +2,9 @@ package io.deviad.ripeti.webapp.ui.route;
 
 import io.deviad.ripeti.webapp.application.command.UserCommandService;
 import io.deviad.ripeti.webapp.ui.Utils;
-import io.deviad.ripeti.webapp.ui.command.RegistrationRequest;
-import io.deviad.ripeti.webapp.ui.command.UpdatePasswordRequest;
-import io.deviad.ripeti.webapp.ui.command.UpdateUserRequest;
+import io.deviad.ripeti.webapp.ui.command.create.RegistrationRequest;
+import io.deviad.ripeti.webapp.ui.command.update.UpdatePasswordRequest;
+import io.deviad.ripeti.webapp.ui.command.update.UpdateUserRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
