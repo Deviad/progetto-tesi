@@ -1,9 +1,9 @@
 package io.deviad.ripeti.webapp.ui.command;
 
-import java.util.Set;
+import java.util.List;
 
-public interface LessonCommand {
+public interface LessonCommand<T extends ILesson> {
 
-    Set<?> getLessons();
+    List<T> getLessons();
 
 }

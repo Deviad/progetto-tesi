@@ -6,6 +6,7 @@ import io.deviad.ripeti.webapp.application.command.UserCommandService;
 import io.deviad.ripeti.webapp.domain.aggregate.CourseAggregate;
 import io.deviad.ripeti.webapp.domain.entity.LessonEntity;
 import io.deviad.ripeti.webapp.ui.Utils;
+import io.deviad.ripeti.webapp.ui.command.LessonCommand;
 import io.deviad.ripeti.webapp.ui.command.create.AddLessonsToCourseRequestCommand;
 import io.deviad.ripeti.webapp.ui.command.create.AddQuizToCourseCommand;
 import io.deviad.ripeti.webapp.ui.command.create.CreateCourseRequest;
@@ -146,8 +147,8 @@ public class CourseCommandRoutesManager {
                 .build())
         .and(
             route()
-                .PUT(
-                        "/api/course/{courseId}/addlesson",
+                .POST(
+                        "/api/course/{courseId}/updateLessons",
                         RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                         this::updateLessons)
                 .build())

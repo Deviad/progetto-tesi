@@ -9,7 +9,6 @@ import io.deviad.ripeti.webapp.persistence.repository.LessonRepository;
 import io.deviad.ripeti.webapp.ui.Utils;
 import io.deviad.ripeti.webapp.ui.command.LessonCommand;
 import io.deviad.ripeti.webapp.ui.command.create.AddLessonsToCourseRequestCommand;
-import io.deviad.ripeti.webapp.ui.command.update.Lesson;
 import io.deviad.ripeti.webapp.ui.command.update.UpdateLessonsCommand;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -30,8 +29,8 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
 import java.security.Principal;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -46,7 +45,7 @@ public class LessonCommandService {
   LessonRepository lessonRepository;
 
   public Mono<ServerResponse> addUpdateLessonHandler(
-      ServerRequest request, Class<? extends LessonCommand> command) {
+      ServerRequest request, Class<? extends LessonCommand<?>> command) {
     UUID courseId = UUID.fromString(request.pathVariable("courseId"));
 
     return Utils.fetchPrincipal(request)
@@ -72,12 +71,12 @@ public class LessonCommandService {
   }
 
   @Transactional
-  public Mono<Set<CourseAggregate>> addLessonsToCourse(
+  public Mono<List<CourseAggregate>> addLessonsToCourse(
       @Parameter(in = ParameterIn.PATH) UUID courseId,
-      @RequestBody(required = true) Set<AddLessonsToCourseRequestCommand.Lesson> lessonDetails,
+      @RequestBody(required = true) List<AddLessonsToCourseRequestCommand.Lesson> lessonDetails,
       @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
 
-    Set<LessonEntity> lessonEntities =
+    List<LessonEntity> lessonEntities =
         MappingUtils.MAPPER.convertValue(lessonDetails, new TypeReference<>() {});
 
     final String email = common.getEmailFromToken(token);
@@ -92,20 +91,20 @@ public class LessonCommandService {
               t._1().getT1().addLessonToCourse(t._2.id());
               return courseRepository.save(t._1().getT1());
             })
-        .collect(Collectors.toCollection(LinkedHashSet::new));
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   @Transactional
-  public Mono<Set<LessonEntity>> updateLessons(
+  public Mono<List<LessonEntity>> updateLessons(
       @Parameter(in = ParameterIn.PATH) UUID courseId,
-      @RequestBody(required = true) Set<Lesson> lessonDetails,
+      @RequestBody(required = true) List<UpdateLessonsCommand.Lesson> lessonDetails,
       @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
 
     final String email = common.getEmailFromToken(token);
 
     var lessons =
         lessonRepository
-            .findAllById(lessonDetails.stream().map(Lesson::getId).collect(Collectors.toSet()))
+            .findAllById(lessonDetails.stream().map(UpdateLessonsCommand.Lesson::getId).collect(Collectors.toList()))
             .onErrorResume(Mono::error);
 
     return Flux.from(common.verifyCourseOwner(courseId, email))
@@ -115,22 +114,22 @@ public class LessonCommandService {
             l.lessonContent(ld.getLessonContent());
             return l;
         })))
-        .collect(Collectors.toSet())
+        .collect(Collectors.toList())
         .doOnNext(System.out::println)
         .flatMapMany(ls -> lessonRepository.saveAll(ls).onErrorResume(Flux::error))
-        .collect(Collectors.toSet());
+        .collect(Collectors.toList());
   }
 
-  private Mono<Set<LessonEntity>> updateLessons(
-      UUID courseId, Tuple2<? extends Principal, ? extends Set<?>> t) {
-    return updateLessons(courseId, (Set<Lesson>) t.getT2(), (JwtAuthenticationToken) t.getT1());
+  private Mono<List<LessonEntity>> updateLessons(
+      UUID courseId, Tuple2<? extends Principal, ? extends List<?>> t) {
+    return updateLessons(courseId, (List<UpdateLessonsCommand.Lesson>) t.getT2(), (JwtAuthenticationToken) t.getT1());
   }
 
-  private Mono<Set<CourseAggregate>> addLessons(
-      UUID courseId, Tuple2<? extends Principal, ? extends Set<?>> t) {
+  private Mono<List<CourseAggregate>> addLessons(
+      UUID courseId, Tuple2<? extends Principal, ? extends List<?>> t) {
     return addLessonsToCourse(
         courseId,
-        (Set<AddLessonsToCourseRequestCommand.Lesson>) t.getT2(),
+        (List<AddLessonsToCourseRequestCommand.Lesson>) t.getT2(),
         (JwtAuthenticationToken) t.getT1());
   }
 }

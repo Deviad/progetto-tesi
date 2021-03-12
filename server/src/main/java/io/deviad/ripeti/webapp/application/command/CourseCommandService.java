@@ -268,7 +268,7 @@ public class CourseCommandService {
 
 
   public Mono<ServerResponse> addUpdateLessonHandler(
-          ServerRequest request, Class<? extends LessonCommand> command) {
+          ServerRequest request, Class<? extends LessonCommand<?>> command) {
           return lessonCommandService.addUpdateLessonHandler(request, command);
 
     }
