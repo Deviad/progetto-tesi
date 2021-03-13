@@ -77,6 +77,7 @@ create table if not exists quizzes
     id           uuid DEFAULT public.uuid_generate_v4(),
     quiz_name    varchar(255),
     quiz_content text,
+    course_id uuid,
     question_ids uuid[],
     primary key (id)
 

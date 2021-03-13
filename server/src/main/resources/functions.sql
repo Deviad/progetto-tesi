@@ -43,11 +43,30 @@ create or replace function f_quizzes_1() returns trigger as
 '
     language plpgsql;
 
+
+create or replace function f_quizzes_2() returns trigger as
+'
+    declare
+    begin
+        raise notice $$THE QUIZ ID WHOSE QUESTIONS WILL BE DELETED IS: %$$, old.id;
+
+                delete
+                from questions
+                where questions.id in (select qs.id
+                   from unnest(array(select qi.question_ids
+                                     from quizzes qi
+                                     where qi.id::text = old.id::text)) question_id
+                                        join questions qs on qs.id::text = question_id::text);
+        return old;
+    end;
+'
+    language plpgsql;
+
 create or replace function f_questions_1() returns trigger as
 '
     declare
     begin
-        raise notice $$THE QUESTION ID TO REMOVE FROM COURSES IS: %$$, old.id;
+        raise notice $$THE QUESTION ID TO REMOVE FROM QUIZZES IS: %$$, old.id;
         update quizzes
         set question_ids = array_remove(quizzes.question_ids, old.id)
         where quizzes.id in (select quizzes.id from quizzes where old.id = any (quizzes.question_ids));
@@ -81,6 +100,14 @@ create trigger quizzes_1_trg
     on quizzes
     for each row
 execute procedure f_quizzes_1();
+
+
+drop trigger if exists quizzes_2_trg on quizzes;
+create trigger quizzes_2_trg
+    after delete
+    on quizzes
+    for each row
+execute procedure f_quizzes_2();
 
 
 

@@ -36,3 +36,7 @@ select a.* from unnest(array(select qs.answer_ids from questions qs where qs.id:
 
 -- alter table if exists users
 --     add role user_role;
+
+
+-- GET ALL QUESTIONS PER QUIZ varianta 2
+select qs.id from questions qs where qs.id = any(array((select qz.question_ids from quizzes qz where qz.id::text = '409a1c2b-b1e5-42a7-b2ae-58212aaf3b37')));

@@ -38,7 +38,7 @@ public class QuizAdapters {
       (Row row, Object o) -> {
         var id = row.get("id", UUID.class);
         var title = row.get("title", String.class);
-        var correct = row.get("correct", Boolean.class);
-        return AnswerQuery.builder().id(id).title(title).value(correct).build();
+        var value = row.get("value", Boolean.class);
+        return AnswerQuery.builder().id(id).title(title).value(value).build();
       };
 }
