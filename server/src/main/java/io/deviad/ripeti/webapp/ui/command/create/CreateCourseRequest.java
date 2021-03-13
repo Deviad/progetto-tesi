@@ -17,7 +17,6 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class CreateCourseRequest {
 
-  @NotNull UUID teacherId;
   @NotBlank String courseName;
   @NotBlank String courseDescription;
 }
