@@ -3,10 +3,7 @@ package io.deviad.ripeti.webapp.ui.route;
 import io.deviad.ripeti.webapp.application.command.CourseCommandService;
 import io.deviad.ripeti.webapp.application.command.LessonCommandService;
 import io.deviad.ripeti.webapp.application.command.UserCommandService;
-import io.deviad.ripeti.webapp.domain.aggregate.CourseAggregate;
-import io.deviad.ripeti.webapp.domain.entity.LessonEntity;
 import io.deviad.ripeti.webapp.ui.Utils;
-import io.deviad.ripeti.webapp.ui.command.LessonCommand;
 import io.deviad.ripeti.webapp.ui.command.create.AddLessonsToCourseRequestCommand;
 import io.deviad.ripeti.webapp.ui.command.create.AddQuizToCourseCommand;
 import io.deviad.ripeti.webapp.ui.command.create.CreateCourseRequest;
@@ -27,10 +24,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
-import java.security.Principal;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -121,7 +115,7 @@ public class CourseCommandRoutesManager {
         .and(
             route()
                 .PUT(
-                    "/api/course",
+                    "/api/course/{courseId}",
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                     this::handleUpdate)
                 .build())
@@ -147,7 +141,7 @@ public class CourseCommandRoutesManager {
                 .build())
         .and(
             route()
-                .POST(
+                .PUT(
                         "/api/course/{courseId}/updateLessons",
                         RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                         this::updateLessons)
@@ -192,7 +186,7 @@ public class CourseCommandRoutesManager {
   }
 
   Mono<ServerResponse> handleUpdate(ServerRequest request) {
-    String courseId = request.pathVariable("id");
+    String courseId = request.pathVariable("courseId");
 
     return Utils.fetchPrincipal(request)
         .flatMap(
@@ -206,6 +200,7 @@ public class CourseCommandRoutesManager {
               return courseService.updateCourse(
                   UUID.fromString(courseId), t.getT2(), (JwtAuthenticationToken) t.getT1());
             })
+        .flatMap(Function.identity())
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
 

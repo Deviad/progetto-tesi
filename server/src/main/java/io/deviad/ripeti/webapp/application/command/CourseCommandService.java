@@ -107,7 +107,7 @@ public class CourseCommandService {
                     .save(
                         x.getT1()
                             .updateCourseInformation(
-                                request.courseName(), request.courseDescription()))
+                                request.getCourseName(), request.getCourseDescription()))
                     .onErrorResume(Mono::error));
   }
 
