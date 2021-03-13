@@ -268,7 +268,7 @@ public class CourseCommandRoutesManager {
                     request.bodyToMono(AddQuizToCourseCommand.class).onErrorResume(Mono::error)))
         .flatMap(
             t ->
-                courseService.addQuizToCourse(
+                courseService.addOrUpdateQuiz(
                     courseId, t.getT2(), (JwtAuthenticationToken) t.getT1()))
         .flatMap(x -> ServerResponse.ok().build());
   }

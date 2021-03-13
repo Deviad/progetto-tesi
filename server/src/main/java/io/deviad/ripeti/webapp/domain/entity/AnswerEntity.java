@@ -31,6 +31,6 @@ public class AnswerEntity {
   @Column("title")
   String title;
 
-  @Column("correct")
-  Boolean correct;
+  @Column("value")
+  Boolean value;
 }

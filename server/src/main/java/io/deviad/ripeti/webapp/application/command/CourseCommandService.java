@@ -9,7 +9,6 @@ import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import io.deviad.ripeti.webapp.persistence.repository.AnswerRepository;
 import io.deviad.ripeti.webapp.persistence.repository.CourseRepository;
 import io.deviad.ripeti.webapp.persistence.repository.LessonRepository;
-import io.deviad.ripeti.webapp.persistence.repository.QuestionRepository;
 import io.deviad.ripeti.webapp.persistence.repository.UserRepository;
 import io.deviad.ripeti.webapp.ui.command.LessonCommand;
 import io.deviad.ripeti.webapp.ui.command.create.AddQuizToCourseCommand;
@@ -198,10 +197,10 @@ public class CourseCommandService {
         .contains(Role.PROFESSOR.name());
   }
 
-  public Mono<Void> addQuizToCourse( UUID courseId,
-                                     AddQuizToCourseCommand quizDetails,
-                                     JwtAuthenticationToken token) {
-    return quizCommandService.addQuizToCourse(courseId, quizDetails, token);
+  public Mono<Void> addOrUpdateQuiz(UUID courseId,
+                                    AddQuizToCourseCommand quizDetails,
+                                    JwtAuthenticationToken token) {
+    return quizCommandService.addOrUpdateQuiz(courseId, quizDetails, token);
   }
 
   public Mono<Void> removeQuizFromCourse(

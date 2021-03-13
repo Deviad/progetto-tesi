@@ -36,8 +36,8 @@ public class QuizEntity {
   @Column("quiz_name")
   private String quizName;
 
-  @Column("course_id")
-  private UUID courseId;
+//  @Column("course_id")
+//  private UUID courseId;
 
   @Column("quiz_content")
   private String quizContent;
