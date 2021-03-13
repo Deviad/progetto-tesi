@@ -153,7 +153,7 @@ public class CourseCommandRoutesManager {
                 .POST(
                     "/api/course/{courseId}/createquiz",
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
-                    this::createQuiz)
+                    this::createOrUpdateQuiz)
                 .build()
                 .and(route().DELETE("/api/course/removequiz/{quizId}", this::removeQuiz).build()));
   }
@@ -257,7 +257,7 @@ public class CourseCommandRoutesManager {
         .flatMap(x -> ServerResponse.ok().build());
   }
 
-  Mono<ServerResponse> createQuiz(ServerRequest request) {
+  Mono<ServerResponse> createOrUpdateQuiz(ServerRequest request) {
     UUID courseId = UUID.fromString(request.pathVariable("courseId"));
 
     return Utils.fetchPrincipal(request)
