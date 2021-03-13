@@ -4,6 +4,5 @@ import java.util.List;
 
 public interface LessonCommand<T extends ILesson> {
 
-    List<T> getLessons();
-
+  List<T> getLessons();
 }

@@ -1,7 +1,6 @@
 package io.deviad.ripeti.webapp.application.query;
 
 import io.deviad.ripeti.webapp.adapter.QuizAdapters;
-import io.deviad.ripeti.webapp.ui.command.create.CreateAnswerDto;
 import io.deviad.ripeti.webapp.ui.queries.AnswerQuery;
 import io.deviad.ripeti.webapp.ui.queries.QuestionResponseDto;
 import io.deviad.ripeti.webapp.ui.queries.QuizWithoutResults;

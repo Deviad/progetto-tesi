@@ -14,10 +14,10 @@ public class JacksonConfiguration {
   @Bean
   ObjectMapper objectMapper() {
 
-      return new ObjectMapper()
-              .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-              .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-              .addMixIn(DataSize.class, DataSizeMixin.class)
-              .findAndRegisterModules();
+    return new ObjectMapper()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+        .addMixIn(DataSize.class, DataSizeMixin.class)
+        .findAndRegisterModules();
   }
 }

@@ -12,5 +12,4 @@ public class CreateQuestionCommand {
 
   @NotBlank String title;
   Set<@Valid @NotNull CreateAnswerDto> answers;
-
 }

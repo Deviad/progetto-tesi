@@ -23,6 +23,7 @@ import java.util.UUID;
 public class Common {
   private final UserRepository repository;
   private final CourseRepository courseRepository;
+
   Mono<UserAggregate> getUserByEmail(String email) {
     return repository
         .getUserAggregateByEmail(email)
@@ -44,15 +45,15 @@ public class Common {
         token.getTokenAttributes(), token.getAuthorities());
   }
 
-    public Mono<Tuple2<CourseAggregate, UserAggregate>> verifyCourseOwner(
-            @Parameter(in = ParameterIn.PATH) UUID courseId, String email) {
-      return isTeacherOfCourse(courseId, email)
-          .filter(tuple -> tuple.getT1().teacherId().equals(tuple.getT2().id()))
-          .switchIfEmpty(
-              Mono.error(
-                  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You don't own this course")))
-          .onErrorResume(Mono::error);
-    }
+  public Mono<Tuple2<CourseAggregate, UserAggregate>> verifyCourseOwner(
+      @Parameter(in = ParameterIn.PATH) UUID courseId, String email) {
+    return isTeacherOfCourse(courseId, email)
+        .filter(tuple -> tuple.getT1().teacherId().equals(tuple.getT2().id()))
+        .switchIfEmpty(
+            Mono.error(
+                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You don't own this course")))
+        .onErrorResume(Mono::error);
+  }
 
   Mono<CourseAggregate> getCourseByCourseId(UUID courseId) {
     return courseRepository
@@ -64,7 +65,7 @@ public class Common {
   }
 
   public Mono<Tuple2<CourseAggregate, UserAggregate>> isTeacherOfCourse(
-          UUID courseId, String email) {
+      UUID courseId, String email) {
     return getCourseByCourseId(courseId)
         .flatMap(c -> Mono.zip(Mono.just(c), getUserByEmail(email)))
         .filter(tuple -> tuple.getT2().role().equals(Role.PROFESSOR))

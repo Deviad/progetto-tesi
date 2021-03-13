@@ -1,8 +1,8 @@
 package io.deviad.ripeti.webapp.ui.command.update;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.deviad.ripeti.webapp.ui.command.ILesson;
+import io.deviad.ripeti.webapp.ui.command.IUpdatableLesson;
 import io.deviad.ripeti.webapp.ui.command.LessonCommand;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -15,7 +15,6 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
-
 // merge cu si fara @AllArgsConstructor
 
 @ToString
@@ -24,22 +23,25 @@ import java.util.UUID;
 @Builder
 @With
 public class UpdateLessonsCommand implements LessonCommand<UpdateLessonsCommand.Lesson> {
-    @JsonProperty("lessons")
-    List<Lesson> lessons;
+  @JsonProperty("lessons")
+  List<Lesson> lessons;
 
-    @ToString
-    @EqualsAndHashCode
-    @Getter
-    @Builder
-    @With
-    public static  class Lesson implements ILesson {
-        @JsonProperty("id")
-        @NotNull UUID id;
-        @JsonProperty("lessonName")
-        @NotBlank String lessonName;
-        @JsonProperty("lessonContent")
-        @NotBlank String lessonContent;
+  @ToString
+  @EqualsAndHashCode
+  @Getter
+  @Builder
+  @With
+  public static class Lesson implements ILesson, IUpdatableLesson {
+    @JsonProperty("id")
+    @NotNull
+    UUID id;
 
-    }
+    @JsonProperty("lessonName")
+    @NotBlank
+    String lessonName;
 
+    @JsonProperty("lessonContent")
+    @NotBlank
+    String lessonContent;
+  }
 }

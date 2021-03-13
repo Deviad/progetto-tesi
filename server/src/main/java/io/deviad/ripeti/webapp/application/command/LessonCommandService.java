@@ -104,16 +104,25 @@ public class LessonCommandService {
 
     var lessons =
         lessonRepository
-            .findAllById(lessonDetails.stream().map(UpdateLessonsCommand.Lesson::getId).collect(Collectors.toList()))
+            .findAllById(
+                lessonDetails.stream()
+                    .map(UpdateLessonsCommand.Lesson::getId)
+                    .collect(Collectors.toList()))
             .onErrorResume(Mono::error);
 
     return Flux.from(common.verifyCourseOwner(courseId, email))
         .onErrorResume(Mono::error)
-        .thenMany(Flux.defer(() -> Flux.zip(lessons, Flux.fromIterable(lessonDetails).onErrorResume(Flux::error), (l, ld)-> {
-            l.lessonName(ld.getLessonName());
-            l.lessonContent(ld.getLessonContent());
-            return l;
-        })))
+        .thenMany(
+            Flux.defer(
+                () ->
+                    Flux.zip(
+                        lessons,
+                        Flux.fromIterable(lessonDetails).onErrorResume(Flux::error),
+                        (l, ld) -> {
+                          l.lessonName(ld.getLessonName());
+                          l.lessonContent(ld.getLessonContent());
+                          return l;
+                        })))
         .collect(Collectors.toList())
         .doOnNext(System.out::println)
         .flatMapMany(ls -> lessonRepository.saveAll(ls).onErrorResume(Flux::error))
@@ -122,7 +131,10 @@ public class LessonCommandService {
 
   private Mono<List<LessonEntity>> updateLessons(
       UUID courseId, Tuple2<? extends Principal, ? extends List<?>> t) {
-    return updateLessons(courseId, (List<UpdateLessonsCommand.Lesson>) t.getT2(), (JwtAuthenticationToken) t.getT1());
+    return updateLessons(
+        courseId,
+        (List<UpdateLessonsCommand.Lesson>) t.getT2(),
+        (JwtAuthenticationToken) t.getT1());
   }
 
   private Mono<List<CourseAggregate>> addLessons(

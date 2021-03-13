@@ -38,6 +38,7 @@ public class CourseCommandRoutesManager {
   CourseCommandService courseService;
   UserCommandService userCommandService;
   LessonCommandService lessonCommandService;
+
   @RouterOperations({
     @RouterOperation(
         path = "/api/course",
@@ -142,9 +143,9 @@ public class CourseCommandRoutesManager {
         .and(
             route()
                 .PUT(
-                        "/api/course/{courseId}/updateLessons",
-                        RequestPredicates.contentType(MediaType.APPLICATION_JSON),
-                        this::updateLessons)
+                    "/api/course/{courseId}/updateLessons",
+                    RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+                    this::updateLessons)
                 .build())
         .and(route().DELETE("/api/course/removelesson/{lessonId}", this::removeLesson).build())
         .and(
@@ -238,13 +239,10 @@ public class CourseCommandRoutesManager {
     return courseService.addUpdateLessonHandler(request, AddLessonsToCourseRequestCommand.class);
   }
 
-
-
   @SneakyThrows
   Mono<ServerResponse> updateLessons(ServerRequest request) {
     return courseService.addUpdateLessonHandler(request, UpdateLessonsCommand.class);
   }
-
 
   @SneakyThrows
   Mono<ServerResponse> removeLesson(ServerRequest request) {
@@ -283,8 +281,4 @@ public class CourseCommandRoutesManager {
         .flatMap(p -> courseService.removeQuizFromCourse(quizId, (JwtAuthenticationToken) p))
         .flatMap(x -> ServerResponse.ok().build());
   }
-
-
-
-
 }

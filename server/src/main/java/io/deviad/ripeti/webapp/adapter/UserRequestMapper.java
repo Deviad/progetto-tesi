@@ -55,5 +55,4 @@ public class UserRequestMapper {
   long getCreatedTimestamp() {
     return Time.currentTimeMillis();
   }
-
 }

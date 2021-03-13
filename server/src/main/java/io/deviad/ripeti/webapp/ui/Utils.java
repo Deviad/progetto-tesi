@@ -11,10 +11,11 @@ import java.security.Principal;
 @UtilityClass
 public class Utils {
 
-    public static Mono<? extends Principal> fetchPrincipal(ServerRequest request) {
-      return request
-              .principal()
-              .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "No token provided")))
-              .onErrorResume(Mono::error);
-    }
+  public static Mono<? extends Principal> fetchPrincipal(ServerRequest request) {
+    return request
+        .principal()
+        .switchIfEmpty(
+            Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "No token provided")))
+        .onErrorResume(Mono::error);
+  }
 }

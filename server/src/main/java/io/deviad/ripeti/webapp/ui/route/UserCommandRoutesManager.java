@@ -65,9 +65,9 @@ public class UserCommandRoutesManager {
 
   Mono<ServerResponse> handleLogout(ServerRequest request) {
     return Utils.fetchPrincipal(request)
-            .map(p -> userManagement.logoutUser((JwtAuthenticationToken) p))
-            .flatMap(Function.identity())
-            .flatMap(r -> ServerResponse.ok().build());
+        .map(p -> userManagement.logoutUser((JwtAuthenticationToken) p))
+        .flatMap(Function.identity())
+        .flatMap(r -> ServerResponse.ok().build());
   }
 
   Mono<ServerResponse> handleUpdatePassword(ServerRequest request) {
@@ -92,11 +92,14 @@ public class UserCommandRoutesManager {
     return request
         .bodyToMono(UpdateUserRequest.class)
         .onErrorResume(Mono::error)
-        .flatMap(r -> Mono.zip(Mono.just(r).onErrorResume(Mono::error),
-                Utils.fetchPrincipal(request)))
-        .map(r -> userManagement.updateUser(r.getT1(), (JwtAuthenticationToken) r.getT2()).onErrorResume(Mono::error))
+        .flatMap(
+            r -> Mono.zip(Mono.just(r).onErrorResume(Mono::error), Utils.fetchPrincipal(request)))
+        .map(
+            r ->
+                userManagement
+                    .updateUser(r.getT1(), (JwtAuthenticationToken) r.getT2())
+                    .onErrorResume(Mono::error))
         .flatMap(Function.identity())
         .flatMap(r -> ServerResponse.ok().build());
   }
-
 }

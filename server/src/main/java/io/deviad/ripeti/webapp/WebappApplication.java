@@ -64,16 +64,16 @@ public class WebappApplication {
     return new WebFluxConfigurer() {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "http://localhost:8080")
-                .allowedMethods(
-                        HttpMethod.OPTIONS.name(),
-                        HttpMethod.GET.name(),
-                        HttpMethod.POST.name(),
-                        HttpMethod.PUT.name(),
-                        HttpMethod.PATCH.name());
+        registry
+            .addMapping("/**")
+            .allowedOrigins("http://localhost:3000", "http://localhost:8080")
+            .allowedMethods(
+                HttpMethod.OPTIONS.name(),
+                HttpMethod.GET.name(),
+                HttpMethod.POST.name(),
+                HttpMethod.PUT.name(),
+                HttpMethod.PATCH.name());
       }
     };
   }
-
 }

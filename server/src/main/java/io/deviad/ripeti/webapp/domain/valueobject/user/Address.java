@@ -8,8 +8,6 @@ import lombok.Value;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
@@ -21,20 +19,20 @@ import javax.validation.constraints.Pattern;
 @Builder
 public class Address {
   @NotBlank
-  @Length(min=3, max = 100)
+  @Length(min = 3, max = 100)
   String firstAddressLine;
 
   @NotBlank
-  @Length(min=3, max = 100)
+  @Length(min = 3, max = 100)
   String secondAddressLine;
 
   @NotBlank
-  @Length(min=3, max=20)
+  @Length(min = 3, max = 20)
   @Pattern(regexp = "^[A-Za-z ]+$")
   String city;
 
   @NotBlank
-  @Length(min=3, max=20)
+  @Length(min = 3, max = 20)
   @Pattern(regexp = "^[A-Za-z ]+$")
   String country;
 }

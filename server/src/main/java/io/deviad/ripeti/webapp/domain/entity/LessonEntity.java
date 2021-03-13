@@ -9,8 +9,6 @@ import lombok.Data;
 import lombok.With;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -25,7 +23,7 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class LessonEntity  {
+public class LessonEntity {
 
   @Id
   @Column("id")
@@ -36,7 +34,6 @@ public class LessonEntity  {
 
   @Column("lesson_content")
   private String lessonContent;
-
 
   public UUID getId() {
     return id();

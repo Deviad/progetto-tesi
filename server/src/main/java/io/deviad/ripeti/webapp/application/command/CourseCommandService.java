@@ -16,12 +16,10 @@ import io.deviad.ripeti.webapp.persistence.repository.QuestionRepository;
 import io.deviad.ripeti.webapp.persistence.repository.QuizRepository;
 import io.deviad.ripeti.webapp.persistence.repository.UserRepository;
 import io.deviad.ripeti.webapp.ui.command.LessonCommand;
-import io.deviad.ripeti.webapp.ui.command.create.AddLessonsToCourseRequestCommand;
 import io.deviad.ripeti.webapp.ui.command.create.AddQuizToCourseCommand;
 import io.deviad.ripeti.webapp.ui.command.create.CreateAnswerDto;
 import io.deviad.ripeti.webapp.ui.command.create.CreateCourseRequest;
 import io.deviad.ripeti.webapp.ui.command.update.UpdateCourseRequest;
-import io.deviad.ripeti.webapp.ui.command.update.UpdateLessonsCommand;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -100,7 +98,8 @@ public class CourseCommandService {
 
     String email = common.getEmailFromToken(token);
 
-    return common.verifyCourseOwner(courseId, email)
+    return common
+        .verifyCourseOwner(courseId, email)
         .flatMap(
             x ->
                 courseRepository
@@ -116,7 +115,8 @@ public class CourseCommandService {
       @Parameter(in = ParameterIn.PATH) UUID courseId,
       @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
     String email = common.getEmailFromToken(token);
-    return common.verifyCourseOwner(courseId, email)
+    return common
+        .verifyCourseOwner(courseId, email)
         .flatMap(x -> courseRepository.deleteById(courseId).onErrorResume(Mono::error))
         .flatMap(x -> Mono.empty());
   }
@@ -173,7 +173,8 @@ public class CourseCommandService {
 
     final String email = common.getEmailFromToken(token);
 
-    return common.verifyCourseOwner(courseId, email)
+    return common
+        .verifyCourseOwner(courseId, email)
         .flatMap(t -> courseRepository.save(t.getT1().publishCourse()));
   }
 
@@ -254,7 +255,7 @@ public class CourseCommandService {
   }
 
   private static Function<Set<UUID>, Mono<QuizEntity>> saveQuiz(
-          AddQuizToCourseCommand quizDetails, QuizRepository quizRepository) {
+      AddQuizToCourseCommand quizDetails, QuizRepository quizRepository) {
     return qs ->
         quizRepository
             .save(
@@ -266,14 +267,10 @@ public class CourseCommandService {
             .onErrorResume(Mono::error);
   }
 
-
   public Mono<ServerResponse> addUpdateLessonHandler(
-          ServerRequest request, Class<? extends LessonCommand<?>> command) {
-          return lessonCommandService.addUpdateLessonHandler(request, command);
-
-    }
-
-
+      ServerRequest request, Class<? extends LessonCommand<?>> command) {
+    return lessonCommandService.addUpdateLessonHandler(request, command);
+  }
 
   private static Function<Set<QuestionEntity>, Mono<Set<UUID>>> saveUpdatedQuestions(
       QuestionRepository questionRepository) {
@@ -300,7 +297,7 @@ public class CourseCommandService {
   }
 
   private Mono<Tuple2<Set<QuestionEntity>, Set<UUID>>> saveAnswers(
-          AddQuizToCourseCommand quizDetails, Set<QuestionEntity> questionEntities) {
+      AddQuizToCourseCommand quizDetails, Set<QuestionEntity> questionEntities) {
     return Mono.from(
         Flux.fromIterable(quizDetails.questions())
             .flatMap(
@@ -338,5 +335,4 @@ public class CourseCommandService {
                 .get("roles"))
         .contains(Role.PROFESSOR.name());
   }
-
 }

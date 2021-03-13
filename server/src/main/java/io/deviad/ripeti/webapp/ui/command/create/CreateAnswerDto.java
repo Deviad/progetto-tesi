@@ -9,7 +9,6 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.UUID;
 
 @Builder
 @Getter
@@ -19,8 +18,6 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class CreateAnswerDto {
 
-  @NotBlank
-  String title;
-  @NotNull
-  Boolean value;
+  @NotBlank String title;
+  @NotNull Boolean value;
 }

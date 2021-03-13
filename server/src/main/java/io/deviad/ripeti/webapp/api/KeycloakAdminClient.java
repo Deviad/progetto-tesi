@@ -80,22 +80,29 @@ public class KeycloakAdminClient {
 
     UserResource userResource = usersRessource.get(userId);
 
-
     // Trebuie sa obtinem raprezentarea clientului, adica: id, nume, etc., nu doar nume.
 
-    ClientRepresentation ripetiWebClient = realmResource.clients() //
-            .findByClientId("ripeti-web").get(0);
-
+    ClientRepresentation ripetiWebClient =
+        realmResource
+            .clients() //
+            .findByClientId("ripeti-web")
+            .get(0);
 
     // la fel ca si pentru client
 
-    RoleRepresentation userClientRole = realmResource.clients().get(ripetiWebClient.getId()) //
-            .roles().get(registrationRequest.role().name()).toRepresentation();
-
+    RoleRepresentation userClientRole =
+        realmResource
+            .clients()
+            .get(ripetiWebClient.getId()) //
+            .roles()
+            .get(registrationRequest.role().name())
+            .toRepresentation();
 
     // adaugam rolurile unui user.
-    userResource.roles() //
-            .clientLevel(ripetiWebClient.getId()).add(Arrays.asList(userClientRole));
+    userResource
+        .roles() //
+        .clientLevel(ripetiWebClient.getId())
+        .add(Arrays.asList(userClientRole));
 
     // Set password credential
     userResource.resetPassword(passwordCred);
@@ -123,8 +130,7 @@ public class KeycloakAdminClient {
     RealmResource realmResource = keycloak.realm(realm);
     UsersResource usersResource = realmResource.users();
 
-    final List<UserRepresentation> search =
-            usersResource.search(null, null, null, email, 0, 1);
+    final List<UserRepresentation> search = usersResource.search(null, null, null, email, 0, 1);
     if (search.isEmpty()) {
       return Mono.error(
           new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keycloak: Cannot find user"));
@@ -143,11 +149,10 @@ public class KeycloakAdminClient {
     RealmResource realmResource = keycloak.realm(realm);
     UsersResource usersResource = realmResource.users();
 
-    final List<UserRepresentation> search =
-            usersResource.search(null, null, null, email, 0, 1);
+    final List<UserRepresentation> search = usersResource.search(null, null, null, email, 0, 1);
     if (search.isEmpty()) {
       return Mono.error(
-              new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keycloak: Cannot find user"));
+          new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keycloak: Cannot find user"));
     }
 
     final UserRepresentation utilizator = search.get(0);
@@ -173,11 +178,10 @@ public class KeycloakAdminClient {
     RealmResource realmResource = keycloak.realm(realm);
     UsersResource usersResource = realmResource.users();
 
-    final List<UserRepresentation> search =
-            usersResource.search(null, null, null, email, 0, 1);
+    final List<UserRepresentation> search = usersResource.search(null, null, null, email, 0, 1);
     if (search.isEmpty()) {
       return Mono.error(
-              new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keycloak: Cannot find user"));
+          new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keycloak: Cannot find user"));
     }
 
     final UserRepresentation utilizator = search.get(0);

@@ -7,8 +7,6 @@ import lombok.ToString;
 import lombok.With;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.UUID;
 
 @ToString
 @EqualsAndHashCode

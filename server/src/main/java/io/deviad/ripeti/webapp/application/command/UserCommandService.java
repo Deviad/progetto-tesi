@@ -89,11 +89,9 @@ public class UserCommandService {
         .flatMap(u -> Mono.just(UserAdapters.mapToUserInfo(u)));
   }
 
-
   public Mono<Void> logoutUser(JwtAuthenticationToken token) {
     final String email = common.getEmailFromToken(token);
     return client.logout(email);
-
   }
 
   @Transactional
@@ -120,23 +118,27 @@ public class UserCommandService {
         .map(Tuple2::getT1);
   }
 
-
   Mono<Void> handleUpdate(UpdateUserRequest r, UserAggregate userEntity) {
     return Mono.just(userEntity)
         .flatMap(
             x -> {
               final ObjectReader objectReader = MappingUtils.MAPPER.readerForUpdating(x);
               return Mono.just(
-                      API
-                      .unchecked(()-> objectReader.readValue(writeCurrentEntityValues(r), UserAggregate.class))
+                  API.unchecked(
+                          () ->
+                              objectReader.readValue(
+                                  writeCurrentEntityValues(r), UserAggregate.class))
                       .get());
             })
         .map(x -> userRepository.save(x).subscribe())
         .then(Mono.empty());
   }
+
   @SneakyThrows
   private String writeCurrentEntityValues(UpdateUserRequest u) {
-    return MappingUtils.create().setSerializationInclusion(JsonInclude.Include.NON_EMPTY).writeValueAsString(u);
+    return MappingUtils.create()
+        .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+        .writeValueAsString(u);
   }
 
   @Transactional
