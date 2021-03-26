@@ -6,13 +6,13 @@ set search_path to ripeti;
 
 -- drop type if exists user_role cascade;
 -- create type user_role as enum ('STUDENT', 'PROFESSOR');
-
+--
 -- alter table if exists users
 --     add role user_role;
-
+--
 -- drop type if exists course_status cascade;
 -- create type course_status as enum ('DRAFT', 'LIVE');
-
+--
 -- alter table if exists courses
 --     add status course_status;
 
@@ -27,6 +27,8 @@ set search_path to ripeti;
 --     country             varchar(30)  not null,
 --     primary key (id)
 -- );
+
+
 create table if not exists users
 (
     id         uuid DEFAULT public.uuid_generate_v4(),
@@ -112,5 +114,3 @@ create table if not exists quiz_run
 );
 
 
--- drop type if exists user_role cascade;
--- create type user_role as enum ('STUDENT', 'PROFESSOR');
