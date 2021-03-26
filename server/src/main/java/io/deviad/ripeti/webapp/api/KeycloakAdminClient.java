@@ -51,7 +51,7 @@ public class KeycloakAdminClient {
             .grantType(OAuth2Constants.PASSWORD) //
             .clientId(clientId) //
             .clientSecret(clientSecret) //
-            .username("agrilinkadmin") //
+            .username("ripetiadmin") //
             .password("password") //
             .build();
 
