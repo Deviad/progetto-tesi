@@ -36,6 +36,8 @@ create or replace function f_lessons_1() returns trigger as
 '
     language plpgsql;
 
+
+-- Remove quiz's id from courses.quiz_ids when a quiz is removed
 create or replace function f_quizzes_1() returns trigger as
 '
     begin
@@ -52,20 +54,7 @@ create or replace function f_quizzes_1() returns trigger as
     language plpgsql;
 
 
-create or replace function f_quizzes_3() returns trigger as
-'
-    begin
-        raise notice $$$THE QUESTION IDS TO REMOVE: %$$, old.question_ids;
-        delete
-        from questions
-        where questions.id in (SELECT *
-                               FROM unnest(old.question_ids) unnested
-                               WHERE unnested <> any (new.question_ids));
-        return new;
-    end;
-'
-    language plpgsql;
-
+-- Delete questions when a quiz is removed
 create or replace function f_quizzes_2() returns trigger as
 '
     #variable_conflict use_column begin
@@ -76,6 +65,23 @@ create or replace function f_quizzes_2() returns trigger as
                            from unnest(array(select old.question_ids)) question_id);
     return null;
 end;
+'
+    language plpgsql;
+
+
+-- Remove questions when their ids are removed from quiz.question_ids
+create or replace function f_quizzes_3() returns trigger as
+'
+    begin
+        raise notice $$$THE QUESTION IDS TO REMOVE: %$$, old.question_ids;
+        delete
+        from questions
+        where questions.id in (SELECT *
+                               FROM unnest(old.question_ids) unnested
+--                                We want the values that do not belong to the intersection
+                               WHERE unnested <> any (new.question_ids));
+        return new;
+    end;
 '
     language plpgsql;
 
