@@ -1,29 +1,22 @@
 import {IAnswer, IFormError, Nullable} from "../types";
+import {Default} from "../utils/utils";
+import {Exclude} from "class-transformer";
 
 
 export class Answer implements IAnswer {
   deleted: Nullable<boolean>;
+
   modified: Nullable<boolean>;
+
+  @Exclude({toPlainOnly: true})
   errors: IFormError;
+
+  type: "new" | "existing";
+
   id: string;
   title: string;
   value: boolean;
-  type: "new" | "existing";
 
-  constructor(
-    deleted: boolean,
-    errors: IFormError,
-    id: string,
-    modified: boolean,
-    title: string,
-    value: boolean,
-    type: "new" | "existing") {
-    this.deleted = deleted;
-    this.errors = errors;
-    this.id = id;
-    this.modified = modified;
-    this.title = title;
-    this.value = value;
-    this.type = type;
-  }
+
+
 }

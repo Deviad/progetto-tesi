@@ -1,7 +1,7 @@
 import {Button, Modal, Steps} from 'antd';
 import {useState} from "reinspect";
 import React, {useCallback, useEffect} from "react";
-import {ILesson, IQuiz} from '../../types';
+import {IFormError, ILesson, IQuiz, Nullable} from '../../types';
 import {ThirdStep} from './steps/third';
 import {FirstStep} from "./steps/first";
 import {SecondStep} from "./steps/second/SecondStep";
@@ -12,24 +12,30 @@ export interface RipetiStep {
 }
 
 export interface NewLesson extends ILesson {
+  id: string,
+  lessonName: string;
+  lessonContent: string;
   type: "new";
-  deleted: boolean;
-  modified: boolean;
-  errors: Record<string, any>;
+  modified: Nullable<boolean>,
+  deleted: Nullable<boolean>,
+  errors: Nullable<IFormError>;
 }
 
 
-export interface RipetiStep1Content {
+export interface ICourse {
   id: string;
   title: string;
   description: string;
-  errors: Record<string, any>;
+  modified: Nullable<boolean>;
+  deleted: Nullable<boolean>;
+  errors: Nullable<IFormError>;
+  type: "new"|"existing"
 }
 
 
 export interface RipetiStep1 extends RipetiStep {
   title: string;
-  content: RipetiStep1Content;
+  content: ICourse;
 }
 
 
@@ -55,7 +61,10 @@ const steps: [RipetiStep1, RipetiStep2, RipetiStep3] = [
       id: "",
       title: "",
       description: "",
-      errors: {}
+      errors: {},
+      type: "existing",
+      deleted: false,
+      modified: false,
     },
   },
   {
@@ -228,6 +237,9 @@ export const WizardSteps = ({
             title,
             description,
             errors: {},
+            type: "existing",
+            deleted: false,
+            modified: false,
           }
         }
 

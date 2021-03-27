@@ -21,8 +21,8 @@ export const FirstStep: FC<{ state: WizardStepsState, setState: Function }> = ({
                 </Typography>
                 <Input name="title" onChange={onTitleChange(state, setState)} value={step1.content.title}/>
                 {
-                    utils.isTrue(step1.content.errors["title"]) &&
-                    <DangerText>{step1.content.errors["title"]}</DangerText>
+                    utils.isTrue(step1.content?.errors?.["title"]) &&
+                    <DangerText>{step1.content?.errors?.["title"]}</DangerText>
                 }
                 <Typography>
                     <Title level={4}>
@@ -34,8 +34,8 @@ export const FirstStep: FC<{ state: WizardStepsState, setState: Function }> = ({
                 <br/>
 
                 {
-                    utils.isTrue(step1.content.errors["description"]) &&
-                    <DangerText>{step1.content.errors["description"]}</DangerText>
+                    utils.isTrue(step1.content?.errors?.["description"]) &&
+                    <DangerText>{step1.content?.errors?.["description"]}</DangerText>
                 }
 
             </>)

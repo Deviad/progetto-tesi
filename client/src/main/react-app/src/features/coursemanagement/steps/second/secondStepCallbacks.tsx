@@ -151,12 +151,8 @@ export const lessonDataAdded: LessonDataAdded =
         lessons: {
           ...step2.lessons,
           [newId]: {
+            ...step2.newLesson,
             id: newId,
-            lessonName: step2.newLesson.lessonName,
-            lessonContent: step2.newLesson.lessonContent,
-            type: step2.newLesson.type,
-            modified: step2.newLesson.modified,
-            deleted: step2.newLesson.deleted,
           }
         }
       }, ...state.steps.slice(2)]

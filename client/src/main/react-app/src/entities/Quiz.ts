@@ -1,31 +1,24 @@
 import {IFormError, IQuestion, IQuiz} from "../types";
-
+import {Default, MapToList, MapToRecord} from "../utils/utils";
+import {Question} from "./Question";
+import {Exclude} from "class-transformer";
 
 export class Quiz implements IQuiz {
-  deleted: boolean;
-  errors: IFormError;
-  id: string;
+  deleted: boolean = true;
+
   modified: boolean;
+
+  @Exclude({toPlainOnly: true})
+  errors: IFormError;
+
+  @Default("existing")
+  type: "new" | "existing";
+
+  id: string;
+  @MapToRecord(Question)
+  @MapToList(Question)
   questions: Record<string, IQuestion>;
   quizContent: string;
   quizName: string;
-  type: "new" | "existing";
 
-  constructor(
-    deleted: boolean,
-    errors: IFormError,
-    id: string,
-    modified: boolean,
-    questions: Record<string, IQuestion>,
-    quizContent: string,
-    quizName: string, type: "new" | "existing") {
-    this.deleted = deleted;
-    this.errors = errors;
-    this.id = id;
-    this.modified = modified;
-    this.questions = questions;
-    this.quizContent = quizContent;
-    this.quizName = quizName;
-    this.type = type;
-  }
 }

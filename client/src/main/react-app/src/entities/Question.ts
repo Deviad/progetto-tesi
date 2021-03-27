@@ -1,28 +1,25 @@
 import {IAnswer, IFormError, IQuestion, Nullable} from "../types";
+import {Exclude, Type} from "class-transformer";
+import {Default, MapToList, MapToRecord} from "../utils/utils";
+import {Answer} from "./Answer";
 
 export class Question implements IQuestion {
+
+  @Type(()=> Answer)
+  @MapToRecord(Answer)
+  @MapToList(Answer)
   answers: Record<string, IAnswer>;
+
   deleted: Nullable<boolean>;
-  errors: IFormError;
-  id: string;
+
   modified: Nullable<boolean>;
-  title: string;
+
   type: "new" | "existing";
 
-  constructor(answers: Record<string, IAnswer>,
-              deleted: false, errors: IFormError,
-              id: string,
-              modified: boolean,
-              title: string,
-              type: "new" | "existing"
-  ) {
-    this.answers = answers;
-    this.deleted = deleted;
-    this.errors = errors;
-    this.id = id;
-    this.modified = modified;
-    this.title = title;
-    this.type = type;
-  }
+  @Exclude({toPlainOnly: true})
+  errors: IFormError;
+  id: string;
+
+  title: string;
 
 }
