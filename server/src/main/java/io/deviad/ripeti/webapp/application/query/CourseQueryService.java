@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -54,18 +55,18 @@ public class CourseQueryService {
     }
 
 
-    @Timed("getCourseByTeacherId")
-    public Flux<CourseInfo> getCoursesByTeacherId(@Parameter(required = true, in = ParameterIn.PATH) String teacherId) {
+    @Timed("getCourseByTeacherEmail")
+    public Flux<CourseInfo> getCoursesByTeacherEmail(@Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken p) {
         //language=PostgreSQL
         String query =
                 """
                  select c.*, concat(u.first_name, ', ', u.last_name) as teacher_name from courses c
-                join users u on c.teacher_id = u.id
-                where c.teacher_id::text = $1
+                    join users u on c.teacher_id = u.id
+                    where u.email = $1
                 """;
 
         return client.getDatabaseClient().sql(query)
-                .bind("$1", teacherId)
+                .bind("$1", p.getTokenAttributes().get("email"))
                 .map(CourseAdapters.COURSEINFO_FROM_ROW_MAP::apply)
                 .all();
     }

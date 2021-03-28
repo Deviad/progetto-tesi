@@ -1,7 +1,9 @@
 package io.deviad.ripeti.webapp.ui.route;
 
 import io.deviad.ripeti.webapp.application.query.CourseQueryService;
+import io.deviad.ripeti.webapp.application.query.LessonQueryService;
 import io.deviad.ripeti.webapp.application.query.QuizQueryService;
+import io.deviad.ripeti.webapp.ui.Utils;
 import io.deviad.ripeti.webapp.ui.queries.CourseInfo;
 import io.deviad.ripeti.webapp.ui.queries.UserInfoDto;
 import lombok.AllArgsConstructor;
@@ -11,6 +13,7 @@ import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -26,6 +29,7 @@ public class CourseQueryRoutesManager {
 
   CourseQueryService queryService;
   QuizQueryService quizQueryService;
+  LessonQueryService lessonQueryService;
 
   @RouterOperations({
     @RouterOperation(
@@ -56,10 +60,11 @@ public class CourseQueryRoutesManager {
   @Bean
   public RouterFunction<ServerResponse> courseQueryRoutes() {
     return route()
-        .GET("/api/course/{courseId}", this::handleGetCourse)
         .GET("/api/course/{courseId}/getstudents", this::handleGetEnrolledStudents)
-        .GET("/api/course/teacher/{teacherId}", this::handleGetByTeacherId)
+        .GET("/api/course/{courseId}/getlessons", this::getLessonsByCourseId)
+        .GET("/api/course/getbyteacher", this::handleGetByTeacherEmail)
         .GET("/api/course/{courseId}/getquizzes", this::getQuizzesByCourseId)
+        .GET("/api/course/{courseId}/getbyid", this::handleGetCourse)
         .build();
   }
 
@@ -79,10 +84,10 @@ public class CourseQueryRoutesManager {
         .flatMap(r -> ServerResponse.ok().body(r, UserInfoDto.class));
   }
 
-  Mono<ServerResponse> handleGetByTeacherId(ServerRequest request) {
-    return Mono.just(request.pathVariable("teacherId"))
+  Mono<ServerResponse> handleGetByTeacherEmail(ServerRequest request) {
+    return Utils.fetchPrincipal(request)
         .onErrorResume(Mono::error)
-        .map(r -> queryService.getCoursesByTeacherId(r))
+        .map(r -> queryService.getCoursesByTeacherEmail((JwtAuthenticationToken)r))
         .switchIfEmpty(Mono.error(new RuntimeException("Cannot find courses")))
         .flatMap(r -> ServerResponse.ok().body(r, CourseInfo.class));
   }
@@ -94,4 +99,13 @@ public class CourseQueryRoutesManager {
         .switchIfEmpty(Mono.error(new RuntimeException("Cannot find quizzes")))
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
+
+  Mono<ServerResponse> getLessonsByCourseId(ServerRequest request) {
+    return Mono.just(request.pathVariable("courseId"))
+            .onErrorResume(Mono::error)
+            .flatMap(r -> lessonQueryService.getAllLessonsByCourseId(r))
+            .switchIfEmpty(Mono.error(new RuntimeException("Cannot find quizzes")))
+            .flatMap(r -> ServerResponse.ok().bodyValue(r));
+  }
+
 }

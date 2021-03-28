@@ -23,7 +23,7 @@ export const onTitleChange = (state: WizardStepsState, setState: Function) => (e
         path: "title"
     });
 
-    step1.content = {...step1.content, title: e.target.value}
+    step1.content = {...step1.content, title: e.target.value, modified: true}
 
     setState({
         ...state,
@@ -41,7 +41,7 @@ export const handleEditorChange = (state: any, setState: Function) => (value: st
         schema: FirstStepSchema,
         path: "description"});
 
-    step1.content = {...step1.content, description: value}
+    step1.content = {...step1.content, description: value, modified: true}
 
     setState({
         ...state,

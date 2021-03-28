@@ -14,9 +14,9 @@ type LessonNameChangedProps = {
 };
 export const SecondStepSchema = object().shape({
   // eslint-disable-next-line no-template-curly-in-string
-  lessonName: string().required().trim().min(3).max(100).test('is-blank', '${path} nu poate fi gol', (value,) => value !== ''),
+  lessonName: string().required().min(3).max(100).test('is-blank', '${path} nu poate fi gol', (value,) => value !== ''),
   // eslint-disable-next-line no-template-curly-in-string
-  lessonContent: string().required().trim().min(3).test('is-blank', '${path} nu poate fi gol', (value,) => value !== ''),
+  lessonContent: string().required().min(3).test('is-blank', '${path} nu poate fi gol', (value,) => value !== ''),
 }).required();
 type LessonNameChanged = (props: LessonNameChangedProps) => (event: ChangeEvent<HTMLInputElement>) => void;
 

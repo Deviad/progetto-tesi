@@ -35,15 +35,18 @@ const Token = () => {
     const user = useSelector((state: RootState) => state.user);
     const cFetchUser = useCallback((user, history) => dispatch(fetchUser(user, history)), []);
 
+    const d = user.expiresAt && user.expiresAt * 1000;
+    const expired = d && d <= Date.now();
 
     useEffect(() => {
         console.log("storedUser", utils.storage.getItem("auth_res"));
-        if (shallowEqual(user, cache.current)) {
+        if (shallowEqual(user, cache.current) && !expired) {
             return;
         }
+
         cFetchUser(user, history);
         cache.current = user;
-    }, [user]);
+    }, [user, expired]);
     return (<div>Token</div>);
 };
 

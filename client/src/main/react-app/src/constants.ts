@@ -110,9 +110,6 @@ export const registrationUiSchema = {
     },
     "password": {
         "ui:widget": "password",
-        // "ui:help": `parola trebuia sa aiba o lungime de cel
-        //     putin 8 caractere, sa aiba cel putin o litera mare, 1 numar si
-        //     1 caracter special`
     },
     "role": {
         "ui:help": "Alege daca esti student sau profesor"

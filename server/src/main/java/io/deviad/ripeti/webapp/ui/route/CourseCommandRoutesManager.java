@@ -136,14 +136,14 @@ public class CourseCommandRoutesManager {
         .and(
             route()
                 .POST(
-                    "/api/course/{courseId}/addlesson",
+                    "/api/course/{courseId}/addlessons",
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                     this::addLessonsToCourse)
                 .build())
         .and(
             route()
                 .PUT(
-                    "/api/course/{courseId}/updateLessons",
+                    "/api/course/{courseId}/updatelessons",
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                     this::updateLessons)
                 .build())

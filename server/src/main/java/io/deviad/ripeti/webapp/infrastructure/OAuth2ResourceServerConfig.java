@@ -30,6 +30,8 @@ public class OAuth2ResourceServerConfig {
         .authenticated()
         .pathMatchers(HttpMethod.DELETE, "/api/user**")
         .authenticated()
+        .pathMatchers(HttpMethod.OPTIONS,"/api/course**", "/api/course/**")
+        .permitAll()
         .pathMatchers("/api/course**", "/api/course/**")
         .authenticated()
         .and()

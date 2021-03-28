@@ -1,4 +1,4 @@
-import {IFormError, ILesson, IQuiz, MediaType, Nullable} from "../../types";
+import {IFormError, ILesson, IQuiz, MediaType} from "../../types";
 import {utils} from "../../utils";
 import React, {SyntheticEvent} from "react";
 import {message} from "antd";
@@ -25,7 +25,7 @@ export const validateStepBeforeMovingForward = async (errors: IFormError) => {
         }
         if (acc.length > 0) {
             await message.error(Object.values(acc).map(x => x));
-            return;
+            throw new Error();
         }
     }
 }
@@ -77,15 +77,30 @@ export const next = (state: WizardStepsState, setState: Function, accessToken: s
 
     const stepHandlers = [handleStep1, handleStep2, handleStep3];
 
-    let errors: Nullable<Record<string, any>> = {};
+    let errors: Record<string, any> = {};
 
-    for (const fn of stepHandlers) {
-        await fn(errors, state);
+    if (state.currentStep === 0) {
+        await handleStep1(errors, state);
+    } else if (state.currentStep === 1) {
+        await handleStep2(errors, state);
+    } else if (state.currentStep === 2) {
+        for (const fn of stepHandlers) {
+            await fn(errors, state);
+        }
     }
 
-    await validateStepBeforeMovingForward(errors);
+    console.log(errors);
 
-    if (Object.values(errors).filter(x => Object.keys(x).length > 0).length > 0) {
+    for (const err of Object.values(errors)) {
+        // @ts-ignore
+        if (Object.values(err) === {} || Object.values(err) == []) {
+            errors.delete(err);
+        }
+    }
+
+    try {
+        await validateStepBeforeMovingForward(errors);
+    } catch (error) {
         return;
     }
 
@@ -100,7 +115,11 @@ export const next = (state: WizardStepsState, setState: Function, accessToken: s
         if (state.steps[0].content.modified) {
             await httpPut<ICourse>({
                 postReqType: MediaType.JSON,
-                bodyArg: state.steps[0].content,
+                bodyArg: {
+                    ...state.steps[0].content,
+                    courseName: state.steps[0].content.title,
+                    courseDescription: state.steps[0].content.description
+                },
                 url: `${BASE_URL}${COURSE_ENDPOINT}/${state.steps[0].content.id}`,
                 headers: {
                     "Authorization": `Bearer ${accessToken}`,
@@ -108,36 +127,50 @@ export const next = (state: WizardStepsState, setState: Function, accessToken: s
             });
         }
 
-        const existingLessons = [];
-        const newLessons = [];
+      if(state.steps[1].lessons && Object.values(state.steps[1].lessons).length > 0) {
+          const existingLessons: any[] = [];
+          const newLessons: any[] = [];
 
-        for (const lv of Object.values(state.steps[1].lessons)) {
-            if (lv.modified && lv.type === "existing") {
-                const pFactory = async () => await httpPut({
-                    postReqType: MediaType.JSON,
-                    bodyArg: lv,
-                    url: `${BASE_URL}${COURSE_ENDPOINT}/${state.steps[0].content.id}/updateLessons`,
-                    headers: {
-                        "Authorization": `Bearer ${accessToken}`,
-                    }
-                });
-                existingLessons.push(pFactory);
+          for (const lv of Object.values(state.steps[1].lessons)) {
+              if (lv.modified && lv.type === "existing") {
+                  existingLessons.push(lv);
+              } else if (lv.type === "new") {
+                  newLessons.push(lv);
+              }
+          }
 
-            } else if (lv.type === "new") {
-                const pFactory = async () => await httpPost({
-                    postReqType: MediaType.JSON,
-                    bodyArg: lv,
-                    url: `${BASE_URL}${COURSE_ENDPOINT}/${state.steps[0].content.id}/addLesson`,
-                    headers: {
-                        "Authorization": `Bearer ${accessToken}`,
-                    }
-                });
-                newLessons.push(pFactory());
 
-            }
-        }
-        // @ts-ignore
-        await Promise.all([existingLessons.length > 0 && [...existingLessons], newLessons.length > 0 && [...newLessons]]);
+          // I use lazy initialization because the moment I assign a promise to the left value updatedL,
+          // the promise gets in pending.
+
+          const updatedL = () =>  httpPut({
+              postReqType: MediaType.JSON,
+              bodyArg: {lessons: existingLessons},
+              url: `${BASE_URL}${COURSE_ENDPOINT}/${state.steps[0].content.id}/updatelessons`,
+              headers: {
+                  "Authorization": `Bearer ${accessToken}`,
+              }
+          });
+          const newL = () => httpPost({
+              postReqType: MediaType.JSON,
+              bodyArg: {lessons: newLessons},
+              url: `${BASE_URL}${COURSE_ENDPOINT}/${state.steps[0].content.id}/addlessons`,
+              headers: {
+                  "Authorization": `Bearer ${accessToken}`,
+              }
+          });
+
+          const result = [];
+
+          if(existingLessons.length > 0) {
+             result.push(updatedL());
+          }
+          if(newLessons.length > 0) {
+              result.push(newL());
+          }
+
+          await Promise.all(result);
+      }
 
         if (Object.keys(state.steps[2].quizzes).length > 0) {
             const values = utils.deepCopyObj(state.steps[2].quizzes);
