@@ -147,26 +147,26 @@ export const httpPut = async <RESPONSE>(params: HttpPostReqParams): Promise<{ bo
     }
 };
 
-export const httpDelete = async (url: string, toDelete: any): Promise<{ status: boolean }> => {
-
-    try {
-
-        let reqConfig = serializeDateAccordingToContentType<"DELETE", Record<string, any>>(MediaType.FORM, toDelete, "DELETE", addContentType(ContentType.URL_ENCODED));
-
-        const response: Response = await fetch(url, reqConfig);
-        const responseOk = Math.floor(response.status / 100) === 2;
-        return {
-            status: responseOk,
-        };
-    } catch (error) {
-        Log.error(error);
-        notification["error"]({
-            message: 'Http client error',
-            description: error.message,
-        });
-        throw error;
-    }
-};
+// export const httpDelete = async (url: string, toDelete: any): Promise<{ status: boolean }> => {
+//
+//     try {
+//
+//         let reqConfig = serializeDateAccordingToContentType<"DELETE", Record<string, any>>(MediaType.FORM, toDelete, "DELETE", addContentType(ContentType.URL_ENCODED));
+//
+//         const response: Response = await fetch(url, reqConfig);
+//         const responseOk = Math.floor(response.status / 100) === 2;
+//         return {
+//             status: responseOk,
+//         };
+//     } catch (error) {
+//         Log.error(error);
+//         notification["error"]({
+//             message: 'Http client error',
+//             description: error.message,
+//         });
+//         throw error;
+//     }
+// };
 
 
 export const httpDeleteAll = async <RESPONSE>(params: HttpPostReqParams): Promise<boolean> => {

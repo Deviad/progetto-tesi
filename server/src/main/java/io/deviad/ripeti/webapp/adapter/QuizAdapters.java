@@ -5,6 +5,7 @@ import io.deviad.ripeti.webapp.ui.queries.QuestionResponseDto;
 import io.deviad.ripeti.webapp.ui.queries.QuizWithoutResults;
 import io.r2dbc.spi.Row;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.UUID;
 import java.util.function.BiFunction;
@@ -29,7 +30,7 @@ public class QuizAdapters {
             QuestionResponseDto.builder()
                 .id(id)
                 .title(title)
-                .answers(new LinkedHashSet<>())
+                .answers(new LinkedHashMap<>())
                 .build();
         return result;
       };

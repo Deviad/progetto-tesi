@@ -1,7 +1,7 @@
 import {Button, Modal, Steps} from 'antd';
 import {useState} from "reinspect";
 import React, {useCallback, useEffect} from "react";
-import {IFormError, ILesson, IQuiz, Nullable} from '../../types';
+import {IAnswer, IFormError, ILesson, IQuestion, IQuiz, Nullable} from '../../types';
 import {ThirdStep} from './steps/third';
 import {FirstStep} from "./steps/first";
 import {SecondStep} from "./steps/second/SecondStep";
@@ -197,24 +197,25 @@ export const WizardSteps = ({
                         modified: false,
                     }
                 }
-                let backendData;
-                try {
-                    backendData = await httpGet<Record<string, any>>({
-                        headers: {
-                            "Authorization": `Bearer ${user.accessToken}`,
-                        },
-                        url: `${BASE_URL}${COURSE_ENDPOINT}/${id}/getlessons`,
-                    });
-                } catch (error) {
-                    console.log(error);
-                }
-
-                // enrichment phase: faza unde adaug niste proprietati suplimentare pe lectile ca
-                // sa pot efectua operatiunile relative mai usor.
 
                 if (step2) {
-                    if (backendData && backendData.body && Object.keys(backendData.body).length > 0) {
-                        step2.lessons = Object.values(backendData?.body).reduce((acc: Record<string, ILesson>, curr: Record<string, any>) => {
+                    let backendDataLessons;
+                    try {
+                        backendDataLessons = await httpGet<Record<string, any>>({
+                            headers: {
+                                "Authorization": `Bearer ${user.accessToken}`,
+                            },
+                            url: `${BASE_URL}${COURSE_ENDPOINT}/${id}/getlessons`,
+                        });
+                    } catch (error) {
+                        console.log(error);
+                    }
+
+                    // enrichment phase: faza unde adaug niste proprietati suplimentare pe lectile ca
+                    // sa pot efectua operatiunile relative mai usor.
+
+                    if (backendDataLessons && backendDataLessons.body && Object.keys(backendDataLessons.body).length > 0) {
+                        step2.lessons = Object.values(backendDataLessons?.body).reduce((acc: Record<string, ILesson>, curr: Record<string, any>) => {
                             acc[curr.id] = {
                                 id: curr.id,
                                 lessonName: curr.lessonName,
@@ -226,6 +227,66 @@ export const WizardSteps = ({
                             }
                             return acc;
                         }, {} as Record<string, ILesson>) || {};
+                    }
+                }
+
+                if (step3) {
+                    let backendQuizzes;
+                    try {
+                        backendQuizzes = await httpGet<Record<string, any>>({
+                            headers: {
+                                "Authorization": `Bearer ${user.accessToken}`,
+                            },
+                            url: `${BASE_URL}${COURSE_ENDPOINT}/${id}/getquizzes`,
+                        });
+                    } catch (error) {
+                        console.log(error);
+                    }
+
+                    if (backendQuizzes && backendQuizzes.body && Object.keys(backendQuizzes.body).length > 0) {
+                      console.log("backendQuizzes", backendQuizzes.body);
+                        step3.quizzes = Object
+                            .values(backendQuizzes?.body)
+                            .reduce((acc: Record<string, IQuiz>, curr: Record<string, any>) => {
+                                acc[curr.id] = {
+                                id: curr.id,
+                                quizName: curr.quizName,
+                                quizContent: curr.quizContent,
+                                questions: Object
+                                    .values(curr.questions as Record<string, IQuestion>)
+                                    .reduce((acc: Record<string, IQuestion>, curr: Record<string, any>) => {
+                                        acc[curr.id] = {
+                                            id: curr.id,
+                                            type: "existing",
+                                            answers:  Object
+                                                .values(curr.answers as Record<string, IAnswer>)
+                                                .reduce((acc: Record<string, IAnswer>, curr: Record<string, any>) => {
+                                                    acc[curr.id] = {
+                                                        id: curr.id,
+                                                        type: "existing",
+                                                        deleted: false,
+                                                        errors: {},
+                                                        modified: false,
+                                                        title: curr.title,
+                                                        value: curr.value,
+                                                    }
+                                                    return acc;
+                                                }, {} as Record<string, IAnswer>) || {},
+                                            deleted: false,
+                                            errors: {},
+                                            modified: false,
+                                            title: curr.title,
+                                        }
+                                        return acc;
+                                    }, {} as Record<string, IQuestion>) || {},
+                                type: "existing",
+                                deleted: false,
+                                modified: false,
+                                errors: {},
+                            }
+                            return acc;
+                        }, {} as Record<string, IQuiz>) || {};
+
                     }
                 }
 

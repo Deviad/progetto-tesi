@@ -94,7 +94,7 @@ public class CourseCommandRoutesManager {
         beanClass = CourseCommandService.class,
         beanMethod = "removeLessons"),
     @RouterOperation(
-        path = "/api/course/{courseId}/createquiz",
+        path = "/api/course/{courseId}/handlequiz",
         beanClass = CourseCommandService.class,
         method = RequestMethod.POST,
         beanMethod = "addQuizToCourse",
@@ -154,7 +154,7 @@ public class CourseCommandRoutesManager {
         .and(
             route()
                 .POST(
-                    "/api/course/{courseId}/createquiz",
+                    "/api/course/{courseId}/handlequiz",
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                     this::createOrUpdateQuiz)
                 .build()

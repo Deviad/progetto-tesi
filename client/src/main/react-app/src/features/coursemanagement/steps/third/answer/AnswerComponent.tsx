@@ -19,11 +19,13 @@ export const AnswerComponent: FC<{
 
     console.log("errors", props.errors);
 
+    const errors = props.errors || {};
+
     return (
         <Row style={{display: "flex", flexDirection: "row", marginBottom: "0.5rem"}} key={props.id}>
             <Col span={5} push={2}>
                 <Input name="name" value={props.answerTitle} onChange={props.changeTitle}/> <br />
-                <DangerText>{props.errors.title || ""}</DangerText>
+                <DangerText>{errors.title || ""}</DangerText>
             </Col>
 
             <Col span={4} push={3} style={{display: "flex", alignItems: "center"}}>

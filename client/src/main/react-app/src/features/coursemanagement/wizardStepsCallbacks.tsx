@@ -3,7 +3,7 @@ import {utils} from "../../utils";
 import React, {SyntheticEvent} from "react";
 import {message} from "antd";
 import {FirstStepSchema} from "./steps/first/firstStepCallbacks";
-import {kebabCase} from "lodash";
+import {cloneDeep, compact, kebabCase} from "lodash";
 import {SecondStepSchema} from "./steps/second/secondStepCallbacks";
 import {QuizSchema} from "./steps/third/quiz/quizCallbacks";
 import {QuestionSchema} from "./steps/third/question/questionCallbacks";
@@ -77,6 +77,8 @@ export const next = (state: WizardStepsState, setState: Function, accessToken: s
 
     const stepHandlers = [handleStep1, handleStep2, handleStep3];
 
+    const courseId = state.steps[0].content.id;
+
     let errors: Record<string, any> = {};
 
     if (state.currentStep === 0) {
@@ -120,7 +122,7 @@ export const next = (state: WizardStepsState, setState: Function, accessToken: s
                     courseName: state.steps[0].content.title,
                     courseDescription: state.steps[0].content.description
                 },
-                url: `${BASE_URL}${COURSE_ENDPOINT}/${state.steps[0].content.id}`,
+                url: `${BASE_URL}${COURSE_ENDPOINT}/${courseId}`,
                 headers: {
                     "Authorization": `Bearer ${accessToken}`,
                 }
@@ -149,7 +151,7 @@ export const next = (state: WizardStepsState, setState: Function, accessToken: s
             const updatedL = () => httpPut({
                 postReqType: MediaType.JSON,
                 bodyArg: {lessons: existingLessons},
-                url: `${BASE_URL}${COURSE_ENDPOINT}/${state.steps[0].content.id}/updatelessons`,
+                url: `${BASE_URL}${COURSE_ENDPOINT}/${courseId}/updatelessons`,
                 headers: {
                     "Authorization": `Bearer ${accessToken}`,
                 }
@@ -157,7 +159,7 @@ export const next = (state: WizardStepsState, setState: Function, accessToken: s
             const newL = () => httpPost({
                 postReqType: MediaType.JSON,
                 bodyArg: {lessons: newLessons},
-                url: `${BASE_URL}${COURSE_ENDPOINT}/${state.steps[0].content.id}/addlessons`,
+                url: `${BASE_URL}${COURSE_ENDPOINT}/${courseId}/addlessons`,
                 headers: {
                     "Authorization": `Bearer ${accessToken}`,
                 }
@@ -193,8 +195,22 @@ export const next = (state: WizardStepsState, setState: Function, accessToken: s
         }
 
         if (Object.keys(state.steps[2].quizzes).length > 0) {
-            const values = utils.deepCopyObj(state.steps[2].quizzes);
-            console.log("THE VALUES: ", JSON.stringify(values));
+
+            let valueCopy = Object.values(cloneDeep(state.steps[2].quizzes))
+
+            const values = compact(Object.values(utils.deepCopyObj(valueCopy)));
+
+            console.log("values is", values);
+
+            await httpPost({
+                postReqType: MediaType.JSON,
+                bodyArg: {quizzes: values},
+                url: `${BASE_URL}${COURSE_ENDPOINT}/${courseId}/handlequiz`,
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                }
+            });
+
         }
     }
 };

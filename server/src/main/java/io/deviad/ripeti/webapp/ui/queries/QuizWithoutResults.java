@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 import lombok.experimental.Accessors;
 
-import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -30,5 +30,5 @@ public class QuizWithoutResults {
 
   String quizContent;
 
-  Set<QuestionResponseDto> questions;
+  Map<UUID, QuestionResponseDto> questions;
 }

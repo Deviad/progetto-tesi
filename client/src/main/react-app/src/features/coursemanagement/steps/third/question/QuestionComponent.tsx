@@ -21,6 +21,7 @@ export const QuestionComponent: FC<{
 
     const {state, setState, answers, title, id: questionId, quizId, changeTitle} = props;
     const [, , step3] = state.steps;
+    const errors = step3?.quizzes[quizId]?.questions[questionId]?.errors || {};
     return (
         <React.Fragment key={questionId}>
             <Row style={{display: "flex", flexDirection: "row"}}>
@@ -35,7 +36,7 @@ export const QuestionComponent: FC<{
             <Row style={{display: "flex", flexDirection: "row"}}>
                 <Col span={10} push={1}>
                     <Input name="name" value={title} onChange={changeTitle}/><br />
-                    <DangerText>{step3.quizzes[quizId].questions[questionId].errors["title"]}</DangerText>
+                    <DangerText>{errors?.title || ""}</DangerText>
                 </Col>
 
                 <Col span={4} push={2} style={{display: "flex", alignItems: "center"}}>

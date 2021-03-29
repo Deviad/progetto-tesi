@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 import lombok.experimental.Accessors;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Builder
@@ -26,5 +26,5 @@ import java.util.UUID;
 public class QuestionResponseDto {
   UUID id;
   String title;
-  Set<AnswerQuery> answers = new LinkedHashSet<>();
+  Map<UUID, AnswerQuery> answers = new LinkedHashMap<>();
 }
