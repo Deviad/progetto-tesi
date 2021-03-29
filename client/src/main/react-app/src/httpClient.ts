@@ -17,7 +17,7 @@ export const addContentType = (contentType: ContentType, obj: Record<string, str
     return obj;
 };
 
-export const createReq = <T extends Nullable<'POST'> | Nullable<'PUT'>, FDATA extends NonNullable<string> | NonNullable<object>>
+export const createReq = <T extends Nullable<'POST'> | Nullable<'PUT'> |  Nullable<'DELETE'>, FDATA extends NonNullable<string> | NonNullable<object>>
 (postReqType: MediaType, bodyArg: FDATA, headers: Record<string, string> = {}, httpMethod?: T) => {
     const config: Record<keyof typeof MediaType, () => Request> = {
         JSON: () => ({
@@ -29,7 +29,7 @@ export const createReq = <T extends Nullable<'POST'> | Nullable<'PUT'>, FDATA ex
         FORM: () => ({
             method: httpMethod ?? "POST",
             mode: 'cors',
-            headers: addContentType(ContentType.JSON_UTF8, headers),
+            headers: addContentType(ContentType.URL_ENCODED, headers),
             body: utils.toFormUrlEncoded(bodyArg as NonNullable<object>),
         }),
     };
@@ -147,13 +147,13 @@ export const httpPut = async <RESPONSE>(params: HttpPostReqParams): Promise<{ bo
     }
 };
 
-export const httpDelete = async (url: string): Promise<{ status: boolean }> => {
+export const httpDelete = async (url: string, toDelete: any): Promise<{ status: boolean }> => {
+
     try {
-        const response: Response = await fetch(url, {
-            method: 'DELETE',
-            mode: 'cors',
-            headers: addContentType(ContentType.JSON_UTF8),
-        });
+
+        let reqConfig = serializeDateAccordingToContentType<"DELETE", Record<string, any>>(MediaType.FORM, toDelete, "DELETE", addContentType(ContentType.URL_ENCODED));
+
+        const response: Response = await fetch(url, reqConfig);
         const responseOk = Math.floor(response.status / 100) === 2;
         return {
             status: responseOk,
@@ -169,7 +169,25 @@ export const httpDelete = async (url: string): Promise<{ status: boolean }> => {
 };
 
 
-export const serializeDateAccordingToContentType = <HTTPMETHOD extends Nullable<'POST'> | Nullable<'PUT'>,
+export const httpDeleteAll = async <RESPONSE>(params: HttpPostReqParams): Promise<boolean> => {
+
+    const {url, bodyArg, postReqType, headers = {}} = params;
+    try {
+        let reqConfig = serializeDateAccordingToContentType<"DELETE", Record<string, any>>(postReqType, bodyArg, "DELETE", headers);
+        const response: Response = await fetch(url, reqConfig);
+        return Math.floor(response.status / 100) === 2;
+    } catch (error) {
+        Log.error(error);
+        notification["error"]({
+            message: 'Http client error',
+            description: error.message,
+        });
+        throw error;
+    }
+};
+
+
+export const serializeDateAccordingToContentType = <HTTPMETHOD extends Nullable<'POST'> | Nullable<'PUT'> | Nullable<'DELETE'>,
     BODY extends NonNullable<string> | NonNullable<object>>(postReqType: MediaType, bodyArg: BODY, httpMethod?: HTTPMETHOD, headers: Record<string, string> = {}) => {
     let reqConfig: any;
 

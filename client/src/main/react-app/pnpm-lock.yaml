@@ -27,6 +27,7 @@ dependencies:
   lodash: 4.17.21
   node-sass: 5.0.0
   npm-run-all: 4.1.5
+  query-string: 7.0.0
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
   react-hook-form: 6.15.5_react@17.0.2
@@ -5940,6 +5941,12 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==
+  /filter-obj/1.1.0:
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-mzERErxsYSehbgFsbF1/GeCAXFs=
   /finalhandler/1.1.2:
     dependencies:
       debug: 2.6.9
@@ -10727,6 +10734,17 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-u7aTucqRXCMlFbIosaArYJBD2+s=
+  /query-string/7.0.0:
+    dependencies:
+      decode-uri-component: 0.2.0
+      filter-obj: 1.1.0
+      split-on-first: 1.1.0
+      strict-uri-encode: 2.0.0
+    dev: false
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-Iy7moLybliR5ZgrK/1R3vjrXq03S13Vz4Rbm5Jg3EFq1LUmQppto0qtXz4vqZ386MSRjZgnTSZ9QC+NZOSd/XA==
   /querystring-es3/0.2.1:
     dev: false
     engines:
@@ -12698,6 +12716,12 @@ packages:
       supports-color: '*'
     resolution:
       integrity: sha512-r46gZQZQV+Kl9oItvl1JZZqJKGr+oEkB08A6BzkiR7593/7IbtuncXHd2YoYeTsG4157ZssMu9KYvUHLcjcDoA==
+  /split-on-first/1.1.0:
+    dev: false
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-43ZssAJaMusuKWL8sKUBQXHWOpq8d6CfN/u1p4gUzfJkM05C8rxTmYrkIPTXapZpORA6LkkzcUulJ8FqA7Uudw==
   /split-string/3.1.0:
     dependencies:
       extend-shallow: 3.0.2
@@ -12818,6 +12842,12 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-J5siXfHVgrH1TmWt3UNS4Y+qBxM=
+  /strict-uri-encode/2.0.0:
+    dev: false
+    engines:
+      node: '>=4'
+    resolution:
+      integrity: sha1-ucczDHBChi9rFC3CdLvMWGbONUY=
   /string-convert/0.2.1:
     dev: false
     resolution:
@@ -14460,6 +14490,7 @@ specifiers:
   postcss-mixins: ^7.0.0
   postcss-nested: ^5.0.0
   postcss-simple-vars: ^6.0.0
+  query-string: ^7.0.0
   react: ^17.0.0
   react-dom: ^17.0.1
   react-hook-form: ^6.15.4

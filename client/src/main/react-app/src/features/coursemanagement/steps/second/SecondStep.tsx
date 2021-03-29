@@ -18,7 +18,9 @@ export const renderLessons = (state: WizardStepsState, setState: Function) => {
     if (Object.keys(step2.lessons).length === 0) {
         return <div>Nu ai lectile existente</div>
     } else {
-        return Object.entries(step2.lessons).map(([k, l]: [string, any]) => (
+        return Object.entries(step2.lessons)
+            .filter(([k, l])=> l.deleted === false)
+            .map(([k, l]: [string, any]) => (
             <Panel header={l.lessonName} key={k}>
                 <Typography style={{marginBottom: "0.5rem"}}>
                     <Text style={{fontWeight: "bold"}}>

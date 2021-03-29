@@ -7,6 +7,7 @@ import io.deviad.ripeti.webapp.ui.Utils;
 import io.deviad.ripeti.webapp.ui.command.create.AddLessonsToCourseRequestCommand;
 import io.deviad.ripeti.webapp.ui.command.create.AddQuizToCourseCommand;
 import io.deviad.ripeti.webapp.ui.command.create.CreateCourseRequest;
+import io.deviad.ripeti.webapp.ui.command.update.DeleteLessonsRequest;
 import io.deviad.ripeti.webapp.ui.command.update.UpdateCourseRequest;
 import io.deviad.ripeti.webapp.ui.command.update.UpdateLessonsCommand;
 import lombok.AllArgsConstructor;
@@ -88,10 +89,10 @@ public class CourseCommandRoutesManager {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE),
     @RouterOperation(
-        path = "/api/course/removelesson/{lessonId}",
+        path = "/api/course/removelessons",
         method = RequestMethod.DELETE,
         beanClass = CourseCommandService.class,
-        beanMethod = "removeLessonFromCourse"),
+        beanMethod = "removeLessons"),
     @RouterOperation(
         path = "/api/course/{courseId}/createquiz",
         beanClass = CourseCommandService.class,
@@ -120,7 +121,7 @@ public class CourseCommandRoutesManager {
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                     this::handleUpdate)
                 .build())
-        .and(route().DELETE("/api/course/{courseId}", this::deleteCourse).build())
+        .and(route().DELETE("/api/course/{courseId}/deletecourse", this::deleteCourse).build())
         .and(route().PUT("/api/course/{courseId}/publish/{teacherId}", this::publishCourse).build())
         .and(
             route()
@@ -147,7 +148,9 @@ public class CourseCommandRoutesManager {
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                     this::updateLessons)
                 .build())
-        .and(route().DELETE("/api/course/removelesson/{lessonId}", this::removeLesson).build())
+        .and(route().DELETE("/api/course/removelessons",
+                RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+                this::removeLessons).build())
         .and(
             route()
                 .POST(
@@ -245,14 +248,17 @@ public class CourseCommandRoutesManager {
   }
 
   @SneakyThrows
-  Mono<ServerResponse> removeLesson(ServerRequest request) {
-    UUID lessonId = UUID.fromString(request.pathVariable("lessonId"));
-
+  Mono<ServerResponse> removeLessons(ServerRequest request) {
     return Utils.fetchPrincipal(request)
+            .flatMap(
+                    p ->
+                            Mono.zip(
+                                    Mono.just(p),
+                                    request.bodyToMono(DeleteLessonsRequest.class).onErrorResume(Mono::error)))
         .flatMap(
-            p ->
+            t ->
                 courseService
-                    .removeLessonFromCourse(lessonId, (JwtAuthenticationToken) p)
+                    .removeLessonsFromCourse(t.getT2(), (JwtAuthenticationToken) t.getT1())
                     .onErrorResume(Mono::error))
         .flatMap(x -> ServerResponse.ok().build());
   }

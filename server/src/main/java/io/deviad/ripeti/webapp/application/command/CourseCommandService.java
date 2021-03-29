@@ -13,6 +13,7 @@ import io.deviad.ripeti.webapp.persistence.repository.UserRepository;
 import io.deviad.ripeti.webapp.ui.command.LessonCommand;
 import io.deviad.ripeti.webapp.ui.command.create.AddQuizToCourseCommand;
 import io.deviad.ripeti.webapp.ui.command.create.CreateCourseRequest;
+import io.deviad.ripeti.webapp.ui.command.update.DeleteLessonsRequest;
 import io.deviad.ripeti.webapp.ui.command.update.UpdateCourseRequest;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Validator;
@@ -166,23 +168,19 @@ public class CourseCommandService {
   }
 
   @Transactional
-  public Mono<Void> removeLessonFromCourse(
-      @Parameter(in = ParameterIn.PATH) UUID lessonId,
+  public Mono<Void> removeLessonsFromCourse(
+      @Parameter(required = true) DeleteLessonsRequest request,
       @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
-
     final OAuth2IntrospectionAuthenticatedPrincipal principal = common.getPrincipalFromToken(token);
     if (!isTeacher(principal)) {
       return Mono.error(
           new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only teachers can do this"));
     }
 
-    Mono<LessonEntity> lesson =
-        lessonRepository
-            .findById(lessonId)
-            .onErrorResume(Mono::error)
-            .switchIfEmpty(Mono.error(new RuntimeException("Lesson does not exist")));
+    return Flux.fromIterable(request.getLessons())
+            .flatMap(id-> lessonRepository.deleteById(id))
+            .thenEmpty(Mono.empty());
 
-    return lesson.flatMap(c -> lessonRepository.deleteById(lessonId)).flatMap(c -> Mono.empty());
   }
 
   public Mono<ServerResponse> addUpdateLessonHandler(

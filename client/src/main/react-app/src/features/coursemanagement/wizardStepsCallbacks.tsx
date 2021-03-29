@@ -10,7 +10,7 @@ import {QuestionSchema} from "./steps/third/question/questionCallbacks";
 import {AnswerSchema} from "./steps/third/answer/answerCallbacks";
 import {ICourse, WizardStepsState} from "./WizardSteps";
 import {classToPlain, serialize} from "class-transformer";
-import {httpPost, httpPut} from "../../httpClient";
+import {httpDeleteAll, httpPost, httpPut} from "../../httpClient";
 import {BASE_URL, COURSE_ENDPOINT} from "../../constants";
 
 export const validateStepBeforeMovingForward = async (errors: IFormError) => {
@@ -127,50 +127,70 @@ export const next = (state: WizardStepsState, setState: Function, accessToken: s
             });
         }
 
-      if(state.steps[1].lessons && Object.values(state.steps[1].lessons).length > 0) {
-          const existingLessons: any[] = [];
-          const newLessons: any[] = [];
+        if (state.steps[1].lessons && Object.values(state.steps[1].lessons).length > 0) {
+            const existingLessons: any[] = [];
+            const newLessons: any[] = [];
+            const deletedL: any[] = [];
 
-          for (const lv of Object.values(state.steps[1].lessons)) {
-              if (lv.modified && lv.type === "existing") {
-                  existingLessons.push(lv);
-              } else if (lv.type === "new") {
-                  newLessons.push(lv);
-              }
-          }
+            for (const lv of Object.values(state.steps[1].lessons)) {
+                if (lv.modified && lv.type === "existing") {
+                    existingLessons.push(lv);
+                } else if (lv.type === "new") {
+                    newLessons.push(lv);
+                } else if (lv.deleted === true) {
+                    deletedL.push(lv.id);
+                }
+            }
 
 
-          // I use lazy initialization because the moment I assign a promise to the left value updatedL,
-          // the promise gets in pending.
+            // I use lazy initialization because the moment I assign a promise to the left value updatedL,
+            // the promise gets in pending.
 
-          const updatedL = () =>  httpPut({
-              postReqType: MediaType.JSON,
-              bodyArg: {lessons: existingLessons},
-              url: `${BASE_URL}${COURSE_ENDPOINT}/${state.steps[0].content.id}/updatelessons`,
-              headers: {
-                  "Authorization": `Bearer ${accessToken}`,
-              }
-          });
-          const newL = () => httpPost({
-              postReqType: MediaType.JSON,
-              bodyArg: {lessons: newLessons},
-              url: `${BASE_URL}${COURSE_ENDPOINT}/${state.steps[0].content.id}/addlessons`,
-              headers: {
-                  "Authorization": `Bearer ${accessToken}`,
-              }
-          });
+            const updatedL = () => httpPut({
+                postReqType: MediaType.JSON,
+                bodyArg: {lessons: existingLessons},
+                url: `${BASE_URL}${COURSE_ENDPOINT}/${state.steps[0].content.id}/updatelessons`,
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                }
+            });
+            const newL = () => httpPost({
+                postReqType: MediaType.JSON,
+                bodyArg: {lessons: newLessons},
+                url: `${BASE_URL}${COURSE_ENDPOINT}/${state.steps[0].content.id}/addlessons`,
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                }
+            });
 
-          const result = [];
+            const deleted = () => httpDeleteAll({
+                postReqType: MediaType.JSON,
+                bodyArg: {lessons: deletedL},
+                url: `${BASE_URL}${COURSE_ENDPOINT}/removelessons`,
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                }
+            });
 
-          if(existingLessons.length > 0) {
-             result.push(updatedL());
-          }
-          if(newLessons.length > 0) {
-              result.push(newL());
-          }
 
-          await Promise.all(result);
-      }
+            const result: any[] = [];
+
+            if (existingLessons.length > 0) {
+                result.push(updatedL());
+            }
+            if (newLessons.length > 0) {
+                result.push(newL());
+            }
+
+            if (deletedL.length > 0) {
+                result.push(deleted());
+            }
+
+            if (result.length > 0) {
+                await Promise.all(result);
+            }
+
+        }
 
         if (Object.keys(state.steps[2].quizzes).length > 0) {
             const values = utils.deepCopyObj(state.steps[2].quizzes);

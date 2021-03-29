@@ -209,34 +209,6 @@ export const WizardSteps = ({
                     console.log(error);
                 }
 
-                // const backendData = [
-                //     {
-                //         id: "123123-asdsads-sadasd-daadsa",
-                //         lessonName: "Test1",
-                //         lessonContent: "Content1"
-                //     },
-                //     {
-                //         id: "123123-asdsads-sadasd-daadsb",
-                //         lessonName: "Test2",
-                //         lessonContent: "Content2"
-                //     },
-                //     {
-                //         id: "123123-asdsads-sadasd-daadsc",
-                //         lessonName: "Test3",
-                //         lessonContent: "Content3"
-                //     },
-                //     {
-                //         id: "123123-asdsads-sadasd-daadsd",
-                //         lessonName: "Test4",
-                //         lessonContent: "Content4"
-                //     },
-                //     {
-                //         id: "123123-asdsads-sadasd-daadse",
-                //         lessonName: "Test5",
-                //         lessonContent: "Content5"
-                //     }
-                // ];
-
                 // enrichment phase: faza unde adaug niste proprietati suplimentare pe lectile ca
                 // sa pot efectua operatiunile relative mai usor.
 

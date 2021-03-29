@@ -71,6 +71,7 @@ public class WebappApplication {
                 HttpMethod.OPTIONS.name(),
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
+                HttpMethod.DELETE.name(),
                 HttpMethod.PUT.name(),
                 HttpMethod.PATCH.name());
       }

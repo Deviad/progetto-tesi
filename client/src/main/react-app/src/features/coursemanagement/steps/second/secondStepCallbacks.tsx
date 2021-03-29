@@ -169,12 +169,33 @@ type LessonDataRemoved = (props: LessonDataRemovedProps) => (event: React.MouseE
 export const lessonDataRemoved: LessonDataRemoved =
   ({state, setState, id}) => (event) => {
     const step2 = state.steps[1];
-    if (id) {
+
+    const existing =
+            Object.values( state
+                .steps[1]
+                .lessons)
+            .find(lesson => lesson.id === id && lesson.type === "existing")
+
+
+    if (!existing) {
       setState({
         ...state, steps: [...state.steps.slice(0, 1), {
           ...step2,
           lessons: {
             ...omit(step2.lessons, id)
+          }
+        }, ...state.steps.slice(2)]
+      })
+    } else {
+      setState({
+        ...state, steps: [...state.steps.slice(0, 1), {
+          ...step2,
+          lessons: {
+            ...state.steps[1].lessons,
+            [id]: {
+              ...state.steps[1].lessons[id],
+              deleted: true,
+             }
           }
         }, ...state.steps.slice(2)]
       })
