@@ -358,7 +358,7 @@ const utils = (function () {
         return undefined;
     }
 
-    if ("object" != typeof obj) {
+    if ('object' != typeof obj) {
       return obj;
     }
     if (obj instanceof Date) {
@@ -389,11 +389,7 @@ const utils = (function () {
 
             let tmp = obj[attr];
 
-            if(attr === 'id' && obj.hasOwnProperty('type') && obj.type === 'new') {
-                tmp = undefined;
-            }
-
-            if(attr === 'modified' || attr === 'type' || attr === 'deleted') {
+            if(attr === 'modified' || attr === 'type' || attr === 'deleted' || attr === 'id') {
                 tmp = undefined;
             }
 

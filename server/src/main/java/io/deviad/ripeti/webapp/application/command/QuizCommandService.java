@@ -14,6 +14,7 @@ import io.deviad.ripeti.webapp.ui.command.create.CreateQuestionCommand;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.vavr.Tuple;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -71,21 +72,17 @@ public class QuizCommandService {
                             Mono.zip(
                                 Mono.just(updateQuestionsWithAnswers(tuple)),
                                 Mono.just(t.getT2()))))
-        .flatMap(t1 -> Mono.zip(saveUpdatedQuestions(t1.getT1()), Mono.just(t1.getT2())))
-        .flatMap(t2 -> Mono.just(saveQuiz(t2.getT2(), quizRepository).apply(t2.getT1())))
-        .flatMap(
-            qe ->
-                Mono.zip(
-                    qe,
-                    courseRepository
-                        .findById(courseId)
-                        .switchIfEmpty(Mono.error(new RuntimeException("Course does not exist")))
-                        .onErrorResume(Mono::error)))
+        .flatMap(t1 -> Flux.zip(saveUpdatedQuestions(t1.getT1()), Mono.defer(()->Mono.just(t1.getT2())).repeat()))
+        .flatMap(t2 -> saveQuiz(t2.getT2(), quizRepository).apply(t2.getT1()))
+        .join(courseRepository
+                .findById(courseId)
+                .switchIfEmpty(Mono.error(new RuntimeException("Course does not exist")))
+                .onErrorResume(Mono::error), s -> Flux.never(), s -> Flux.never(), Tuple::of)
         .flatMap(
             t3 ->
-                courseRepository
-                    .save(t3.getT2().addQuizToCourse(t3.getT1().id()))
-                    .onErrorResume(Mono::error))
+                Flux.defer(()->courseRepository
+                        .save(t3._2().addQuizToCourse(t3._1().id()))
+                        .onErrorResume(Mono::error)))
         .then(Mono.empty());
   }
 
@@ -98,8 +95,8 @@ public class QuizCommandService {
   }
 
   @Transactional
-  public Mono<Void> removeQuizFromCourse(
-      @Parameter(in = ParameterIn.PATH) UUID quizId,
+  public Mono<Void> removeQuizzesFromCourse(
+      @Parameter(in = ParameterIn.PATH) Set<UUID> quizIds,
       @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
 
     final OAuth2IntrospectionAuthenticatedPrincipal principal = common.getPrincipalFromToken(token);
@@ -108,15 +105,14 @@ public class QuizCommandService {
           new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only teachers can do this"));
     }
 
-    Mono<QuizEntity> quiz =
-        quizRepository
-            .findById(quizId)
+    return Flux.fromIterable(quizIds)
+            .flatMap(qId->  quizRepository.findById(qId))
             .onErrorResume(Mono::error)
-            .switchIfEmpty(Mono.error(new RuntimeException("Quiz does not exist")));
+            .switchIfEmpty(Mono.error(new RuntimeException("Quiz does not exist")))
+            .flatMap(x->quizRepository.deleteById(x.id()))
+            .onErrorResume(Mono::error)
+            .then(Mono.empty());
 
-    return quiz.then(quizRepository.deleteById(quizId))
-        .onErrorResume(Mono::error)
-        .then(Mono.empty());
   }
 
   public boolean isTeacher(OAuth2IntrospectionAuthenticatedPrincipal principal) {

@@ -1,4 +1,4 @@
-package io.deviad.ripeti.webapp.ui.command.update;
+package io.deviad.ripeti.webapp.ui.command.delete;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

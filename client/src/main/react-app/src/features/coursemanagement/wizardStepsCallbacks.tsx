@@ -202,6 +202,16 @@ export const next = (state: WizardStepsState, setState: Function, accessToken: s
 
             console.log("values is", values);
 
+            await httpDeleteAll({
+                postReqType: MediaType.JSON,
+                bodyArg: {quizzes: Object.keys(state.steps[2].quizzes)},
+                url: `${BASE_URL}${COURSE_ENDPOINT}/removequizzes`,
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                }
+            });
+
+
             await httpPost({
                 postReqType: MediaType.JSON,
                 bodyArg: {quizzes: values},

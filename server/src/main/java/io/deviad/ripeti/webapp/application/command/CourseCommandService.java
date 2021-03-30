@@ -4,7 +4,6 @@ import io.deviad.ripeti.webapp.Utils;
 import io.deviad.ripeti.webapp.adapter.MappingUtils;
 import io.deviad.ripeti.webapp.domain.aggregate.CourseAggregate;
 import io.deviad.ripeti.webapp.domain.aggregate.UserAggregate;
-import io.deviad.ripeti.webapp.domain.entity.LessonEntity;
 import io.deviad.ripeti.webapp.domain.valueobject.user.Role;
 import io.deviad.ripeti.webapp.persistence.repository.AnswerRepository;
 import io.deviad.ripeti.webapp.persistence.repository.CourseRepository;
@@ -13,7 +12,7 @@ import io.deviad.ripeti.webapp.persistence.repository.UserRepository;
 import io.deviad.ripeti.webapp.ui.command.LessonCommand;
 import io.deviad.ripeti.webapp.ui.command.create.AddQuizToCourseCommand;
 import io.deviad.ripeti.webapp.ui.command.create.CreateCourseRequest;
-import io.deviad.ripeti.webapp.ui.command.update.DeleteLessonsRequest;
+import io.deviad.ripeti.webapp.ui.command.delete.DeleteLessonsRequest;
 import io.deviad.ripeti.webapp.ui.command.update.UpdateCourseRequest;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -34,6 +33,7 @@ import reactor.core.publisher.Mono;
 import javax.validation.Validator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -201,10 +201,10 @@ public class CourseCommandService {
     return quizCommandService.addOrUpdateQuiz(courseId, quizDetails, token);
   }
 
-  public Mono<Void> removeQuizFromCourse(
-          UUID quizId,
+  public Mono<Void> removeQuizzes(
+          Set<UUID> quizIds,
           JwtAuthenticationToken token) {
-    return quizCommandService.removeQuizFromCourse(quizId, token);
+    return quizCommandService.removeQuizzesFromCourse(quizIds, token);
 
   }
 }

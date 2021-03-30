@@ -7,7 +7,8 @@ import io.deviad.ripeti.webapp.ui.Utils;
 import io.deviad.ripeti.webapp.ui.command.create.AddLessonsToCourseRequestCommand;
 import io.deviad.ripeti.webapp.ui.command.create.AddQuizToCourseCommand;
 import io.deviad.ripeti.webapp.ui.command.create.CreateCourseRequest;
-import io.deviad.ripeti.webapp.ui.command.update.DeleteLessonsRequest;
+import io.deviad.ripeti.webapp.ui.command.delete.DeleteLessonsRequest;
+import io.deviad.ripeti.webapp.ui.command.delete.DeleteQuizzesRequest;
 import io.deviad.ripeti.webapp.ui.command.update.UpdateCourseRequest;
 import io.deviad.ripeti.webapp.ui.command.update.UpdateLessonsCommand;
 import lombok.AllArgsConstructor;
@@ -101,10 +102,10 @@ public class CourseCommandRoutesManager {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE),
     @RouterOperation(
-        path = "/api/course/removequiz/{quizId}",
+        path = "/api/course/removequizzes",
         beanClass = CourseCommandService.class,
         method = RequestMethod.DELETE,
-        beanMethod = "removeQuizFromCourse"),
+        beanMethod = "removeQuizzes"),
   })
   @Bean
   public RouterFunction<ServerResponse> courseCommandRoutes() {
@@ -114,8 +115,7 @@ public class CourseCommandRoutesManager {
             RequestPredicates.contentType(MediaType.APPLICATION_JSON),
             this::createCourse)
         .build()
-        .and(
-            route()
+        .and(route()
                 .PUT(
                     "/api/course/{courseId}",
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
@@ -123,26 +123,22 @@ public class CourseCommandRoutesManager {
                 .build())
         .and(route().DELETE("/api/course/{courseId}/deletecourse", this::deleteCourse).build())
         .and(route().PUT("/api/course/{courseId}/publish/{teacherId}", this::publishCourse).build())
-        .and(
-            route()
+        .and(route()
                 .PUT(
                     "/api/course/{courseId}/assignstudent/{studentId}", this::assignStudentToCourse)
                 .build())
-        .and(
-            route()
+        .and(route()
                 .PUT(
                     "/api/course/{courseId}/unassignstudent/{studentId}",
                     this::unassignUserFromCourse)
                 .build())
-        .and(
-            route()
+        .and(route()
                 .POST(
                     "/api/course/{courseId}/addlessons",
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                     this::addLessonsToCourse)
                 .build())
-        .and(
-            route()
+        .and(route()
                 .PUT(
                     "/api/course/{courseId}/updatelessons",
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
@@ -151,14 +147,15 @@ public class CourseCommandRoutesManager {
         .and(route().DELETE("/api/course/removelessons",
                 RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                 this::removeLessons).build())
-        .and(
-            route()
+        .and(route()
                 .POST(
                     "/api/course/{courseId}/handlequiz",
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                     this::createOrUpdateQuiz)
                 .build()
-                .and(route().DELETE("/api/course/removequiz/{quizId}", this::removeQuiz).build()));
+                .and(route().DELETE("/api/course/removequizzes",
+                        RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+                        this::removeQuizzes).build()));
   }
 
   Mono<ServerResponse> createCourse(ServerRequest request) {
@@ -280,11 +277,12 @@ public class CourseCommandRoutesManager {
   }
 
   @SneakyThrows
-  Mono<ServerResponse> removeQuiz(ServerRequest request) {
-    UUID quizId = UUID.fromString(request.pathVariable("quizId"));
-
+  Mono<ServerResponse> removeQuizzes(ServerRequest request) {
     return Utils.fetchPrincipal(request)
-        .flatMap(p -> courseService.removeQuizFromCourse(quizId, (JwtAuthenticationToken) p))
-        .flatMap(x -> ServerResponse.ok().build());
+            .flatMap(p -> Mono.zip(Mono.just(p),
+                                    request.bodyToMono(DeleteQuizzesRequest.class)
+                                            .onErrorResume(Mono::error)))
+            .flatMap(t-> courseService.removeQuizzes(t.getT2().getQuizzes(), (JwtAuthenticationToken) t.getT1()))
+            .then(ServerResponse.ok().build());
   }
 }
