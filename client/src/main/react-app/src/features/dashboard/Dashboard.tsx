@@ -4,6 +4,7 @@ import {RootState} from "../../app/rootReducer";
 import {getSetCurrentPage} from "../../app/appSharedSlice";
 import {PageSlug} from "../../types";
 import {ProfessorDashboard} from "./ProfesorDashboard";
+import {StudentDashboard} from "./StudentDashboard";
 
 
 export const Dashboard: FC = () => {
@@ -18,9 +19,9 @@ export const Dashboard: FC = () => {
 
     return (
         <>
-            {<ProfessorDashboard/>}
+            {user.roles?.includes("PROFESSOR") && <ProfessorDashboard/>}
 
-            {/*{user.roles?.includes("STUDENT") && <StudentDashboard/>}*/}
+            {user.roles?.includes("STUDENT") && <StudentDashboard/>}
 
         </>
     );

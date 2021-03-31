@@ -214,7 +214,7 @@ export const WizardSteps = ({
                     // enrichment phase: faza unde adaug niste proprietati suplimentare pe lectile ca
                     // sa pot efectua operatiunile relative mai usor.
 
-                    if (backendDataLessons && backendDataLessons.body && Object.keys(backendDataLessons.body).length > 0) {
+                    if (backendDataLessons && backendDataLessons.status && backendDataLessons.body && Object.keys(backendDataLessons.body).length > 0) {
                         step2.lessons = Object.values(backendDataLessons?.body).reduce((acc: Record<string, ILesson>, curr: Record<string, any>) => {
                             acc[curr.id] = {
                                 id: curr.id,
@@ -243,7 +243,7 @@ export const WizardSteps = ({
                         console.log(error);
                     }
 
-                    if (backendQuizzes && backendQuizzes.body && Object.keys(backendQuizzes.body).length > 0) {
+                    if (backendQuizzes && backendQuizzes.status && !!backendQuizzes.body && Object.keys(backendQuizzes.body).length > 0) {
                       console.log("backendQuizzes", backendQuizzes.body);
                         step3.quizzes = Object
                             .values(backendQuizzes?.body)
@@ -253,6 +253,7 @@ export const WizardSteps = ({
                                 quizName: curr.quizName,
                                 quizContent: curr.quizContent,
                                 questions: Object
+                                    .values(curr.questions).length > 0 && Object
                                     .values(curr.questions as Record<string, IQuestion>)
                                     .reduce((acc: Record<string, IQuestion>, curr: Record<string, any>) => {
                                         acc[curr.id] = {

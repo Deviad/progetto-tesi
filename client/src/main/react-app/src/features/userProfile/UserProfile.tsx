@@ -33,6 +33,7 @@ import {PoweroffOutlined} from "@ant-design/icons";
 import {utils} from "../../utils";
 import {getAppFailure, getAppLoading, getSetCurrentPage, getStopLoading} from "../../app/appSharedSlice";
 import {Dispatch} from "redux";
+import {useHistory} from "react-router-dom";
 
 const Form = withTheme(AntDTheme);
 
@@ -147,6 +148,11 @@ const toggleSubmitButton = (formRef: RefObject<HTMLFormElement>, isDisabled: boo
 
 const UserProfile = () => {
     const user = useSelector((state: RootState) => state.user);
+    const history = useHistory();
+
+    const d = user.expiresAt && user.expiresAt * 1000;
+    const expired = d && d <= Date.now();
+
     const [isDisabled, setDisabled] = useState(true);
 
     const [fData, setFData] = useState(userProfileInitialState);
@@ -159,6 +165,11 @@ const UserProfile = () => {
 
 
     useEffect(() => {
+
+        if (expired) {
+            history.push("/login")
+        }
+
         dispatch(getAppLoading());
         dispatch(getSetCurrentPage(PageSlug.USER_PROFILE))
 
@@ -166,7 +177,7 @@ const UserProfile = () => {
             getData(dispatch, setFData, user);
         }
 
-    }, [fData.email, user.accessToken]);
+    }, [fData.email, user.accessToken, expired]);
 
 
     useEffect(() => {
