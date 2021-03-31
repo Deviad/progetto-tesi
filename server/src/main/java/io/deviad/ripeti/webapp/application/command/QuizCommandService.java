@@ -14,8 +14,8 @@ import io.deviad.ripeti.webapp.ui.command.create.CreateQuestionCommand;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.vavr.Tuple;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
@@ -26,16 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -50,6 +46,7 @@ public class QuizCommandService {
   AnswerRepository answerRepository;
 
   @Transactional
+  @SneakyThrows
   public Mono<Void> addOrUpdateQuiz(
       @Parameter(in = ParameterIn.PATH) UUID courseId,
       @RequestBody(required = true) AddQuizToCourseCommand quiz,
@@ -62,36 +59,38 @@ public class QuizCommandService {
     }
 
     return Flux.fromIterable(quiz.quizzes())
-        .flatMap(x -> Mono.zip(Mono.just(x.questions()), Mono.just(x)))
-        .flatMap(
-            t ->
-                saveQuestions(t.getT1())
-                    .flatMap(questionEntities -> saveAnswers(t.getT1(), questionEntities))
-                    .flatMap(
-                        tuple ->
-                            Mono.zip(
-                                Mono.just(updateQuestionsWithAnswers(tuple)),
-                                Mono.just(t.getT2()))))
-        .flatMap(t1 -> Flux.zip(saveUpdatedQuestions(t1.getT1()), Mono.defer(()->Mono.just(t1.getT2())).repeat()))
-        .flatMap(t2 -> saveQuiz(t2.getT2(), quizRepository).apply(t2.getT1()))
-        .join(courseRepository
-                .findById(courseId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Course does not exist")))
-                .onErrorResume(Mono::error), s -> Flux.never(), s -> Flux.never(), Tuple::of)
-        .flatMap(
-            t3 ->
-                Flux.defer(()->courseRepository
-                        .save(t3._2().addQuizToCourse(t3._1().id()))
-                        .onErrorResume(Mono::error)))
-        .then(Mono.empty());
+
+            .flatMap(q-> Flux.fromIterable(q.questions())
+                            .flatMap(qs-> answerRepository
+                                    .saveAll(mapToAnswerEntity(qs.getAnswers()))
+                                            .collect(Collectors.toSet())
+                                            .flatMap(l-> Mono.just(l.stream().map(AnswerEntity::id).collect(Collectors.toSet())))
+                                            .flatMap(l -> Mono.defer(()-> Mono.just(toQuestionEntity(qs,l)))))
+                                    .collect(Collectors.toSet())
+                                            .flatMap(l-> questionRepository.saveAll(l).collect(Collectors.toSet()))
+                                            .map(l->l.stream().map(QuestionEntity::id).collect(Collectors.toSet()))
+                                            .flatMapMany(qsl-> quizRepository.save(toQuizEntity(q, qsl)))
+                                            .doOnNext(System.out::println))
+            .delayUntil(qe-> courseRepository.findById(courseId).map(x->x.addQuizToCourse(qe.id())).flatMap(c->courseRepository.save(c)))
+            .doOnNext(System.out::println)
+            .then(Mono.empty());
+
   }
 
-  private Mono<Set<UUID>> saveUpdatedQuestions(Set<QuestionEntity> set) {
-    return questionRepository
-        .saveAll(set)
-        .onErrorResume(Flux::error)
-        .map(QuestionEntity::id)
-        .collect(Collectors.toSet());
+  private QuizEntity toQuizEntity(AddQuizToCourseCommand.Quiz q, Set<UUID> qsIds) {
+    return QuizEntity.builder()
+            .id(q.id())
+            .questionIds(qsIds)
+            .quizName(q.quizName())
+            .quizContent(q.quizContent())
+            .build();
+  }
+
+  private QuestionEntity toQuestionEntity( CreateQuestionCommand qs, Set<UUID> ansIds) {
+    return QuestionEntity.builder()
+            .id(qs.getId())
+            .answerIds(ansIds)
+            .title(qs.getTitle()).build();
   }
 
   @Transactional
@@ -122,59 +121,6 @@ public class QuizCommandService {
         .contains(Role.PROFESSOR.name());
   }
 
-  private static Set<QuestionEntity> updateQuestionsWithAnswers(
-      Tuple2<Set<QuestionEntity>, Set<UUID>> tuple) {
-    return tuple.getT1().stream()
-        .map(
-            x ->
-                x.withAnswerIds(
-                    Stream.of(x.answerIds(), tuple.getT2())
-                        .flatMap(Stream::ofNullable)
-                        .flatMap(Collection::stream)
-                        .collect(Collectors.toUnmodifiableSet())))
-        .collect(Collectors.toSet());
-  }
-
-  private Mono<Tuple2<Set<QuestionEntity>, Set<UUID>>> saveAnswers(
-      Set<CreateQuestionCommand> questions, Set<QuestionEntity> questionEntities) {
-    return Mono.from(
-        Flux.fromIterable(questions)
-            .flatMap(
-                x -> {
-                  var answers = mapToAnswerEntity(x.getAnswers());
-                  Mono<Set<UUID>> answerIds =
-                      answerRepository
-                          .saveAll(answers)
-                          .onErrorResume(Flux::error)
-                          .map(AnswerEntity::id)
-                          .collect(Collectors.toSet());
-                  return Mono.zip(Mono.just(questionEntities), answerIds);
-                }));
-  }
-
-  private Mono<Set<QuestionEntity>> saveQuestions(Set<CreateQuestionCommand> questions) {
-
-    final var qd =
-        questions.stream()
-            .map(x -> QuestionEntity.builder().id(x.getId()).title(x.getTitle()).build())
-            .collect(Collectors.toSet());
-
-    return questionRepository.saveAll(qd).collect(Collectors.toSet());
-  }
-
-  private static Function<Set<UUID>, Mono<QuizEntity>> saveQuiz(
-      AddQuizToCourseCommand.Quiz quizDetails, QuizRepository quizRepository) {
-    return qs ->
-        quizRepository
-            .save(
-                QuizEntity.builder()
-                    .id(quizDetails.id())
-                    .questionIds(qs)
-                    .quizName(quizDetails.quizName())
-                    .quizContent(quizDetails.quizContent())
-                    .build())
-            .onErrorResume(Mono::error);
-  }
 
   private Set<AnswerEntity> mapToAnswerEntity(Set<CreateAnswerDto> answers) {
     return answers.stream()

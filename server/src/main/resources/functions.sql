@@ -95,8 +95,22 @@ create or replace function f_questions_1() returns trigger as
         where quizzes.id in (select quizzes.id
                              from quizzes
                              where old.id = any (quizzes.question_ids));
-        return new;
+        return old;
     end;
+'
+    language plpgsql;
+
+-- Delete answers when a question is removed
+create or replace function f_questions_2() returns trigger as
+'
+    #variable_conflict use_column begin
+    raise notice $$THE ANSWERS IDS TO BE REMOVED: %$$, old.answer_ids;
+    delete
+    from answers
+    where answers.id in (select ids
+                         from unnest(array(select old.answer_ids)) ids);
+    return null;
+end;
 '
     language plpgsql;
 
@@ -147,4 +161,11 @@ create trigger questions_1_trg
     on questions
     for each row
 execute procedure f_questions_1();
+
+drop trigger if exists questions_2_trg on questions;
+create trigger questions_2_trg
+    after delete
+    on questions
+    for each row
+execute procedure f_questions_2();
 
