@@ -112,15 +112,17 @@ public class CourseCommandService {
 
   @Transactional
   public Mono<Void> assignStudentToCourse(
-      @Parameter(in = ParameterIn.PATH) UUID userId, UUID courseId) {
+      @Parameter(in = ParameterIn.PATH) JwtAuthenticationToken p, UUID courseId) {
     Mono<CourseAggregate> course =
         courseRepository
             .findById(courseId)
             .onErrorResume(Mono::error)
             .switchIfEmpty(Mono.error(new RuntimeException("Course does not exist")));
+
+    String email = (String) p.getTokenAttributes().get("email");
     Mono<UserAggregate> user =
         userRepository
-            .findById(userId)
+            .getUserAggregateByEmail(email)
             .onErrorResume(Mono::error)
             .switchIfEmpty(Mono.error(new RuntimeException("User does not exist")));
 

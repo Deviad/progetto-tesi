@@ -85,7 +85,7 @@ export function showHttpServerError<RESPONSE>(responseOk: boolean, body: RESPONS
 
 export const httpPost = async <RESPONSE>(params: HttpPostReqParams): Promise<{ body: RESPONSE | undefined | null; status: boolean }> => {
 
-    const {url, bodyArg, postReqType, headers = {}} = params;
+    const {url, bodyArg={}, postReqType, headers = {}} = params;
     try {
         let reqConfig = serializeDateAccordingToContentType<"POST", Record<string, any>>(postReqType, bodyArg, "POST", headers);
         const response: Response = await fetch(url, reqConfig);
@@ -118,7 +118,7 @@ export const httpPost = async <RESPONSE>(params: HttpPostReqParams): Promise<{ b
 
 export const httpPut = async <RESPONSE>(params: HttpPostReqParams): Promise<{ body: RESPONSE | undefined | null; status: boolean }> => {
 
-    const {url, bodyArg, postReqType, headers = {}} = params;
+    const {url, bodyArg={}, postReqType, headers = {}} = params;
     try {
         let reqConfig = serializeDateAccordingToContentType<"PUT", Record<string, any>>(postReqType, bodyArg, "PUT", headers);
         const response: Response = await fetch(url, reqConfig);
@@ -171,7 +171,7 @@ export const httpPut = async <RESPONSE>(params: HttpPostReqParams): Promise<{ bo
 
 export const httpDeleteAll = async <RESPONSE>(params: HttpPostReqParams): Promise<boolean> => {
 
-    const {url, bodyArg, postReqType, headers = {}} = params;
+    const {url, bodyArg={}, postReqType, headers = {}} = params;
     try {
         let reqConfig = serializeDateAccordingToContentType<"DELETE", Record<string, any>>(postReqType, bodyArg, "DELETE", headers);
         const response: Response = await fetch(url, reqConfig);

@@ -2,14 +2,14 @@ import {Card, Col, Row, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import React, {useEffect} from "react";
 import {EditOutlined} from "@ant-design/icons";
-import "./Card.scss";
-import "./CourseList.scss"
+import "../Card.scss";
+import "./CourseListProfessor.scss"
 import {useState} from "reinspect";
-import {WizardSteps} from "../coursemanagement/WizardSteps";
+import {WizardSteps} from "../../coursemanagement/WizardSteps";
 import {useSelector} from "react-redux";
-import {RootState} from "../../app/rootReducer";
-import {httpGet} from "../../httpClient";
-import {BASE_URL, COURSE_ENDPOINT} from "../../constants";
+import {RootState} from "../../../app/rootReducer";
+import {httpGet} from "../../../httpClient";
+import {BASE_URL, COURSE_ENDPOINT} from "../../../constants";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {useHistory} from "react-router-dom";
@@ -48,7 +48,7 @@ const renderCardList =
     };
 
 
-export const CourseList = () => {
+export const CourseListProfessor = () => {
 
 
     const [selected, select] = useState({id: "", title: "", content: ""}, "selected-course");
@@ -66,8 +66,6 @@ export const CourseList = () => {
     const d = user.expiresAt && user.expiresAt * 1000;
     const expired = d && d <= Date.now();
     const [courses, setCourses] = useState([], 'loading-courses');
-
-    console.log("azz list", [d, Date.now(), d && d <= Date.now()]);
 
     useEffect(() => {
 
@@ -111,49 +109,6 @@ export const CourseList = () => {
 
     }, [user.accessToken, expired]);
 
-
-    // const courses = [
-    //     {
-    //         id: "asdas-asdsasa-asdsadsa",
-    //         title: "Programare Mobila",
-    //         content: "Short description",
-    //     },
-    //     {
-    //         id: "asdas-asdsasa-bbbb",
-    //         title: "Grafica pe calculator",
-    //         content: "Short description",
-    //     },
-    //     {
-    //         id: "asdas-asdsasa-bbbc",
-    //         title: "Grafica pe calculator",
-    //         content: "Short description",
-    //     },
-    //     {
-    //         id: "asdas-asdsasa-bbbd",
-    //         title: "Grafica pe calculator",
-    //         content: "Short description",
-    //     },
-    //     {
-    //         id: "asdas-asdsasa-ccccc",
-    //         title: "Programare Mobila",
-    //         content: "Short description",
-    //     },
-    //     {
-    //         id: "asdas-asdsasa-eeeee",
-    //         title: "Grafica pe calculator",
-    //         content: "Short description",
-    //     },
-    //     {
-    //         id: "asdas-asdsasa-fffff",
-    //         title: "Grafica pe calculator",
-    //         content: "Short description",
-    //     },
-    //     {
-    //         id: "asdas-asdsasa-gggggg",
-    //         title: "Grafica pe calculator",
-    //         content: "Short description",
-    //     }
-    // ];
 
     if (!courses || courses.length === 0) {
         return <div>Loading Courses ...</div>

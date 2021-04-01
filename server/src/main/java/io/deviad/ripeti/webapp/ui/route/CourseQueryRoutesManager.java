@@ -20,6 +20,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.stream.Collectors;
+
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -32,6 +34,18 @@ public class CourseQueryRoutesManager {
   LessonQueryService lessonQueryService;
 
   @RouterOperations({
+    @RouterOperation(
+            path = "/api/course/getallcourses",
+            method = RequestMethod.GET,
+            beanClass = CourseQueryService.class,
+            beanMethod = "getAllCourses",
+            produces = MediaType.APPLICATION_JSON_VALUE),
+    @RouterOperation(
+            path = "/api/course/enrolledcourses",
+            method = RequestMethod.GET,
+            beanClass = CourseQueryService.class,
+            beanMethod = "getAllEnrolledCourses",
+            produces = MediaType.APPLICATION_JSON_VALUE),
     @RouterOperation(
         path = "/api/course/{courseId}",
         method = RequestMethod.GET,
@@ -60,6 +74,8 @@ public class CourseQueryRoutesManager {
   @Bean
   public RouterFunction<ServerResponse> courseQueryRoutes() {
     return route()
+        .GET("/api/course/getallcourses", this::handleGetAllCourses)
+        .GET("/api/course/enrolledcourses", this::getAllCoursesWhereStudentIsEnrolled)
         .GET("/api/course/{courseId}/getstudents", this::handleGetEnrolledStudents)
         .GET("/api/course/{courseId}/getlessons", this::getLessonsByCourseId)
         .GET("/api/course/getbyteacher", this::handleGetByTeacherEmail)
@@ -75,6 +91,27 @@ public class CourseQueryRoutesManager {
         .switchIfEmpty(Mono.error(new RuntimeException("Cannot find course")))
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
+
+  Mono<ServerResponse> handleGetAllCourses(ServerRequest request) {
+    return queryService
+        .getAllLiveCourses()
+        .collect(Collectors.toList())
+        .onErrorResume(Mono::error)
+        .switchIfEmpty(Mono.error(new RuntimeException("Cannot find course")))
+        .flatMap(r -> ServerResponse.ok().bodyValue(r));
+  }
+
+  Mono<ServerResponse> getAllCoursesWhereStudentIsEnrolled(ServerRequest request) {
+    return Utils.fetchPrincipal(request)
+            .onErrorResume(Mono::error)
+            .flatMap(p-> queryService
+                    .getAllCoursesWhereStudentIsEnrolled((JwtAuthenticationToken) p)
+                    .collect(Collectors.toList()))
+            .onErrorResume(Mono::error)
+            .switchIfEmpty(Mono.error(new RuntimeException("Cannot find course")))
+            .flatMap(r -> ServerResponse.ok().bodyValue(r));
+  }
+
 
   Mono<ServerResponse> handleGetEnrolledStudents(ServerRequest request) {
     return Mono.just(request.pathVariable("courseId"))

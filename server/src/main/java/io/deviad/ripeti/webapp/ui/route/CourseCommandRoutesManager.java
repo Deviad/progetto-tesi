@@ -69,11 +69,10 @@ public class CourseCommandRoutesManager {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE),
     @RouterOperation(
-        path = "/api/course/{courseId}/assignstudent/{studentId}",
+        path = "/api/course/{courseId}/assignstudent",
         method = RequestMethod.PUT,
         beanClass = CourseCommandService.class,
         beanMethod = "assignUserToCourse",
-        consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE),
     @RouterOperation(
         path = "/api/course/{courseId}/unassignstudent/{studentId}",
@@ -125,37 +124,50 @@ public class CourseCommandRoutesManager {
         .and(route().PUT("/api/course/{courseId}/publish/{teacherId}", this::publishCourse).build())
         .and(route()
                 .PUT(
-                    "/api/course/{courseId}/assignstudent/{studentId}", this::assignStudentToCourse)
+                    "/api/course/{courseId}/assignstudent",
+                        this::assignStudentToCourse)
                 .build())
-        .and(route()
+        .and(
+            route()
                 .PUT(
                     "/api/course/{courseId}/unassignstudent/{studentId}",
                     this::unassignUserFromCourse)
                 .build())
-        .and(route()
+        .and(
+            route()
                 .POST(
                     "/api/course/{courseId}/addlessons",
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                     this::addLessonsToCourse)
                 .build())
-        .and(route()
+        .and(
+            route()
                 .PUT(
                     "/api/course/{courseId}/updatelessons",
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                     this::updateLessons)
                 .build())
-        .and(route().DELETE("/api/course/removelessons",
-                RequestPredicates.contentType(MediaType.APPLICATION_JSON),
-                this::removeLessons).build())
-        .and(route()
+        .and(
+            route()
+                .DELETE(
+                    "/api/course/removelessons",
+                    RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+                    this::removeLessons)
+                .build())
+        .and(
+            route()
                 .POST(
                     "/api/course/{courseId}/handlequiz",
                     RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                     this::createOrUpdateQuiz)
                 .build()
-                .and(route().DELETE("/api/course/removequizzes",
-                        RequestPredicates.contentType(MediaType.APPLICATION_JSON),
-                        this::removeQuizzes).build()));
+                .and(
+                    route()
+                        .DELETE(
+                            "/api/course/removequizzes",
+                            RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+                            this::removeQuizzes)
+                        .build()));
   }
 
   Mono<ServerResponse> createCourse(ServerRequest request) {
@@ -207,10 +219,8 @@ public class CourseCommandRoutesManager {
 
   Mono<ServerResponse> assignStudentToCourse(ServerRequest request) {
     UUID courseId = UUID.fromString(request.pathVariable("courseId"));
-    UUID studentId = UUID.fromString(request.pathVariable("studentId"));
-
-    return courseService
-        .assignStudentToCourse(studentId, courseId)
+    return Utils.fetchPrincipal(request)
+        .flatMap(p -> courseService.assignStudentToCourse((JwtAuthenticationToken) p, courseId))
         .onErrorResume(Mono::error)
         .flatMap(r -> ServerResponse.ok().build());
   }

@@ -3,8 +3,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../app/rootReducer";
 import {getSetCurrentPage} from "../../app/appSharedSlice";
 import {PageSlug} from "../../types";
-import {ProfessorDashboard} from "./ProfesorDashboard";
-import {StudentDashboard} from "./StudentDashboard";
+import {ProfessorDashboard} from "./profesor/ProfesorDashboard";
+import {StudentDashboard} from "./student/StudentDashboard";
 
 
 export const Dashboard: FC = () => {

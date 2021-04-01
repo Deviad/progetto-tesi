@@ -51,7 +51,7 @@ export type HttpGetRequestParams = {
 
 export type HttpPostReqParams = {
     url: string;
-    bodyArg: Record<any, any>;
+    bodyArg?: Record<any, any>;
     postReqType: MediaType;
     headers?: Record<string, string>
 }

@@ -4,8 +4,8 @@ import Title from "antd/es/typography/Title";
 import 'react-quill/dist/quill.snow.css';
 import "./ProfessorDashboard.scss";
 import {Route, Switch, useHistory} from "react-router-dom";
-import {CourseAddition} from "./CourseAddition";
-import {CourseList} from "./CourseList";
+import {CourseAddition} from "../CourseAddition";
+import {CourseListProfessor} from "./CourseListProfessor";
 
 export const ProfessorDashboard: FC = () => {
 
@@ -49,7 +49,7 @@ export const ProfessorDashboard: FC = () => {
                         <CourseAddition/>
                     </Route>
                     <Route path="*/professor/listcourses">
-                        <CourseList/>
+                        <CourseListProfessor/>
                     </Route>
                 </Switch>
             </Row>
