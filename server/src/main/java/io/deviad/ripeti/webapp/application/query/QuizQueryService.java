@@ -3,7 +3,7 @@ package io.deviad.ripeti.webapp.application.query;
 import io.deviad.ripeti.webapp.adapter.QuizAdapters;
 import io.deviad.ripeti.webapp.ui.queries.AnswerQuery;
 import io.deviad.ripeti.webapp.ui.queries.QuestionResponseDto;
-import io.deviad.ripeti.webapp.ui.queries.QuizWithoutResults;
+import io.deviad.ripeti.webapp.ui.queries.QuizWithResults;
 import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -18,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
@@ -34,7 +33,7 @@ public class QuizQueryService {
 
 
  @Transactional
-  public Mono<Map<UUID, QuizWithoutResults>> getAllQuizzes(@Parameter(in = ParameterIn.PATH, required = true) String courseId) {
+  public Mono<Map<UUID, QuizWithResults>> getAllQuizzes(@Parameter(in = ParameterIn.PATH, required = true) String courseId) {
 
     return getAllQuizEntitiesByCourseId(courseId)
             .onErrorResume(Flux::error)
@@ -58,10 +57,10 @@ public class QuizQueryService {
              q = q.withQuestions(tuple.getT2());
              return Flux.just(q);
          })
-        .collectMap(QuizWithoutResults::id);
+        .collectMap(QuizWithResults::id);
  }
 
-    private Flux<QuestionResponseDto> combineQuestionsWithAnswers(QuizWithoutResults quiz) {
+    private Flux<QuestionResponseDto> combineQuestionsWithAnswers(QuizWithResults quiz) {
         return Flux.fromIterable(quiz.questions().entrySet())
                 .flatMap(question-> Flux.zip(Mono.defer(()->Mono.just(question)).repeat(), getAnswers(question.getKey().toString()).collect(Collectors.toMap(AnswerQuery::id, Function.identity()))))
                 .flatMap(x-> {
@@ -75,7 +74,7 @@ public class QuizQueryService {
 
 
     @Timed("getAllQuizEntitiesByCourseId")
-     Flux<QuizWithoutResults> getAllQuizEntitiesByCourseId(String courseId) {
+     Flux<QuizWithResults> getAllQuizEntitiesByCourseId(String courseId) {
         //language=PostgreSQL
         String query =
                 """

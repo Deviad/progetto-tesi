@@ -41,6 +41,12 @@ public class CourseQueryRoutesManager {
             beanMethod = "getAllCourses",
             produces = MediaType.APPLICATION_JSON_VALUE),
     @RouterOperation(
+            path = "/api/course/{courseId}/getcourseinfo",
+            method = RequestMethod.GET,
+            beanClass = CourseQueryService.class,
+            beanMethod = "getAllCourses",
+            produces = MediaType.APPLICATION_JSON_VALUE),
+    @RouterOperation(
             path = "/api/course/enrolledcourses",
             method = RequestMethod.GET,
             beanClass = CourseQueryService.class,
@@ -75,6 +81,7 @@ public class CourseQueryRoutesManager {
   public RouterFunction<ServerResponse> courseQueryRoutes() {
     return route()
         .GET("/api/course/getallcourses", this::handleGetAllCourses)
+        .GET("/api/course/{courseId}/getcourseinfo", this::getCourseInfo)
         .GET("/api/course/enrolledcourses", this::getAllCoursesWhereStudentIsEnrolled)
         .GET("/api/course/{courseId}/getstudents", this::handleGetEnrolledStudents)
         .GET("/api/course/{courseId}/getlessons", this::getLessonsByCourseId)
@@ -99,6 +106,15 @@ public class CourseQueryRoutesManager {
         .onErrorResume(Mono::error)
         .switchIfEmpty(Mono.error(new RuntimeException("Cannot find course")))
         .flatMap(r -> ServerResponse.ok().bodyValue(r));
+  }
+
+  Mono<ServerResponse> getCourseInfo(ServerRequest request) {
+    return Mono.just(request.pathVariable("courseId"))
+            .onErrorResume(Mono::error)
+            .flatMap(r -> queryService.getAllCourseInfoByCourseId(r))
+            .onErrorResume(Mono::error)
+            .switchIfEmpty(Mono.error(new RuntimeException("Cannot find course")))
+            .flatMap(r -> ServerResponse.ok().bodyValue(r));
   }
 
   Mono<ServerResponse> getAllCoursesWhereStudentIsEnrolled(ServerRequest request) {
