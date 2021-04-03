@@ -1,3 +1,16 @@
-.course-description, .enrolled-students, .course-lessons {
+.course-description, .enrolled-students, .course-lessons, .quiz-questions {
   width: 100%;
+}
+
+.quiz-questions {
+  .ant-card-body {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.answer-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
 }
