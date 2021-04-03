@@ -16,7 +16,8 @@ begin
 
     create temp table t_qi_left as
 
-    select quiz_id, cs.id as course_id,
+    select qz.id as quiz_id,
+           cs.id as course_id,
            cs.course_name as course_name,
            cs.description as course_description,
            cs.status as course_status,
@@ -24,11 +25,12 @@ begin
            cs.student_ids as course_student_ids,
            cs.lesson_ids as course_lesson_ids,
            cs.quiz_ids as course_quiz_ids
-    from unnest(array(select c.quiz_ids from courses c where c.id::text = courseId)) quiz_id
-        left join courses cs on quiz_id  = any(cs.quiz_ids);
+    from courses cs
+        left join quizzes qz on qz.id  = any(cs.quiz_ids);
 
     create temp table t_qi_right as
-    select quiz_id, cs.id as course_id,
+    select qz.id as quiz_id,
+           cs.id as course_id,
            cs.course_name as course_name,
            cs.description as course_description,
            cs.status as course_status,
@@ -36,8 +38,8 @@ begin
            cs.student_ids as course_student_ids,
            cs.lesson_ids as course_lesson_ids,
            cs.quiz_ids as course_quiz_ids
-    from unnest(array(select c.quiz_ids from courses c where c.id::text = courseId)) quiz_id
-        right join courses cs on quiz_id  = any(cs.quiz_ids);
+    from courses cs
+             left join quizzes qz on qz.id  = any(cs.quiz_ids);
 
     create temp table courses_with_q_id as
     select *  from ( select * from t_qi_left WHERE t_qi_left.quiz_id IS NULL
