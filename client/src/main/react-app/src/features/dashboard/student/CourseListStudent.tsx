@@ -1,4 +1,4 @@
-import {Card, Col, Row, Typography} from "antd";
+import {Anchor, Card, Col, Row, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import React, {useEffect} from "react";
 import {EyeOutlined} from "@ant-design/icons";
@@ -13,11 +13,12 @@ import utc from "dayjs/plugin/utc";
 import {useHistory} from "react-router-dom";
 import {CoursePreview} from "./CoursePreview";
 import {getUrl, ListType} from "./ListType";
+const { Link } = Anchor;
 
 dayjs.extend(utc);
 
 const renderCardList =
-    ({courses, click}:
+    ({courses, click, titleClick}:
          {
              courses: { id: string; title: string, content: string, teacherName: string }[],
              click: ({
@@ -26,6 +27,9 @@ const renderCardList =
                          content,
                          teacherName
                      }: { id: string, title: string, content: string, teacherName: string }) => (e: any) => void
+
+             titleClick: ({id}: {id: string}) => (e: React.MouseEvent) => void
+
          }) => {
 
         const courseList = courses.map(c => {
@@ -46,7 +50,9 @@ const renderCardList =
                             })}/>
                     ]}
                 >
-                    <p>{c.title}</p>
+                <Anchor affix={false} onClick={titleClick({id: c.id})}>
+                     <Link href="#" title={c.title}  />
+                </Anchor>
                 </Card>);
         });
 
@@ -64,17 +70,22 @@ export const CourseListStudent = ({type}: { type: ListType }) => {
 
     const [selected, select] = useState({id: "", title: "", content: "", teacherName: ""}, "selected-course");
     const [toggled, toggleModal] = useState(false, "toggled-modal");
-
+    const history = useHistory();
 
     const handleSelection = ({id, title, content, teacherName}:
                                  { id: string, title: string, content: string, teacherName: string }) =>
         (e: any) => {
             select({id, title, content, teacherName});
+
             toggleModal(true);
         }
 
+    const handleTitleClick = ({id}: {id: string}) => (e: React.MouseEvent) => {
+        e.preventDefault();
+        history.push(`coursedetail/${id}`);
+    }
+
     const user = useSelector((state: RootState) => state.user)
-    const history = useHistory();
     const d = user.expiresAt && user.expiresAt * 1000;
     const expired = d && d <= Date.now();
     const [courses, setCourses] = useState([], 'loading-courses');
@@ -143,7 +154,7 @@ export const CourseListStudent = ({type}: { type: ListType }) => {
                 <Col className="ant-col-xs-24--ripeti-card-row ant-col-md-22--ripeti-card-row"
                      lg={{span: 22, flex: "auto", push: 2}} md={{span: 22, flex: "auto", push: 2}}
                      xs={{flex: "auto", span: 24}} style={{}}>
-                    {renderCardList({courses, click: handleSelection})}
+                    {renderCardList({courses, click: handleSelection, titleClick: handleTitleClick})}
                 </Col>
             </Row>
             {toggled &&

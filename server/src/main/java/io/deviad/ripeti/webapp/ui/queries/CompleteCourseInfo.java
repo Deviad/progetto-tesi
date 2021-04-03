@@ -31,5 +31,6 @@ public class CompleteCourseInfo {
   UUID teacherId;
   Map<UUID, QuizWithResults> quizzes = new HashMap<>();
   Set<Student> studentList = new HashSet<>();
+  Set<Lesson> lessonList = new HashSet<>();
 
 }

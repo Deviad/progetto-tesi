@@ -6,6 +6,7 @@ import io.deviad.ripeti.webapp.domain.valueobject.course.CourseStatus;
 import io.deviad.ripeti.webapp.ui.queries.AnswerQuery;
 import io.deviad.ripeti.webapp.ui.queries.CompleteCourseInfo;
 import io.deviad.ripeti.webapp.ui.queries.CourseInfo;
+import io.deviad.ripeti.webapp.ui.queries.Lesson;
 import io.deviad.ripeti.webapp.ui.queries.QuestionResponseDto;
 import io.deviad.ripeti.webapp.ui.queries.QuizWithResults;
 import io.deviad.ripeti.webapp.ui.queries.Student;
@@ -26,8 +27,7 @@ import reactor.core.publisher.Mono;
 @Lazy
 public class CourseQueryService {
 
-        R2dbcEntityOperations client;
-
+    R2dbcEntityOperations client;
 
     @Timed("getAllCourseInfoByCourseId")
     public Mono<CompleteCourseInfo> getAllCourseInfoByCourseId(@Parameter(required = true, in = ParameterIn.PATH) String courseId) {
@@ -64,11 +64,23 @@ public class CourseQueryService {
                    k.setCourseName(r.getCourseName());
                    k.setCourseDescription(r.getCourseDescription());
                    k.setCourseStatus(r.getCourseStatus());
-                   k.getStudentList().add(Student.builder()
-                           .email(r.getStudentEmail())
-                           .username(r.getStudentUsername())
-                           .studentCompleteName(r.getStudentFullName())
-                           .build());
+
+                   if(r.getStudentEmail() != null) {
+                       k.getStudentList().add(Student.builder()
+                               .email(r.getStudentEmail())
+                               .username(r.getStudentUsername())
+                               .studentCompleteName(r.getStudentFullName())
+                               .build());
+                   }
+
+                   if(r.getLessonId() != null) {
+                       k.getLessonList().add(Lesson.builder()
+                               .id(r.getLessonId())
+                               .lessonName(r.getLessonName())
+                               .lessonContent(r.getLessonName())
+                               .build());
+                   }
+
                    k.setTeacherId(r.getCourseTeacherId());
                    k.setTeacherName(r.getTeacherName());
                    k.setTeacherEmail(r.getTeacherEmail());
@@ -103,6 +115,7 @@ public class CourseQueryService {
                                 .answers()
                                 .put(r.getAnswerId(), AnswerQuery
                                         .builder()
+                                        .id(r.getAnswerId())
                                         .title(r.getAnswerTitle())
                                         .value(r.getAnswerValue())
                                         .build());

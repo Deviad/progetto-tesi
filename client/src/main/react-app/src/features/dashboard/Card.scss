@@ -17,4 +17,8 @@
     border-top: 0 !important;
   }
 
+  .ant-anchor-ink::before {
+    display: none;
+  }
+
 }
