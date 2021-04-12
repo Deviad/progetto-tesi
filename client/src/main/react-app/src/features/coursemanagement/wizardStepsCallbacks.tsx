@@ -45,10 +45,9 @@ export const handleStep2 = async (errors: IFormError, state: WizardStepsState) =
     const usedNames: string[] = [];
     for (const [, lesson] of Object.entries((state.steps[1].lessons as Record<string, ILesson>))) {
         if (usedNames.some(l => l === kebabCase(lesson.lessonName.toLowerCase()))) {
-            await message.error("Nu poti avea 2 lecti cu aceasi denumire");
-            return;
+            errors[kebabCase(lesson.lessonName.toLowerCase())] = {lessonName: "Nu poti avea 2 lecti cu aceasi denumire"};
         }
-        errors[kebabCase(lesson.lessonName.toLowerCase())] = utils.validateFormBlock(lesson, SecondStepSchema);
+        errors[kebabCase(lesson.lessonName.toLowerCase())] = {...errors[kebabCase(lesson.lessonName.toLowerCase())],...utils.validateFormBlock(lesson, SecondStepSchema)};
         usedNames.push(kebabCase(lesson.lessonName.toLowerCase()));
 
     }
@@ -73,6 +72,14 @@ export const handleStep3 = async (errors: IFormError, state: WizardStepsState) =
 }
 
 
+function isObject(err: Object) {
+    return Object.prototype.toString.call(err) === '[object Object]';
+}
+
+function isArray(err: any[]) {
+    return Object.prototype.toString.call(err) === '[object Array]';
+}
+
 export const next = (state: WizardStepsState, setState: Function, accessToken: string) => async (event: SyntheticEvent<HTMLFormElement>) => {
 
     const stepHandlers = [handleStep1, handleStep2, handleStep3];
@@ -93,10 +100,9 @@ export const next = (state: WizardStepsState, setState: Function, accessToken: s
 
     console.log(errors);
 
-    for (const err of Object.values(errors)) {
-        // @ts-ignore
-        if (Object.values(err) === {} || Object.values(err) == []) {
-            errors.delete(err);
+    for (const [k, v] of Object.entries(errors)) {
+        if ((isObject(v) || isArray(v)) && Object.values(v).length == 0) {
+            delete errors[k];
         }
     }
 
