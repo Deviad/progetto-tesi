@@ -66,37 +66,37 @@ const App: FC = () => {
                     <Switch>
 
                         {["/", PagePathName.HOME].map(path => (
-                            <Route exact path={path}>
+                            <Route exact path={path} key={path}>
                                 <Home/>
                             </Route>
                         ))}
 
-                        <Route path="/oauth">
+                        <Route path="/oauth" key="oauth">
                             <Oauth2/>
                         </Route>
 
                         {guardedPaths.map(r => (
-                            <Route path={r}>
+                            <Route path={r} key={r}>
                                 <AuthGuard/>
                             </Route>
                         ))}
 
-                        <Route path="/login">
+                        <Route path="/login" key="login">
                             <Login/>
                         </Route>
 
-                        <Route path="/logout">
+                        <Route path="/logout" key="logout">
                             <Logout/>
                         </Route>
 
-                        <Route path="/register">
+                        <Route path="/register" key="register">
                             <Registration/>
                         </Route>
 
-                        <Route path="/error">
+                        <Route path="/error" key="error">
                             <ErrorComponent/>
                         </Route>
-                        <Route path={`*`} component={NotFound}/>
+                        <Route path={`*`} component={NotFound} key="notfound"/>
                     </Switch>
                 </Col>
             </Layout.Content>
