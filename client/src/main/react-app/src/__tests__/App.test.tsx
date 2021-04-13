@@ -1,11 +1,26 @@
 import React from 'react';
 import {render} from '@testing-library/react';
-import App from './App';
+import App from '../App';
+import {Provider} from "react-redux";
+import { MemoryRouter } from 'react-router-dom';
+import { createStore } from '@reduxjs/toolkit';
+import rootReducer from "../app/rootReducer";
 
 
 
-test('renders learn react link', () => {
-    const {getByText} = render(<App/>);
-    const linkElement = getByText(/learn react/i);
-    expect(linkElement).toBeInTheDocument();
+
+describe('<App />', () => {
+    it('renders properly', () => {
+        const store = createStore(rootReducer);
+
+        const wrapper = render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/']}>
+                    <App/>
+                </MemoryRouter>
+            </Provider>,
+        );
+        expect(wrapper.container.querySelector(".ant-layout")).toBeInTheDocument();
+        wrapper.unmount();
+    });
 });
