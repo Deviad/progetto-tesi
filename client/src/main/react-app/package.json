@@ -85,6 +85,26 @@
     "postcss-math": "^0.0.10",
     "postcss-mixins": "^7.0.0",
     "postcss-nested": "^5.0.0",
-    "postcss-simple-vars": "^6.0.0"
+    "postcss-simple-vars": "^6.0.0",
+    "ts-jest": "^26.5.4"
+  },
+  "jest": {
+    "resetMocks": true,
+    "transform": {
+      "^.+\\.(ts|tsx|js|jsx)?$": "ts-jest"
+    },
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/\\.pnpm/(?!antd|@babel|rc-util|@ant-design|rc-pagination|rc-picker|rc-notification|rc-tooltip|react-quill)"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/__data__/**/*",
+      "!src/**/store/actions/*.{ts,tsx}",
+      "!src/index.tsx",
+      "!src/setupProxy.js",
+      "!**/types.ts",
+      "!**/types.tsx",
+      "!**/react-app-env.d.ts"
+    ]
   }
 }
