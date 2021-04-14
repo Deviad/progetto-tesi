@@ -10,7 +10,7 @@ import rootReducer from "../app/rootReducer";
 
 
 describe('<App />', () => {
-    it('renders properly', () => {
+    test('renders app properly', () => {
         const store = createStore(rootReducer);
 
         const wrapper = render(

@@ -7,10 +7,7 @@ import {Router} from "react-router-dom";
 const mockPush = jest.fn();
 describe('<Login />', () => {
 
-    jest.doMock('react-router-dom', () => ({}));
-
-
-    test('renders properly', () => {
+    test('redirects to component', () => {
         const history = createMemoryHistory()
         const pushSpy = jest.spyOn(history, 'push')
         render(
@@ -22,7 +19,7 @@ describe('<Login />', () => {
         expect(pushSpy).toHaveBeenCalled()
     });
 
-    test('renders properly', () => {
+    test('renders text before redirection', async () => {
         const history = createMemoryHistory();
         history.push = (...args: any) => mockPush(args);
         jest.spyOn(history, 'push')
@@ -32,7 +29,8 @@ describe('<Login />', () => {
                 <Login/>
             </Router>,
         );
-        expect(history.push).toHaveBeenCalled()
-        wrapper.findByText("This is a showcase").then(el => expect(el).toBeInTheDocument());
+        expect(history.push).toHaveBeenCalled();
+        const result = await wrapper.findByText("This is a showcase of OAuth2 integration in React");
+        expect(result).toBeInTheDocument();
     });
 });

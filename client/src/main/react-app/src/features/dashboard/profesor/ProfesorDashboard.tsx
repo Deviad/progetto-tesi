@@ -45,10 +45,10 @@ export const ProfessorDashboard: FC = () => {
             <br/>
             <Row gutter={[16, 16]} align="middle" justify="center" style={{display: "flex", alignItems: "flex-start"}}>
                 <Switch>
-                    <Route path="*/professor/addcourse">
+                    <Route path="*/professor/addcourse" key="addcourse">
                         <CourseAddition/>
                     </Route>
-                    <Route path="*/professor/listcourses">
+                    <Route path="*/professor/listcourses" key="listcourses">
                         <CourseListProfessor/>
                     </Route>
                 </Switch>

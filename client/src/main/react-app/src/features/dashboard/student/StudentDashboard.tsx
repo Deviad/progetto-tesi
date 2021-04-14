@@ -56,10 +56,10 @@ export const StudentDashboard: FC = () => {
                 <Row gutter={[16, 16]} align="middle" justify="center"
                      style={{display: "flex", alignItems: "flex-start"}}>
                     <Switch>
-                        <Route path="*/student/listallcourses">
+                        <Route path="*/student/listallcourses" key="allcourses">
                             <CourseListStudent type={ListType.ALL_COURSES}/>
                         </Route>
-                        <Route path="*/student/listenrolledcourses">
+                        <Route path="*/student/listenrolledcourses" key="enrolled">
                             <CourseListStudent type={ListType.ENROLLED_COURSES}/>
                         </Route>
 
