@@ -188,7 +188,7 @@ public class CourseCommandRoutesManager {
   }
 
   Mono<ServerResponse> deleteCourse(ServerRequest request) {
-    String courseId = request.pathVariable("id");
+    String courseId = request.pathVariable("courseId");
     return Utils.fetchPrincipal(request)
         .flatMap(
             p ->

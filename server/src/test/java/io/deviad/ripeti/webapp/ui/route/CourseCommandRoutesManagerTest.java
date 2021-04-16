@@ -103,7 +103,19 @@ class CourseCommandRoutesManagerTest {
   }
 
   @Test
-  void deleteCourse() {}
+  void deleteCourse() {
+
+
+    lenient().doReturn(Mono.empty()).when(courseService).deleteCourse(any(), any());
+
+    webTestClient
+        .mutateWith(mockJwt())
+        .delete()
+        .uri("/api/course/276c56be-f6ad-4627-b44f-7dd44102a0eb/deletecourse")
+        .exchange()
+        .expectStatus()
+        .isOk();
+  }
 
   @Test
   void handleUpdate() {}
