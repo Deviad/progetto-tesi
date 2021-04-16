@@ -1,6 +1,6 @@
 package io.deviad.ripeti.webapp.application.command;
 
-import io.deviad.ripeti.webapp.Utils;
+import io.deviad.ripeti.webapp.ValidationUtils;
 import io.deviad.ripeti.webapp.adapter.MappingUtils;
 import io.deviad.ripeti.webapp.domain.aggregate.CourseAggregate;
 import io.deviad.ripeti.webapp.domain.aggregate.UserAggregate;
@@ -56,7 +56,7 @@ public class CourseCommandService {
       @RequestBody(required = true) CreateCourseRequest request,
       @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
 
-    Utils.handleValidation(MappingUtils.MAPPER, validator, request);
+    ValidationUtils.handleValidation(MappingUtils.MAPPER, validator, request);
 
     String email = common.getEmailFromToken(token);
 
@@ -83,7 +83,7 @@ public class CourseCommandService {
       @RequestBody(required = true) UpdateCourseRequest request,
       @Parameter(required = true, in = ParameterIn.HEADER) JwtAuthenticationToken token) {
 
-    Utils.handleValidation(MappingUtils.MAPPER, validator, request);
+    ValidationUtils.handleValidation(MappingUtils.MAPPER, validator, request);
 
     String email = common.getEmailFromToken(token);
 

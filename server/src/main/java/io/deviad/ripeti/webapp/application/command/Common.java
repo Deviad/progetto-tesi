@@ -24,7 +24,7 @@ public class Common {
   private final UserRepository repository;
   private final CourseRepository courseRepository;
 
-  Mono<UserAggregate> getUserByEmail(String email) {
+  public Mono<UserAggregate> getUserByEmail(String email) {
     return repository
         .getUserAggregateByEmail(email)
         .switchIfEmpty(
@@ -32,7 +32,7 @@ public class Common {
         .onErrorResume(Mono::error);
   }
 
-  String getEmailFromToken(JwtAuthenticationToken token) {
+  public String getEmailFromToken(JwtAuthenticationToken token) {
     var principal =
         new OAuth2IntrospectionAuthenticatedPrincipal(
             token.getTokenAttributes(), token.getAuthorities());
@@ -40,7 +40,7 @@ public class Common {
     return principal.getAttribute("email");
   }
 
-  OAuth2IntrospectionAuthenticatedPrincipal getPrincipalFromToken(JwtAuthenticationToken token) {
+  public OAuth2IntrospectionAuthenticatedPrincipal getPrincipalFromToken(JwtAuthenticationToken token) {
     return new OAuth2IntrospectionAuthenticatedPrincipal(
         token.getTokenAttributes(), token.getAuthorities());
   }
@@ -55,7 +55,7 @@ public class Common {
         .onErrorResume(Mono::error);
   }
 
-  Mono<CourseAggregate> getCourseByCourseId(UUID courseId) {
+  public Mono<CourseAggregate> getCourseByCourseId(UUID courseId) {
     return courseRepository
         .findById(courseId)
         .onErrorResume(Mono::error)

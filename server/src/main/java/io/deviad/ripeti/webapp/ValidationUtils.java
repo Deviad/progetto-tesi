@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 @UtilityClass
-public class Utils {
+public class ValidationUtils {
   @SneakyThrows
   public static <T> void handleValidation(ObjectMapper mapper, Validator validator, T o) {
 

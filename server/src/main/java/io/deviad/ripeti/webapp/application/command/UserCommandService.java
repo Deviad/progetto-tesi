@@ -2,7 +2,7 @@ package io.deviad.ripeti.webapp.application.command;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectReader;
-import io.deviad.ripeti.webapp.Utils;
+import io.deviad.ripeti.webapp.ValidationUtils;
 import io.deviad.ripeti.webapp.adapter.MappingUtils;
 import io.deviad.ripeti.webapp.adapter.UserAdapters;
 import io.deviad.ripeti.webapp.api.KeycloakAdminClient;
@@ -47,7 +47,7 @@ public class UserCommandService {
   @SneakyThrows
   public Mono<UserInfoDto> registerUser(@RequestBody(required = true) RegistrationRequest r) {
 
-    Utils.handleValidation(MappingUtils.MAPPER, validator, r);
+    ValidationUtils.handleValidation(MappingUtils.MAPPER, validator, r);
 
     var address =
         Address.builder()
