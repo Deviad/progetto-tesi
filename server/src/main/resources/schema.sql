@@ -64,16 +64,6 @@ create table if not exists lessons
     lesson_content text,
     primary key (id)
 );
-create table if not exists teams
-(
-    id          uuid DEFAULT public.uuid_generate_v4(),
-    team_name   varchar(255),
-    course_id   uuid,
-    score       int,
-    student_ids uuid[],
-    constraint fk_teams_course foreign key (course_id) references courses (id),
-    primary key (id)
-);
 create table if not exists quizzes
 (
     id           uuid DEFAULT public.uuid_generate_v4(),
@@ -96,19 +86,6 @@ create table if not exists answers
     id      uuid DEFAULT public.uuid_generate_v4(),
     title   varchar(255),
     value   bool,
-    primary key (id)
-);
-create table if not exists quiz_run
-(
-    id            uuid DEFAULT public.uuid_generate_v4(),
-    quiz_id       uuid,
-    student_id    uuid,
-    question_id   uuid,
-    run_count     int,
-    avg_run_score int,
-    constraint fk_quiz_run_quiz foreign key (quiz_id) references quizzes (id),
-    constraint fk_quiz_run_student foreign key (student_id) references users (id),
-    constraint fk_quiz_run_question foreign key (question_id) references questions (id),
     primary key (id)
 );
 
