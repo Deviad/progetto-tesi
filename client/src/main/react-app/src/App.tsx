@@ -6,11 +6,10 @@ import {Registration} from "./features/registration/Registration";
 import {Route, Switch, useHistory} from "react-router-dom";
 import {ErrorComponent} from "./features/common/Error";
 import {AuthGuard} from "./features/oauth2/AuthGuard";
-import * as H from 'history';
 import {useSelector} from "react-redux";
 import {RootState} from "./app/rootReducer";
 import {PagePathName, PageSlug} from "./types";
-import {Login} from "./features/login/Login";
+import {Login} from "./features/login";
 import {
     handleClick,
     renderDashboardMenuButton,
@@ -28,7 +27,7 @@ const NotFound = () => <div>Page not Found</div>;
 
 const App: FC = () => {
 
-    const history: H.History = useHistory();
+    const history = useHistory();
 
     const [menuState, setMenuState] = useState<Record<string, string>>({});
 

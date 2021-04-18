@@ -31,6 +31,7 @@ public class CourseQueryService {
 
     @Timed("getAllCourseInfoByCourseId")
     public Mono<CompleteCourseInfo> getAllCourseInfoByCourseId(@Parameter(required = true, in = ParameterIn.PATH) String courseId) {
+        //language=PostgreSQL
         String query =
                 """
                     select * from f_get_complete_course_info('$1') as t(
@@ -56,6 +57,16 @@ public class CourseQueryService {
                       answer_title varchar,
                       answer_value bool); 
                 """.replace("$1", courseId);
+        return client.getDatabaseClient().sql("select id from courses where id::text = $1")
+                .bind("$1", courseId) // this step is for sanitization
+                .fetch()
+                .first()
+                .onErrorResume(Mono::error)
+                .switchIfEmpty(Mono.error(new RuntimeException("Cannot find course")))
+                .then(getAllCourseInfo(query));
+    }
+
+    private Mono<CompleteCourseInfo> getAllCourseInfo(String query) {
         return client.getDatabaseClient().sql(query)
                 .map(CourseAdapters.COMPLETE_COURSEINFO_FROM_ROW_MAP::apply)
                 .all()
